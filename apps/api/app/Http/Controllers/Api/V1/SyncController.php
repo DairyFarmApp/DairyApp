@@ -2,7 +2,15 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\AnimalRegistry\Models\Animal;
+use App\Domain\AnimalRegistry\Models\AnimalBreed;
+use App\Domain\AnimalRegistry\Models\AnimalGroup;
+use App\Domain\AnimalRegistry\Models\AnimalSpecies;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\AnimalBreedResource;
+use App\Http\Resources\Api\V1\AnimalGroupResource;
+use App\Http\Resources\Api\V1\AnimalResource;
+use App\Http\Resources\Api\V1\AnimalSpeciesResource;
 use App\Http\Resources\Api\V1\FarmResource;
 use App\Http\Resources\Api\V1\OrganizationResource;
 use App\Http\Resources\Api\V1\ShedResource;
@@ -44,8 +52,44 @@ class SyncController extends Controller
         $farms = Farm::withTrashed()->where('organization_id', $organizationId)->when($since, fn ($query) => $query->where('updated_at', '>=', $since))->when(! $membership->all_farms, fn ($query) => $query->whereIn('id', $membership->farms()->withTrashed()->pluck('farms.id')))->get();
         $sheds = Shed::withTrashed()->where('organization_id', $organizationId)->when($since, fn ($query) => $query->where('updated_at', '>=', $since))->when(! $membership->all_farms, fn ($query) => $query->whereIn('farm_id', $accessibleFarmIds))->get();
         $organizations = Organization::withTrashed()->whereKey($organizationId)->when($since, fn ($query) => $query->where('updated_at', '>=', $since))->get();
+        $species = $membership->can('animals.view')
+            ? AnimalSpecies::query()->when($since, fn ($query) => $query->where('updated_at', '>=', $since))->get()
+            : collect();
+        $breeds = $membership->can('animal_breeds.view')
+            ? AnimalBreed::withTrashed()
+                ->with('species')
+                ->where('organization_id', $organizationId)
+                ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
+                ->get()
+            : collect();
+        $groups = $membership->can('animal_groups.view')
+            ? AnimalGroup::withTrashed()
+                ->with(['farm', 'defaultShed'])
+                ->where('organization_id', $organizationId)
+                ->whereIn('farm_id', $accessibleFarmIds)
+                ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
+                ->get()
+            : collect();
+        $animals = $membership->can('animals.view')
+            ? Animal::withTrashed()
+                ->with(['species', 'breed', 'currentFarm', 'currentShed', 'currentGroup', 'mother', 'father'])
+                ->where('organization_id', $organizationId)
+                ->whereIn('current_farm_id', $accessibleFarmIds)
+                ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
+                ->get()
+            : collect();
 
-        return ApiResponse::success($request, ['organizations' => OrganizationResource::collection($organizations)->resolve($request), 'farms' => FarmResource::collection($farms)->resolve($request), 'sheds' => ShedResource::collection($sheds)->resolve($request), 'authorized_farm_ids' => $accessibleFarmIds->values(), 'next_cursor' => $this->encodeCursor($now->copy()->subSeconds(2))]);
+        return ApiResponse::success($request, [
+            'organizations' => OrganizationResource::collection($organizations)->resolve($request),
+            'farms' => FarmResource::collection($farms)->resolve($request),
+            'sheds' => ShedResource::collection($sheds)->resolve($request),
+            'animal_species' => AnimalSpeciesResource::collection($species)->resolve($request),
+            'animal_breeds' => AnimalBreedResource::collection($breeds)->resolve($request),
+            'animal_groups' => AnimalGroupResource::collection($groups)->resolve($request),
+            'animals' => AnimalResource::collection($animals)->resolve($request),
+            'authorized_farm_ids' => $accessibleFarmIds->values(),
+            'next_cursor' => $this->encodeCursor($now->copy()->subSeconds(2)),
+        ]);
     }
 
     private function decodeCursor(string $cursor): Carbon

@@ -19,6 +19,8 @@ final class FoundationShell extends ConsumerWidget {
         const _Destination('Farms', Icons.agriculture_outlined, '/farms'),
       if (session?.can('sheds.view') ?? false)
         const _Destination('Sheds', Icons.warehouse_outlined, '/sheds'),
+      if (session?.can('animals.view') ?? false)
+        const _Destination('Animals', Icons.pets_outlined, '/animals'),
       const _Destination('Sync', Icons.sync_outlined, '/sync'),
     ];
     final selected = destinations.indexWhere((item) => location == item.path);

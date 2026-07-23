@@ -1,6 +1,32 @@
-# Preliminary ERD
+# ERD
 
-This is a module-level ERD, intentionally preliminary; it does not represent Phase 0 migrations.
+## Implemented Phase 2A registry
+
+```mermaid
+erDiagram
+  ORGANIZATION ||--o{ ANIMAL_BREED : owns
+  ANIMAL_SPECIES ||--o{ ANIMAL_BREED : classifies
+  ORGANIZATION ||--o{ ANIMAL_GROUP : owns
+  FARM ||--o{ ANIMAL_GROUP : scopes
+  SHED o|--o{ ANIMAL_GROUP : defaults
+  ORGANIZATION ||--o{ ORGANIZATION_SEQUENCE : numbers
+  ORGANIZATION ||--o{ ANIMAL : owns
+  ANIMAL_SPECIES ||--o{ ANIMAL : classifies
+  ANIMAL_BREED ||--o{ ANIMAL : classifies
+  FARM ||--o{ ANIMAL : locates
+  SHED ||--o{ ANIMAL : locates
+  ANIMAL_GROUP o|--o{ ANIMAL : groups
+  ANIMAL o|--o{ ANIMAL : mother
+  ANIMAL o|--o{ ANIMAL : father
+  USER ||--o{ ANIMAL : creates_or_updates
+  ORGANIZATION ||--o{ AUDIT_LOG : records
+```
+
+Every tenant relationship shown above is constrained or scoped by organization; farm/shed/group links additionally use composite keys so a valid UUID from another tenant/farm cannot be linked. Parent links preserve historical archived rows.
+
+## Product-wide preliminary ERD
+
+This remaining module-level ERD is intentionally preliminary and does not imply that later tables exist.
 
 ```mermaid
 erDiagram

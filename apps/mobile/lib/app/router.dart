@@ -1,6 +1,11 @@
 import 'package:dairycare_mobile/core/auth/auth_controller.dart';
 import 'package:dairycare_mobile/core/auth/session_models.dart';
 import 'package:dairycare_mobile/features/authentication/presentation/login_screen.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_detail_screen.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_form_screen.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_group_management_screen.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_list_screen.dart';
+import 'package:dairycare_mobile/features/animals/presentation/breed_management_screen.dart';
 import 'package:dairycare_mobile/features/farms/presentation/farm_selection_screen.dart';
 import 'package:dairycare_mobile/features/farms/presentation/farm_list_screen.dart';
 import 'package:dairycare_mobile/features/foundation_home/presentation/foundation_home_screen.dart';
@@ -42,6 +47,32 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(path: '/farms', builder: (_, _) => const FarmListScreen()),
           GoRoute(path: '/sheds', builder: (_, _) => const ShedListScreen()),
+          GoRoute(
+            path: '/animals',
+            builder: (_, _) => const AnimalListScreen(),
+          ),
+          GoRoute(
+            path: '/animals/new',
+            builder: (_, _) => const AnimalFormScreen(),
+          ),
+          GoRoute(
+            path: '/animals/:animalId/edit',
+            builder: (_, state) =>
+                AnimalFormScreen(animalId: state.pathParameters['animalId']!),
+          ),
+          GoRoute(
+            path: '/animals/:animalId',
+            builder: (_, state) =>
+                AnimalDetailScreen(animalId: state.pathParameters['animalId']!),
+          ),
+          GoRoute(
+            path: '/animal-breeds',
+            builder: (_, _) => const BreedManagementScreen(),
+          ),
+          GoRoute(
+            path: '/animal-groups',
+            builder: (_, _) => const AnimalGroupManagementScreen(),
+          ),
           GoRoute(
             path: '/sync',
             builder: (_, _) => const SyncDiagnosticsScreen(),

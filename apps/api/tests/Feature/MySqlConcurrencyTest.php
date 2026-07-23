@@ -205,6 +205,40 @@ class MySqlConcurrencyTest extends TestCase
         $this->assertCount(count($combinations), $records->pluck('scope_key')->unique());
     }
 
+    public function test_concurrent_animal_creates_generate_unique_organization_numbers(): void
+    {
+        $data = $this->foundation(['animals.view', 'animals.create']);
+        $references = $this->animalRegistryReferences($data);
+        $token = $this->loginToken();
+        $payload = [
+            'species_id' => $references['species']->id,
+            'breed_id' => $references['breed']->id,
+            'sex' => 'female',
+            'life_stage' => 'adult',
+            'date_of_birth' => '2022-01-01',
+            'current_farm_id' => $data['farm']->id,
+            'current_shed_id' => $data['shed']->id,
+            'current_animal_group_id' => $references['group']->id,
+            'origin' => 'born_on_farm',
+        ];
+
+        $results = $this->runConcurrently([
+            $this->requestPayload('/api/v1/animals', $payload, $this->bearer($token) + ['Idempotency-Key' => 'animal-sequence-a']),
+            $this->requestPayload('/api/v1/animals', $payload, $this->bearer($token) + ['Idempotency-Key' => 'animal-sequence-b']),
+        ]);
+
+        $this->assertSame([201, 201], collect($results)->pluck('status')->sort()->values()->all());
+        $numbers = collect($results)->pluck('data.animal_number')->sort()->values()->all();
+        $this->assertSame(['AN-000001', 'AN-000002'], $numbers);
+        $this->assertCount(2, collect($results)->pluck('data.id')->unique());
+        $this->assertDatabaseCount('animals', 2);
+        $this->assertDatabaseHas('organization_sequences', [
+            'organization_id' => $data['organization']->id,
+            'sequence_key' => 'animal_number',
+            'next_value' => 3,
+        ]);
+    }
+
     /**
      * @param  array<int, array<string, mixed>>  $payloads
      * @return array<int, array<string, mixed>>

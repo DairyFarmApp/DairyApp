@@ -2,8 +2,15 @@
 
 namespace App\Providers;
 
+use App\Domain\AnimalRegistry\Models\Animal;
+use App\Domain\AnimalRegistry\Models\AnimalBreed;
+use App\Domain\AnimalRegistry\Models\AnimalGroup;
+use App\Domain\AnimalRegistry\Policies\AnimalBreedPolicy;
+use App\Domain\AnimalRegistry\Policies\AnimalGroupPolicy;
+use App\Domain\AnimalRegistry\Policies\AnimalPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(AnimalBreed::class, AnimalBreedPolicy::class);
+        Gate::policy(AnimalGroup::class, AnimalGroupPolicy::class);
+        Gate::policy(Animal::class, AnimalPolicy::class);
         RateLimiter::for('login', fn (Request $request) => [
             Limit::perMinute(10)->by('identity:'.hash('sha256', strtolower((string) $request->input('email')))),
             Limit::perMinute(30)->by($request->ip()),

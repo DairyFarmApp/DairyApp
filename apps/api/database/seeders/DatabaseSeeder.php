@@ -42,15 +42,40 @@ class DatabaseSeeder extends Seeder
                 );
             }
 
-            $permissionNames = ['organizations.view', 'organizations.update', 'farms.view', 'farms.create', 'farms.update', 'farms.archive', 'sheds.view', 'sheds.create', 'sheds.update', 'sheds.archive', 'users.view', 'users.manage', 'roles.view', 'roles.manage', 'sessions.view_own', 'sessions.revoke_own', 'audit_logs.view'];
+            $permissionNames = [
+                'organizations.view', 'organizations.update',
+                'farms.view', 'farms.create', 'farms.update', 'farms.archive',
+                'sheds.view', 'sheds.create', 'sheds.update', 'sheds.archive',
+                'users.view', 'users.manage', 'roles.view', 'roles.manage',
+                'sessions.view_own', 'sessions.revoke_own', 'audit_logs.view',
+                'animals.view', 'animals.create', 'animals.update', 'animals.archive',
+                'animals.restore', 'animals.manage_identifiers',
+                'animal_breeds.view', 'animal_breeds.manage',
+                'animal_groups.view', 'animal_groups.manage',
+            ];
             $permissions = collect($permissionNames)->mapWithKeys(
                 fn ($name) => [$name => Permission::query()->firstOrCreate(['name' => $name])],
             );
             $roles = [
                 'organization-owner' => ['Organization Owner', $permissionNames],
-                'farm-manager' => ['Farm Manager', ['organizations.view', 'farms.view', 'farms.create', 'farms.update', 'sheds.view', 'sheds.create', 'sheds.update', 'sheds.archive', 'sessions.view_own', 'sessions.revoke_own']],
-                'farm-worker' => ['Farm Worker', ['organizations.view', 'farms.view', 'sheds.view', 'sessions.view_own', 'sessions.revoke_own']],
-                'viewer' => ['Viewer', ['organizations.view', 'farms.view', 'sheds.view', 'sessions.view_own', 'sessions.revoke_own']],
+                'farm-manager' => ['Farm Manager', [
+                    'organizations.view', 'farms.view', 'farms.create', 'farms.update',
+                    'sheds.view', 'sheds.create', 'sheds.update', 'sheds.archive',
+                    'animals.view', 'animals.create', 'animals.update',
+                    'animal_breeds.view', 'animal_breeds.manage',
+                    'animal_groups.view', 'animal_groups.manage',
+                    'sessions.view_own', 'sessions.revoke_own',
+                ]],
+                'farm-worker' => ['Farm Worker', [
+                    'organizations.view', 'farms.view', 'sheds.view', 'animals.view',
+                    'animal_breeds.view', 'animal_groups.view',
+                    'sessions.view_own', 'sessions.revoke_own',
+                ]],
+                'viewer' => ['Viewer', [
+                    'organizations.view', 'farms.view', 'sheds.view', 'animals.view',
+                    'animal_breeds.view', 'animal_groups.view',
+                    'sessions.view_own', 'sessions.revoke_own',
+                ]],
             ];
             $roleModels = collect($roles)->mapWithKeys(function ($definition, $slug) use ($organization, $permissions) {
                 $role = Role::query()->updateOrCreate(
@@ -83,5 +108,7 @@ class DatabaseSeeder extends Seeder
                 )->all());
             }
         });
+
+        $this->call(AnimalRegistrySeeder::class);
     }
 }

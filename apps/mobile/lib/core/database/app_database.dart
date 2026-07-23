@@ -52,6 +52,100 @@ class LocalSheds extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+class LocalAnimalSpecies extends Table {
+  TextColumn get id => text()();
+  TextColumn get code => text()();
+  TextColumn get name => text()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  DateTimeColumn get serverUpdatedAt => dateTime()();
+  DateTimeColumn get cachedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class LocalAnimalBreeds extends Table {
+  TextColumn get id => text()();
+  TextColumn get organizationId => text()();
+  TextColumn get speciesId => text()();
+  TextColumn get code => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  DateTimeColumn get serverUpdatedAt => dateTime()();
+  DateTimeColumn get cachedAt => dateTime()();
+  BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class LocalAnimalGroups extends Table {
+  TextColumn get id => text()();
+  TextColumn get organizationId => text()();
+  TextColumn get farmId => text()();
+  TextColumn get defaultShedId => text().nullable()();
+  TextColumn get code => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  DateTimeColumn get serverUpdatedAt => dateTime()();
+  DateTimeColumn get cachedAt => dateTime()();
+  BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
+  BoolColumn get isAccessible => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class LocalAnimals extends Table {
+  TextColumn get id => text()();
+  TextColumn get organizationId => text()();
+  TextColumn get animalNumber => text()();
+  TextColumn get earTagNumber => text().nullable()();
+  TextColumn get rfidNumber => text().nullable()();
+  TextColumn get name => text().nullable()();
+  TextColumn get registrationNumber => text().nullable()();
+  TextColumn get speciesId => text()();
+  TextColumn get speciesName => text()();
+  TextColumn get breedId => text()();
+  TextColumn get breedName => text()();
+  TextColumn get sex => text()();
+  TextColumn get lifeStage => text()();
+  DateTimeColumn get dateOfBirth => dateTime().nullable()();
+  BoolColumn get isDateOfBirthEstimated =>
+      boolean().withDefault(const Constant(false))();
+  TextColumn get colour => text().nullable()();
+  TextColumn get identifyingMarks => text().nullable()();
+  TextColumn get currentFarmId => text()();
+  TextColumn get currentFarmName => text()();
+  TextColumn get currentShedId => text()();
+  TextColumn get currentShedName => text()();
+  TextColumn get currentAnimalGroupId => text().nullable()();
+  TextColumn get currentAnimalGroupName => text().nullable()();
+  TextColumn get motherAnimalId => text().nullable()();
+  TextColumn get motherAnimalNumber => text().nullable()();
+  TextColumn get fatherAnimalId => text().nullable()();
+  TextColumn get fatherAnimalNumber => text().nullable()();
+  TextColumn get externalSireReference => text().nullable()();
+  TextColumn get origin => text()();
+  DateTimeColumn get acquisitionDate => dateTime().nullable()();
+  TextColumn get sourceDescription => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  TextColumn get operationalStatus => text()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  DateTimeColumn get serverUpdatedAt => dateTime()();
+  DateTimeColumn get cachedAt => dateTime()();
+  BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
+  BoolColumn get isAccessible => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 class SyncDevices extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
@@ -133,6 +227,10 @@ class LocalApplicationSettings extends Table {
     LocalOrganizations,
     LocalFarms,
     LocalSheds,
+    LocalAnimalSpecies,
+    LocalAnimalBreeds,
+    LocalAnimalGroups,
+    LocalAnimals,
     SyncDevices,
     SyncCursors,
     SyncOutbox,
@@ -145,7 +243,20 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'dairycare'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (migrator) => migrator.createAll(),
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await migrator.createTable(localAnimalSpecies);
+        await migrator.createTable(localAnimalBreeds);
+        await migrator.createTable(localAnimalGroups);
+        await migrator.createTable(localAnimals);
+      }
+    },
+  );
 
   Stream<int> watchPendingOperationCount() {
     final count = syncOutbox.id.count();
@@ -193,4 +304,69 @@ class AppDatabase extends _$AppDatabase {
             )
             ..orderBy([(row) => OrderingTerm.asc(row.createdAt)]))
           .get();
+
+  Stream<List<LocalAnimal>> watchAnimals({
+    required String organizationId,
+    String? farmId,
+    String search = '',
+    String? speciesId,
+    String? breedId,
+    String? sex,
+    String? lifeStage,
+    String? shedId,
+    String? groupId,
+    String? operationalStatus,
+    String archiveState = 'active',
+  }) {
+    final query = select(localAnimals)
+      ..where(
+        (row) =>
+            row.organizationId.equals(organizationId) &
+            row.isAccessible.equals(true),
+      );
+    if (archiveState == 'active') {
+      query.where((row) => row.isArchived.equals(false));
+    } else if (archiveState == 'archived') {
+      query.where((row) => row.isArchived.equals(true));
+    }
+    if (farmId != null) {
+      query.where((row) => row.currentFarmId.equals(farmId));
+    }
+    if (speciesId != null) {
+      query.where((row) => row.speciesId.equals(speciesId));
+    }
+    if (breedId != null) {
+      query.where((row) => row.breedId.equals(breedId));
+    }
+    if (sex != null) {
+      query.where((row) => row.sex.equals(sex));
+    }
+    if (lifeStage != null) {
+      query.where((row) => row.lifeStage.equals(lifeStage));
+    }
+    if (shedId != null) {
+      query.where((row) => row.currentShedId.equals(shedId));
+    }
+    if (groupId != null) {
+      query.where((row) => row.currentAnimalGroupId.equals(groupId));
+    }
+    if (operationalStatus != null) {
+      query.where((row) => row.operationalStatus.equals(operationalStatus));
+    }
+    final trimmedSearch = search.trim();
+    if (trimmedSearch.isNotEmpty) {
+      final pattern =
+          '%${trimmedSearch.replaceAll('%', r'\%').replaceAll('_', r'\_')}%';
+      query.where(
+        (row) =>
+            row.animalNumber.like(pattern) |
+            row.earTagNumber.like(pattern) |
+            row.rfidNumber.like(pattern) |
+            row.name.like(pattern),
+      );
+    }
+    query.orderBy([(row) => OrderingTerm.asc(row.animalNumber)]);
+
+    return query.watch();
+  }
 }

@@ -1,6 +1,6 @@
-# DairyCare Mobile Foundation
+# DairyCare Mobile
 
-Flutter 3.41.9 / Dart 3.11.5 client for Phase 1. Implemented features are authentication, secure session persistence, organization/farm context selection, responsive shell, permission-aware foundation navigation, farm/shed reference management, Drift reference cache/outbox/conflicts, connectivity state, manual sync, and diagnostics.
+Flutter 3.41.9 / Dart 3.11.5 client for the Phase 1 foundation and Phase 2A registry. Implemented features include authentication/context, responsive permission-aware navigation, farm/shed foundation data, animal list/search/filter/add/detail/edit/archive/restore, breed/group management, Drift authorized registry read cache, connectivity, sync, and diagnostics.
 
 ## Run
 
@@ -26,4 +26,4 @@ SQLite uses the operating-system native library via `pubspec.yaml` hooks because
 
 The Phase 1.1 Android debug build passed with Android SDK/build-tools 36.1 and the Android Studio JDK 21. The manifest contains `INTERNET` and Connectivity Plus contributes network-state permission. Production signing is intentionally not configured.
 
-No animal, milk, health, inventory, finance, or other later-phase code exists.
+Phase 2A analysis and all 33 Flutter tests pass. The debug APK builds successfully. Animal/breed/group writes require connectivity; Drift caches only authorized read data. Movement, weight, QR, photo, offline animal mutation, timeline, milk, breeding, health, inventory, finance, and all later-phase screens remain excluded.

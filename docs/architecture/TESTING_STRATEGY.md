@@ -27,3 +27,12 @@ CI should run deterministic checks on every pull request and publish artifacts w
 ## Phase 0 validation
 
 No application tests/builds apply because no application exists and Phase 0 creates documentation only. Validation consists of repository inventory, required-file presence, content/search checks, and Git/diff checks where available.
+
+## Phase 2A executed evidence
+
+- MySQL 8.4.9: 44 tests, 366 assertions, including opaque-session policy regression, separate-process animal-number concurrency, and direct foreign-key/unique/composite-tenant failures.
+- SQLite portability: 44 discovered, 39 passed, 294 assertions, 5 MySQL-only tests skipped.
+- Flutter: 33 unit/repository/Drift/sync/widget tests covering serialization, protected edit payloads, idempotent online writes, local search/archive filters, management endpoints, form validation, permission controls, responsive cards/table, bootstrap/incremental tombstones, and access removal.
+- PHP syntax, Pint, Composer validation/audit, Redocly OpenAPI validation, Dart format, Flutter analysis, and Android debug build passed.
+
+The full evidence and known environmental gaps are in `docs/PHASE_2A_COMPLETION.md`.

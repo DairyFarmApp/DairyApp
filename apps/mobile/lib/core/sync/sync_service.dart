@@ -189,6 +189,18 @@ final class SyncService {
                 row.farmId.isNotIn(authorizedFarmIds),
           ))
           .write(const LocalShedsCompanion(isDeleted: Value(true)));
+      await (_database.update(_database.localAnimalGroups)..where(
+            (row) =>
+                row.organizationId.equals(organizationId) &
+                row.farmId.isNotIn(authorizedFarmIds),
+          ))
+          .write(const LocalAnimalGroupsCompanion(isAccessible: Value(false)));
+      await (_database.update(_database.localAnimals)..where(
+            (row) =>
+                row.organizationId.equals(organizationId) &
+                row.currentFarmId.isNotIn(authorizedFarmIds),
+          ))
+          .write(const LocalAnimalsCompanion(isAccessible: Value(false)));
       for (final raw in _maps(data['organizations'])) {
         await _database
             .into(_database.localOrganizations)
@@ -232,6 +244,66 @@ final class SyncService {
               ),
             );
       }
+      for (final raw in _maps(data['animal_species'])) {
+        await _database
+            .into(_database.localAnimalSpecies)
+            .insertOnConflictUpdate(
+              LocalAnimalSpeciesCompanion.insert(
+                id: raw['id'] as String,
+                code: raw['code'] as String,
+                name: raw['name'] as String,
+                isActive: Value(raw['is_active'] as bool? ?? true),
+                version: Value(raw['version'] as int? ?? 1),
+                serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+                cachedAt: synchronizedAt,
+              ),
+            );
+      }
+      for (final raw in _maps(data['animal_breeds'])) {
+        await _database
+            .into(_database.localAnimalBreeds)
+            .insertOnConflictUpdate(
+              LocalAnimalBreedsCompanion.insert(
+                id: raw['id'] as String,
+                organizationId: raw['organization_id'] as String,
+                speciesId: raw['species_id'] as String,
+                code: raw['code'] as String,
+                name: raw['name'] as String,
+                description: Value(raw['description'] as String?),
+                isActive: Value(raw['is_active'] as bool? ?? true),
+                version: Value(raw['version'] as int? ?? 1),
+                serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+                cachedAt: synchronizedAt,
+                isArchived: Value(raw['is_archived'] as bool? ?? false),
+              ),
+            );
+      }
+      for (final raw in _maps(data['animal_groups'])) {
+        await _database
+            .into(_database.localAnimalGroups)
+            .insertOnConflictUpdate(
+              LocalAnimalGroupsCompanion.insert(
+                id: raw['id'] as String,
+                organizationId: raw['organization_id'] as String,
+                farmId: raw['farm_id'] as String,
+                defaultShedId: Value(raw['default_shed_id'] as String?),
+                code: raw['code'] as String,
+                name: raw['name'] as String,
+                description: Value(raw['description'] as String?),
+                isActive: Value(raw['is_active'] as bool? ?? true),
+                version: Value(raw['version'] as int? ?? 1),
+                serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+                cachedAt: synchronizedAt,
+                isArchived: Value(raw['is_archived'] as bool? ?? false),
+                isAccessible: const Value(true),
+              ),
+            );
+      }
+      for (final raw in _maps(data['animals'])) {
+        await _database
+            .into(_database.localAnimals)
+            .insertOnConflictUpdate(_animalCompanion(raw, synchronizedAt));
+      }
       await _database
           .into(_database.syncCursors)
           .insertOnConflictUpdate(
@@ -250,4 +322,59 @@ final class SyncService {
 
   DateTime _date(Object? value, DateTime fallback) =>
       value is String ? DateTime.parse(value).toUtc() : fallback;
+
+  DateTime? _nullableDate(Object? value) {
+    if (value is! String || value.isEmpty) return null;
+    if (!value.contains('T')) {
+      final parts = value.split('-').map(int.parse).toList(growable: false);
+      return DateTime.utc(parts[0], parts[1], parts[2]);
+    }
+    return DateTime.parse(value).toUtc();
+  }
+
+  LocalAnimalsCompanion _animalCompanion(
+    Map<String, dynamic> raw,
+    DateTime synchronizedAt,
+  ) => LocalAnimalsCompanion.insert(
+    id: raw['id'] as String,
+    organizationId: raw['organization_id'] as String,
+    animalNumber: raw['animal_number'] as String,
+    earTagNumber: Value(raw['ear_tag_number'] as String?),
+    rfidNumber: Value(raw['rfid_number'] as String?),
+    name: Value(raw['name'] as String?),
+    registrationNumber: Value(raw['registration_number'] as String?),
+    speciesId: raw['species_id'] as String,
+    speciesName: raw['species_name'] as String? ?? '',
+    breedId: raw['breed_id'] as String,
+    breedName: raw['breed_name'] as String? ?? '',
+    sex: raw['sex'] as String,
+    lifeStage: raw['life_stage'] as String,
+    dateOfBirth: Value(_nullableDate(raw['date_of_birth'])),
+    isDateOfBirthEstimated: Value(
+      raw['is_date_of_birth_estimated'] as bool? ?? false,
+    ),
+    colour: Value(raw['colour'] as String?),
+    identifyingMarks: Value(raw['identifying_marks'] as String?),
+    currentFarmId: raw['current_farm_id'] as String,
+    currentFarmName: raw['current_farm_name'] as String? ?? '',
+    currentShedId: raw['current_shed_id'] as String,
+    currentShedName: raw['current_shed_name'] as String? ?? '',
+    currentAnimalGroupId: Value(raw['current_animal_group_id'] as String?),
+    currentAnimalGroupName: Value(raw['current_animal_group_name'] as String?),
+    motherAnimalId: Value(raw['mother_animal_id'] as String?),
+    motherAnimalNumber: Value(raw['mother_animal_number'] as String?),
+    fatherAnimalId: Value(raw['father_animal_id'] as String?),
+    fatherAnimalNumber: Value(raw['father_animal_number'] as String?),
+    externalSireReference: Value(raw['external_sire_reference'] as String?),
+    origin: raw['origin'] as String,
+    acquisitionDate: Value(_nullableDate(raw['acquisition_date'])),
+    sourceDescription: Value(raw['source_description'] as String?),
+    notes: Value(raw['notes'] as String?),
+    operationalStatus: raw['operational_status'] as String,
+    version: Value(raw['version'] as int? ?? 1),
+    serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+    cachedAt: synchronizedAt,
+    isArchived: Value(raw['is_archived'] as bool? ?? false),
+    isAccessible: const Value(true),
+  );
 }

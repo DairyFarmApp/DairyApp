@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-07-23 — Phase 2A animal registry core
+
+- Added controlled cattle/buffalo species, six organization breeds, farm-specific animal groups, and a 20-animal repeatable seed.
+- Added tenant-composite MySQL schema, UUIDv7 records, optimistic versions, archive state, and concurrency-safe organization animal numbering.
+- Added parentage, classification, initial-location, identifier normalization/uniqueness, permission, idempotency, and audit enforcement.
+- Added 17 animal-registry API routes with pagination, safe sorting, search/filters, profile update, archive, restore, and OpenAPI coverage.
+- Added responsive Flutter animal list/add/detail/edit/archive/restore and breed/group management screens backed by the real API.
+- Extended Drift bootstrap/incremental cache for species, breeds, groups, animals, tombstones, local search, and farm-access removal.
+- Passed 44 MySQL tests with 366 assertions, SQLite portability with 294 assertions, 33 Flutter tests, analysis, Pint, Composer audit, OpenAPI validation, and Android debug build.
+
+No movement, weight, QR, photo, offline animal mutation, timeline, milk, breeding, health, inventory, finance, or later-domain implementation was added.
+
 ## 2026-07-23 — Phase 1.2 MySQL validation gate
 
 - Installed official Oracle MySQL Community Server 8.4.9 as the automatic, localhost-only `MySQL84` Windows service.

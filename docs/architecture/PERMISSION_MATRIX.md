@@ -19,6 +19,23 @@
 
 The seeder and this table share the same explicit catalog. API middleware applies implemented organization/farm permissions; user/role/audit management endpoints are intentionally not exposed until an approved workflow assigns them.
 
+## Implemented Phase 2A permissions
+
+| Permission | Organization Owner | Farm Manager | Farm Worker | Viewer |
+|---|---:|---:|---:|---:|
+| `animals.view` | Yes | Yes, authorized farms | Yes, authorized farms | Yes, authorized farms |
+| `animals.create` | Yes | Yes, authorized farms | No by default | No |
+| `animals.update` | Yes | Yes, authorized farms | No | No |
+| `animals.archive` | Yes | No by default | No | No |
+| `animals.restore` | Yes | No by default | No | No |
+| `animals.manage_identifiers` | Yes | No by default | No | No |
+| `animal_breeds.view` | Yes | Yes | Yes | Yes |
+| `animal_breeds.manage` | Yes | Yes | No | No |
+| `animal_groups.view` | Yes | Yes, authorized farms | Yes, authorized farms | Yes, authorized farms |
+| `animal_groups.manage` | Yes | Yes, authorized farms | No | No |
+
+An explicitly customized role may grant worker create or manager archive, but the seeded defaults remain conservative. Permission alone never expands organization membership or farm grants. Identifier management controls user-supplied animal numbers and edits to animal number/ear tag/RFID.
+
 ## Product-wide proposed baseline
 
 This is a conservative baseline. Organization owners can customize roles but cannot bypass platform boundaries. `Scope` is additionally restricted by membership and farm grants.

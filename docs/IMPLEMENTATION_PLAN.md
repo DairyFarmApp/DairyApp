@@ -18,7 +18,7 @@ Exclude animals, milk, health, inventory, finance, placeholder screens, demo dat
 
 Phase 1 exit: clean initialization reproducible; authentication/session revocation works; organization/farm/shed CRUD respects permission and tenant isolation; Flutter uses the API and caches allowed foundation data; sync foundation demonstrates safe replay; audit is verified; relevant gates actually pass.
 
-Completion evidence is recorded in `docs/PHASE_1_COMPLETION.md`. Phase 2 remains unapproved and has not started.
+Completion evidence is recorded in `docs/PHASE_1_COMPLETION.md`.
 
 ## Phase 1.1 — Foundation hardening and platform validation (implemented 2026-07-22)
 
@@ -30,11 +30,27 @@ At Phase 1.1 completion, local MySQL execution remained pending because no appro
 
 Install and isolate official MySQL Community Server 8.4, configure least-privilege development/test databases, execute migration/rollback/repeatable-seed and real endpoint checks, inspect physical metadata, prove tenant constraints, and exercise renewal/idempotency races with independent connections/processes. Correct only foundation defects exposed by MySQL, then rerun backend, Flutter, Android, and dependency gates.
 
-Completion evidence is recorded in `docs/PHASE_1_2_MYSQL_VALIDATION.md`. The gate passes: MySQL has 31 passing tests with 204 assertions, SQLite portability remains green, Flutter has 18 passing tests, and Android debug compilation passes. Phase 2 is technically ready for a separately approved scope but remains unapproved and has not started.
+Completion evidence is recorded in `docs/PHASE_1_2_MYSQL_VALIDATION.md`. The gate passes: MySQL has 31 passing tests with 204 assertions, SQLite portability remains green, Flutter has 18 passing tests, and Android debug compilation passes.
+
+## Phase 2A — Animal Registry Core (implemented 2026-07-23)
+
+Implement controlled species, organization breeds, farm groups, animal registration/numbering/profile/search/filter/archive/restore, initial location, parentage, permissions, audit, MySQL persistence, responsive Flutter workflows, and Drift authorized read caching.
+
+Phase 2A explicitly excludes movements, weights, status history, QR, photos, offline animal mutation, timeline, milk, breeding, health, inventory, finance, and all later domains. MySQL has 44 passing tests with 366 assertions; SQLite portability has 294 assertions; Flutter has 33 passing tests; Android debug compilation passes.
+
+Completion evidence is recorded in `docs/PHASE_2A_COMPLETION.md`.
+
+## Recommended Phase 2B — Online animal movements (not started)
+
+After explicit approval, implement only request/approve/reject/cancel movement commands, tenant/farm/shed/group validation, atomic current-location projection updates, immutable movement history, audit, and responsive Flutter review/history UI. Do not include weight history, QR, photos, offline mutations, or a combined timeline in this subphase.
+
+## Recommended Phase 2C — Approved offline animal workflows (not started)
+
+After the online workflow is stable and separately approved, extend the existing outbox/conflict model to specifically approved animal creates/edits/movements. Define field-level conflict behavior and scale/performance limits before implementation.
 
 ## Later phases
 
-1. **Phase 2 Animals:** species/breeds, animals, groups, approved movements, weights, lifecycle, QR/search/timeline.
+1. **Remaining Phase 2 Animals:** movements first, then separately approved weights/lifecycle/QR/search-scale/timeline work.
 2. **Phase 3 Milk:** sessions/entry, batches, tanks/movement ledger, quality/balance, basic reports and alerts.
 3. **Phase 4 Health and breeding:** cases/treatments/withdrawals, vaccination/deworming, heat/service/pregnancy/calving/offspring.
 4. **Phase 5 Feed and inventory:** item/batch/movement ledger, ration/feed issue, transfer/adjustment, thresholds/expiry.
@@ -45,7 +61,7 @@ Completion evidence is recorded in `docs/PHASE_1_2_MYSQL_VALIDATION.md`. The gat
 
 ## Approval gates
 
-Each phase begins only after explicit approval of its exact scope, inspects the current implementation, adds no unrelated modules, and ends with the prescribed completion report. Database changes are introduced only in the phase owning them. Architecture decisions are updated as approved decisions, not silently changed.
+Each phase or subphase begins only after explicit approval of its exact scope, inspects the current implementation, adds no unrelated modules, and ends with the prescribed completion report. Database changes are introduced only in the phase owning them. Architecture decisions are updated as approved decisions, not silently changed.
 
 ## Genuinely blocking questions
 

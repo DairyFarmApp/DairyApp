@@ -181,6 +181,138 @@ void main() {
     );
   });
 
+  test(
+    'animal bootstrap caches registry records, tombstones, and farm access',
+    () async {
+      const farm = '018f0000-0000-7000-8000-000000000020';
+      const shed = '018f0000-0000-7000-8000-000000000030';
+      const species = '018f0000-0000-7000-8000-000000000040';
+      const breed = '018f0000-0000-7000-8000-000000000050';
+      const group = '018f0000-0000-7000-8000-000000000060';
+      const animal = '018f0000-0000-7000-8000-000000000070';
+      final now = DateTime.now().toUtc().toIso8601String();
+      await SyncService(
+        database: database,
+        api: _api(
+          writeStatus: 201,
+          syncData: {
+            'organizations': <Object>[],
+            'farms': <Object>[],
+            'sheds': <Object>[],
+            'animal_species': [
+              {
+                'id': species,
+                'code': 'CATTLE',
+                'name': 'Cattle',
+                'is_active': true,
+                'updated_at': now,
+              },
+            ],
+            'animal_breeds': [
+              {
+                'id': breed,
+                'organization_id': organizationA,
+                'species_id': species,
+                'code': 'SAHIWAL',
+                'name': 'Sahiwal',
+                'is_active': true,
+                'version': 1,
+                'is_archived': false,
+                'updated_at': now,
+              },
+            ],
+            'animal_groups': [
+              {
+                'id': group,
+                'organization_id': organizationA,
+                'farm_id': farm,
+                'default_shed_id': shed,
+                'code': 'MAIN-HERD',
+                'name': 'Main Herd',
+                'is_active': true,
+                'version': 1,
+                'is_archived': false,
+                'updated_at': now,
+              },
+            ],
+            'animals': [
+              {
+                'id': animal,
+                'organization_id': organizationA,
+                'animal_number': 'AN-000001',
+                'species_id': species,
+                'species_name': 'Cattle',
+                'breed_id': breed,
+                'breed_name': 'Sahiwal',
+                'sex': 'female',
+                'life_stage': 'adult',
+                'current_farm_id': farm,
+                'current_farm_name': 'North Farm',
+                'current_shed_id': shed,
+                'current_shed_name': 'Main Shed',
+                'current_animal_group_id': group,
+                'current_animal_group_name': 'Main Herd',
+                'origin': 'born_on_farm',
+                'operational_status': 'active',
+                'version': 2,
+                'is_archived': true,
+                'updated_at': now,
+              },
+            ],
+            'authorized_farm_ids': [farm],
+            'next_cursor': 'animal-cursor',
+          },
+        ),
+      ).synchronize(organizationId: organizationA);
+
+      expect(
+        await database.select(database.localAnimalSpecies).get(),
+        hasLength(1),
+      );
+      expect(
+        await database.select(database.localAnimalBreeds).get(),
+        hasLength(1),
+      );
+      expect(
+        await database.select(database.localAnimalGroups).get(),
+        hasLength(1),
+      );
+      final cachedAnimal = await database
+          .select(database.localAnimals)
+          .getSingle();
+      expect(cachedAnimal.isArchived, isTrue);
+      expect(cachedAnimal.isAccessible, isTrue);
+
+      await SyncService(
+        database: database,
+        api: _api(
+          writeStatus: 201,
+          syncData: {
+            'organizations': <Object>[],
+            'farms': <Object>[],
+            'sheds': <Object>[],
+            'animal_species': <Object>[],
+            'animal_breeds': <Object>[],
+            'animal_groups': <Object>[],
+            'animals': <Object>[],
+            'authorized_farm_ids': <String>[],
+            'next_cursor': 'access-revoked',
+          },
+        ),
+      ).synchronize(organizationId: organizationA);
+
+      expect(
+        (await database.select(database.localAnimals).getSingle()).isAccessible,
+        isFalse,
+      );
+      expect(
+        (await database.select(database.localAnimalGroups).getSingle())
+            .isAccessible,
+        isFalse,
+      );
+    },
+  );
+
   test('stored cursor selects incremental endpoint on the next pull', () async {
     final requests = <RequestOptions>[];
     final service = SyncService(

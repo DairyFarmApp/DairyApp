@@ -2,6 +2,10 @@
 
 namespace Tests\Concerns;
 
+use App\Domain\AnimalRegistry\Models\AnimalBreed;
+use App\Domain\AnimalRegistry\Models\AnimalGroup;
+use App\Domain\AnimalRegistry\Models\AnimalSpecies;
+use App\Domain\AnimalRegistry\Support\AnimalRegistryNormalizer;
 use App\Models\Farm;
 use App\Models\Organization;
 use App\Models\OrganizationMembership;
@@ -41,5 +45,31 @@ trait CreatesFoundationData
     protected function bearer(string $token): array
     {
         return ['Authorization' => 'Bearer '.$token];
+    }
+
+    protected function animalRegistryReferences(array $foundation): array
+    {
+        $species = AnimalSpecies::create(['code' => 'CATTLE', 'name' => 'Cattle', 'is_active' => true]);
+        $breed = AnimalBreed::create([
+            'organization_id' => $foundation['organization']->id,
+            'species_id' => $species->id,
+            'code' => 'SAHIWAL',
+            'name' => 'Sahiwal',
+            'normalized_name' => app(AnimalRegistryNormalizer::class)->name('Sahiwal'),
+            'created_by' => $foundation['user']->id,
+            'updated_by' => $foundation['user']->id,
+        ]);
+        $group = AnimalGroup::create([
+            'organization_id' => $foundation['organization']->id,
+            'farm_id' => $foundation['farm']->id,
+            'default_shed_id' => $foundation['shed']->id,
+            'code' => 'MAIN-HERD',
+            'name' => 'Main Herd',
+            'normalized_name' => app(AnimalRegistryNormalizer::class)->name('Main Herd'),
+            'created_by' => $foundation['user']->id,
+            'updated_by' => $foundation['user']->id,
+        ]);
+
+        return compact('species', 'breed', 'group');
     }
 }

@@ -86,8 +86,13 @@ final class ApiClient {
   }
 
   Future<void> delete(String path) async {
+    await deleteJson(path);
+  }
+
+  Future<Map<String, dynamic>> deleteJson(String path, {Object? data}) async {
     try {
-      await dio.delete<void>(path);
+      final response = await dio.delete<Object>(path, data: data);
+      return _asJson(response.data);
     } catch (error) {
       throw _errorMapper.map(error);
     }

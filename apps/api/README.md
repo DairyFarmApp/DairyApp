@@ -1,6 +1,6 @@
-# DairyCare API Foundation
+# DairyCare API
 
-Laravel 13.21.1 / PHP 8.5 REST API for Phase 1. MySQL 8.4 is the authoritative integration database; the fast portability suite also uses isolated in-memory SQLite.
+Laravel 13.21.1 / PHP 8.5 REST API for the Phase 1 foundation and Phase 2A animal registry. MySQL 8.4 is the authoritative integration database; the fast portability suite also uses isolated in-memory SQLite.
 
 ## Setup
 
@@ -27,6 +27,8 @@ php artisan migrate --force
 php vendor/bin/pint --test
 ```
 
-Phase 1.2 passes 31 MySQL tests with 204 assertions, including separate-process renewal and idempotency concurrency. The SQLite run passes 27 tests with 146 assertions and skips only the four MySQL-specific concurrency cases. Composer validation and audit pass with no advisories or abandoned packages.
+Phase 2A passes 44 MySQL tests with 366 assertions, including separate-process renewal, idempotency, animal-number concurrency, and opaque-session policy regression coverage. The SQLite run discovers 44 tests, passes 39 with 294 assertions, and skips only five MySQL-specific concurrency cases. Composer validation and audit pass with no advisories or abandoned packages.
+
+Animal-registry behavior, fields, numbering, normalization, parentage, initial location, permissions, sync cache, and exclusions are documented in [`docs/ANIMAL_REGISTRY.md`](../../docs/ANIMAL_REGISTRY.md).
 
 API contract: [`openapi.yaml`](openapi.yaml).

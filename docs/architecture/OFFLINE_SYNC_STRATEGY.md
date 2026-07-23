@@ -4,6 +4,8 @@
 
 Offline support is selective. Phase 1 establishes infrastructure; each later feature explicitly declares read cache, offline create/update, and attachment behavior. Server validation, authorization, canonical totals, and workflow state remain authoritative. Connectivity status is only a hint; actual request success determines online state.
 
+Phase 2A explicitly adds read caching—but not offline mutation—for animal species, breeds, farm groups, and animals.
+
 ## Local Drift model
 
 - Cached domain tables contain UUID, organization/farm scope, server version, server timestamps, cache timestamp, and tombstone marker.
@@ -25,11 +27,15 @@ Offline support is selective. Phase 1 establishes infrastructure; each later fea
 
 Phase 1.1 implements organization-filtered due-operation selection, dependency blocking, conflict persistence, safe error codes, terminal-versus-retryable classification, authorized-farm reconciliation, and a two-second overlapping versioned cursor. Repeated overlap rows are safe because reference records are upserted transactionally.
 
+Phase 2A extends the same bootstrap/incremental response with `animal_species`, `animal_breeds`, `animal_groups`, and `animals`. Drift schema version 2 stores server UUID/version/update marker, archive state, cache time, organization/farm scope, locally searchable identifiers, and an accessibility flag. Archive rows are applied as tombstones. If `authorized_farm_ids` removes a farm, cached groups/animals from that farm are immediately excluded from reads.
+
 ## Idempotency and retries
 
 Idempotency scope is organization + actor/device + key. Reusing a key with a different canonical request hash returns `409 IDEMPOTENCY_KEY_REUSED`; a completed identical request replays the stored status/body. In-progress duplicates return retry guidance. Retain records longer than the maximum offline/retry window.
 
 Retry only network failures, `408`, `425`, `429`, and transient `5xx`, using exponential backoff with full jitter, server `Retry-After`, an upper delay, and manual retry. Authentication pauses for renewal; validation/authorization failures become user-visible failed items and do not loop. Local data is never deleted because upload failed.
+
+Animal, breed, and group create/update/archive/restore bypass the outbox in Phase 2A and require an online API result. Offline registry mutation is reserved for a separately approved Phase 2C after online workflows and conflicts are proven.
 
 ## Conflict policy
 

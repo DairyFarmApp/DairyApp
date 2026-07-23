@@ -1,12 +1,12 @@
 # Project Architecture
 
-Status: Phase 0 proposal with Phase 1.1 status note, 2026-07-22. Architecture sections remain guidance unless explicitly marked implemented.
+Status: Phase 0 proposal updated through implemented Phase 2A, 2026-07-23. Later-domain sections remain guidance unless explicitly marked implemented.
 
 ## Repository baseline
 
-The original Phase 0 inspection found only `AGENTS.md` and the master specification. That statement is historical. The current repository is initialized and contains the Phase 1/1.1 Flutter client, Laravel API, Drift/Laravel schemas, tests, documentation, and CI workflow. MySQL remains the production authority but has not been executed locally because no approved server/runtime is available.
+The original Phase 0 inspection found only `AGENTS.md` and the master specification. That statement is historical. The current repository contains the Phase 1 foundation/hardening, verified MySQL 8.4 environment, and Phase 2A animal registry across Flutter, Laravel, Drift, migrations, tests, documentation, and CI.
 
-The only observed defect is text mojibake in the supplied Markdown when rendered by the current shell (for example smart punctuation and tree glyphs). Content remains readable; source files were not altered.
+Phase 2A follows the modular-monolith topology: `app/Domain/AnimalRegistry` owns registry rules, while Flutter `features/animals` owns the feature layers. No movement, weight, QR, photo, offline-mutation, timeline, or later dairy domain was initialized.
 
 ## Recommended topology
 
@@ -89,7 +89,7 @@ apps/api/
   routes/api.php
   database/{migrations,factories,seeders}/
   tests/{Feature,Unit}/
-  openapi/
+  openapi.yaml
 ```
 
 Controllers remain thin: request validation -> action/query -> API resource. Multi-record state transitions execute in database transactions. Models are never serialized directly. Domain events trigger after commit where consumers depend on committed data.
