@@ -313,6 +313,102 @@ void main() {
     },
   );
 
+  test(
+    'movement sync upserts status changes and removes revoked farm access',
+    () async {
+      const sourceFarm = '018f0000-0000-7000-8000-000000000020';
+      const destinationFarm = '018f0000-0000-7000-8000-000000000021';
+      const animal = '018f0000-0000-7000-8000-000000000070';
+      const movement = '018f0000-0000-7000-8000-000000000080';
+      final now = DateTime.now().toUtc().toIso8601String();
+      Map<String, Object?> movementData(String status, int version) => {
+        'id': movement,
+        'organization_id': organizationA,
+        'animal_id': animal,
+        'animal_number': 'AN-000001',
+        'source_farm_id': sourceFarm,
+        'source_farm_name': 'North Farm',
+        'source_shed_id': 'source-shed',
+        'source_shed_name': 'Main Shed',
+        'destination_farm_id': destinationFarm,
+        'destination_farm_name': 'South Farm',
+        'destination_shed_id': 'destination-shed',
+        'destination_shed_name': 'Receiving Shed',
+        'requested_effective_at': now,
+        'actual_effective_at': status == 'approved' ? now : null,
+        'reason': 'Routine relocation',
+        'status': status,
+        'approval_required': true,
+        'requested_by': 'requester',
+        'requested_by_name': 'Bilal Ahmed',
+        'version': version,
+        'updated_at': now,
+      };
+
+      await SyncService(
+        database: database,
+        api: _api(
+          writeStatus: 201,
+          syncData: {
+            'organizations': <Object>[],
+            'farms': <Object>[],
+            'sheds': <Object>[],
+            'animal_movements': [movementData('pending', 1)],
+            'animal_movements_authorized': true,
+            'authorized_farm_ids': [sourceFarm, destinationFarm],
+            'next_cursor': 'movement-pending',
+          },
+        ),
+      ).synchronize(organizationId: organizationA);
+
+      var cached = await database
+          .select(database.localAnimalMovements)
+          .getSingle();
+      expect(cached.status, 'pending');
+      expect(cached.isAccessible, isTrue);
+
+      await SyncService(
+        database: database,
+        api: _api(
+          writeStatus: 201,
+          syncData: {
+            'organizations': <Object>[],
+            'farms': <Object>[],
+            'sheds': <Object>[],
+            'animal_movements': [movementData('approved', 2)],
+            'animal_movements_authorized': true,
+            'authorized_farm_ids': [sourceFarm, destinationFarm],
+            'next_cursor': 'movement-approved',
+          },
+        ),
+      ).synchronize(organizationId: organizationA);
+      cached = await database.select(database.localAnimalMovements).getSingle();
+      expect(cached.status, 'approved');
+      expect(cached.version, 2);
+
+      await SyncService(
+        database: database,
+        api: _api(
+          writeStatus: 201,
+          syncData: {
+            'organizations': <Object>[],
+            'farms': <Object>[],
+            'sheds': <Object>[],
+            'animal_movements': <Object>[],
+            'animal_movements_authorized': true,
+            'authorized_farm_ids': [destinationFarm],
+            'next_cursor': 'movement-revoked',
+          },
+        ),
+      ).synchronize(organizationId: organizationA);
+      expect(
+        (await database.select(database.localAnimalMovements).getSingle())
+            .isAccessible,
+        isFalse,
+      );
+    },
+  );
+
   test('stored cursor selects incremental endpoint on the next pull', () async {
     final requests = <RequestOptions>[];
     final service = SyncService(

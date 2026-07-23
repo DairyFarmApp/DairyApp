@@ -4,7 +4,7 @@
 
 Offline support is selective. Phase 1 establishes infrastructure; each later feature explicitly declares read cache, offline create/update, and attachment behavior. Server validation, authorization, canonical totals, and workflow state remain authoritative. Connectivity status is only a hint; actual request success determines online state.
 
-Phase 2A explicitly adds read caching—but not offline mutation—for animal species, breeds, farm groups, and animals.
+Phase 2A explicitly adds read caching—but not offline mutation—for animal species, breeds, farm groups, and animals. Phase 2B adds authorized movement-history read caching and status updates, while movement requests and decisions remain online-only.
 
 ## Local Drift model
 
@@ -29,13 +29,15 @@ Phase 1.1 implements organization-filtered due-operation selection, dependency b
 
 Phase 2A extends the same bootstrap/incremental response with `animal_species`, `animal_breeds`, `animal_groups`, and `animals`. Drift schema version 2 stores server UUID/version/update marker, archive state, cache time, organization/farm scope, locally searchable identifiers, and an accessibility flag. Archive rows are applied as tombstones. If `authorized_farm_ids` removes a farm, cached groups/animals from that farm are immediately excluded from reads.
 
+Phase 2B extends the response with `animal_movements`. Drift schema version 3 stores immutable source/destination snapshots, decision/status fields, server version/timestamp, cache time, and accessibility. Repeated bootstrap/incremental rows upsert status transitions safely. Movement visibility requires the view permission and access to both source and destination farms; revoked permission or either farm grant marks the row inaccessible.
+
 ## Idempotency and retries
 
 Idempotency scope is organization + actor/device + key. Reusing a key with a different canonical request hash returns `409 IDEMPOTENCY_KEY_REUSED`; a completed identical request replays the stored status/body. In-progress duplicates return retry guidance. Retain records longer than the maximum offline/retry window.
 
 Retry only network failures, `408`, `425`, `429`, and transient `5xx`, using exponential backoff with full jitter, server `Retry-After`, an upper delay, and manual retry. Authentication pauses for renewal; validation/authorization failures become user-visible failed items and do not loop. Local data is never deleted because upload failed.
 
-Animal, breed, and group create/update/archive/restore bypass the outbox in Phase 2A and require an online API result. Offline registry mutation is reserved for a separately approved Phase 2C after online workflows and conflicts are proven.
+Animal, breed, and group create/update/archive/restore plus every movement request/decision bypass the outbox through Phase 2B and require an online API result. Offline registry/movement mutation is reserved for a separately approved Phase 2C after online workflows and conflicts are proven.
 
 ## Conflict policy
 

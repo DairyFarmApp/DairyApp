@@ -7,6 +7,7 @@ use App\Models\Organization;
 use App\Models\OrganizationMembership;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Setting;
 use App\Models\Shed;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -35,6 +36,14 @@ class DatabaseSeeder extends Seeder
                 ['organization_id' => $organization->id, 'code' => 'RIVER'],
                 ['name' => 'Riverside Farm', 'timezone' => 'Asia/Karachi'],
             );
+            Setting::query()->updateOrCreate(
+                [
+                    'organization_id' => $organization->id,
+                    'farm_id' => null,
+                    'key' => 'animal_movement_requires_approval',
+                ],
+                ['type' => 'boolean', 'value' => ['enabled' => true]],
+            );
             foreach ([[$north, 'Lactation Shed', 'N-LACT'], [$north, 'Calf Shed', 'N-CALF'], [$riverside, 'Main Shed', 'R-MAIN'], [$riverside, 'Quarantine Shed', 'R-QUAR']] as [$farm, $name, $code]) {
                 Shed::query()->updateOrCreate(
                     ['farm_id' => $farm->id, 'code' => $code],
@@ -52,6 +61,8 @@ class DatabaseSeeder extends Seeder
                 'animals.restore', 'animals.manage_identifiers',
                 'animal_breeds.view', 'animal_breeds.manage',
                 'animal_groups.view', 'animal_groups.manage',
+                'animals.move', 'animal_movements.view', 'animal_movements.approve',
+                'animal_movements.reject', 'animal_movements.cancel',
             ];
             $permissions = collect($permissionNames)->mapWithKeys(
                 fn ($name) => [$name => Permission::query()->firstOrCreate(['name' => $name])],
@@ -64,16 +75,20 @@ class DatabaseSeeder extends Seeder
                     'animals.view', 'animals.create', 'animals.update',
                     'animal_breeds.view', 'animal_breeds.manage',
                     'animal_groups.view', 'animal_groups.manage',
+                    'animals.move', 'animal_movements.view', 'animal_movements.approve',
+                    'animal_movements.reject', 'animal_movements.cancel',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'farm-worker' => ['Farm Worker', [
                     'organizations.view', 'farms.view', 'sheds.view', 'animals.view',
                     'animal_breeds.view', 'animal_groups.view',
+                    'animals.move', 'animal_movements.view',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'viewer' => ['Viewer', [
                     'organizations.view', 'farms.view', 'sheds.view', 'animals.view',
                     'animal_breeds.view', 'animal_groups.view',
+                    'animal_movements.view',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
             ];

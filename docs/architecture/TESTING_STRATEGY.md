@@ -36,3 +36,12 @@ No application tests/builds apply because no application exists and Phase 0 crea
 - PHP syntax, Pint, Composer validation/audit, Redocly OpenAPI validation, Dart format, Flutter analysis, and Android debug build passed.
 
 The full evidence and known environmental gaps are in `docs/PHASE_2A_COMPLETION.md`.
+
+## Phase 2B executed evidence
+
+- MySQL 8.4.9: 56 tests, 501 assertions, including transactional movement rules, composite foreign keys, audit/idempotency, tenant and both-farm concealment, stale-source behavior, and a separate-process concurrent approval test.
+- SQLite portability: 56 discovered, 50 passed, 409 assertions, 6 MySQL-only concurrency tests skipped.
+- Flutter: 46 unit/repository/Drift/sync/widget tests covering movement models, online mutations, typed errors, cached reads, history states, request validation, dependent destinations, permissions/separation of duties, responsive cards/table, status upserts, and revoked farm access.
+- PHP syntax, Pint, Composer validation/audit, Redocly lint/bundle, Dart format, Flutter analysis, and Android debug build passed.
+
+The full evidence and known limitations are in `docs/PHASE_2B_COMPLETION.md`.

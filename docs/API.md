@@ -8,4 +8,6 @@ Cursor pagination is used for farm/shed lists. Sync cursors are opaque, versione
 
 Phase 2A adds controlled species listing plus paginated breed, farm-group, and animal endpoints. Animals support bounded search by animal number/ear tag/RFID/name and allowlisted classification/location/status/archive filters and sorts. Create endpoints are idempotent; update/archive/restore requires `version` and returns `412 STALE_VERSION` on a lost update.
 
-The normal animal edit route rejects farm, shed, and group changes. Initial registration validates them, while later location transitions are reserved for the Phase 2B movement workflow. Identifier, parentage, breed/species, tenant, and farm rules are documented in `docs/ANIMAL_REGISTRY.md`.
+The normal animal edit route rejects farm, shed, and group changes. Initial registration validates them. Phase 2B owns later location transitions through six movement request/read/approve/reject/cancel operations. Movement creation and decisions are idempotent, decisions require optimistic `version`, and approval atomically changes the animal's current location. Both source and destination farm access are required; pending/rejected/cancelled records never change location.
+
+Identifier, parentage, breed/species, tenant, and farm rules are documented in `docs/ANIMAL_REGISTRY.md`. Movement fields, approval configuration, safe conflicts, audit, and endpoint behavior are documented in `docs/ANIMAL_MOVEMENTS.md`. The current inventory is 46 API routes.

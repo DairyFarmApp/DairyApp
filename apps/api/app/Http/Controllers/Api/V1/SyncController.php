@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\AnimalMovements\Models\AnimalMovement;
 use App\Domain\AnimalRegistry\Models\Animal;
 use App\Domain\AnimalRegistry\Models\AnimalBreed;
 use App\Domain\AnimalRegistry\Models\AnimalGroup;
@@ -9,6 +10,7 @@ use App\Domain\AnimalRegistry\Models\AnimalSpecies;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AnimalBreedResource;
 use App\Http\Resources\Api\V1\AnimalGroupResource;
+use App\Http\Resources\Api\V1\AnimalMovementResource;
 use App\Http\Resources\Api\V1\AnimalResource;
 use App\Http\Resources\Api\V1\AnimalSpeciesResource;
 use App\Http\Resources\Api\V1\FarmResource;
@@ -78,6 +80,25 @@ class SyncController extends Controller
                 ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
                 ->get()
             : collect();
+        $movements = $membership->can('animal_movements.view')
+            ? AnimalMovement::query()
+                ->with([
+                    'animal',
+                    'sourceFarm',
+                    'sourceShed',
+                    'sourceGroup',
+                    'destinationFarm',
+                    'destinationShed',
+                    'destinationGroup',
+                    'requester',
+                    'decisionMaker',
+                ])
+                ->where('organization_id', $organizationId)
+                ->whereIn('source_farm_id', $accessibleFarmIds)
+                ->whereIn('destination_farm_id', $accessibleFarmIds)
+                ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
+                ->get()
+            : collect();
 
         return ApiResponse::success($request, [
             'organizations' => OrganizationResource::collection($organizations)->resolve($request),
@@ -87,6 +108,8 @@ class SyncController extends Controller
             'animal_breeds' => AnimalBreedResource::collection($breeds)->resolve($request),
             'animal_groups' => AnimalGroupResource::collection($groups)->resolve($request),
             'animals' => AnimalResource::collection($animals)->resolve($request),
+            'animal_movements' => AnimalMovementResource::collection($movements)->resolve($request),
+            'animal_movements_authorized' => $membership->can('animal_movements.view'),
             'authorized_farm_ids' => $accessibleFarmIds->values(),
             'next_cursor' => $this->encodeCursor($now->copy()->subSeconds(2)),
         ]);

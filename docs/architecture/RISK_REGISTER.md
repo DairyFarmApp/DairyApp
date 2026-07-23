@@ -18,5 +18,7 @@
 | R14 | Audit logs leak sensitive values or can be altered | M / High | Redaction, append-only authorization/storage, integrity chaining/export controls | Phase 1+ |
 | R15 | Large scope delays usable outcomes | H / High | Controlled vertical phases and per-feature definition of done; no placeholder modules | Every phase |
 | R16 | Text encoding/mojibake damages documentation or localization | M / Medium | Standardize UTF-8/editorconfig in Phase 1; verify Urdu/RTL fixtures | Phase 1/9 |
+| R17 | Concurrent or stale movement decisions corrupt current animal location | M / High | Animal/movement row locks, immutable source snapshots, optimistic versions, atomic projection/audit transaction, dedicated MySQL race test | Phase 2B onward |
+| R18 | Approval setting or custom roles weaken movement separation of duties | M / High | Fail-safe approval default, per-request approval snapshot, distinct requester check, dual authority for immediate mode, role/setting review and tests | Phase 2B onward |
 
 Risk status is reviewed at each phase gate. Critical residual risks require owner acceptance before production deployment.

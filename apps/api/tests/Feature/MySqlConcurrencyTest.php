@@ -2,12 +2,19 @@
 
 namespace Tests\Feature;
 
+use App\Domain\AnimalMovements\Models\AnimalMovement;
+use App\Domain\AnimalRegistry\Models\Animal;
+use App\Domain\AnimalRegistry\Models\AnimalGroup;
 use App\Models\ApiSession;
 use App\Models\ApiSessionRenewalToken;
 use App\Models\AuditLog;
 use App\Models\Farm;
 use App\Models\IdempotencyRecord;
 use App\Models\Organization;
+use App\Models\OrganizationMembership;
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\Shed;
 use App\Models\User;
 use App\Support\IdempotencyService;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
@@ -237,6 +244,114 @@ class MySqlConcurrencyTest extends TestCase
             'sequence_key' => 'animal_number',
             'next_value' => 3,
         ]);
+    }
+
+    public function test_concurrent_movement_approvals_apply_location_once_without_corruption(): void
+    {
+        $permissions = [
+            'animals.view',
+            'animals.move',
+            'animal_movements.view',
+            'animal_movements.approve',
+        ];
+        $data = $this->foundation($permissions);
+        $references = $this->animalRegistryReferences($data);
+        $destinationFarm = Farm::create([
+            'organization_id' => $data['organization']->id,
+            'name' => 'Concurrent Destination',
+            'code' => 'MOVE-DEST',
+            'timezone' => 'UTC',
+        ]);
+        $destinationShed = Shed::create([
+            'organization_id' => $data['organization']->id,
+            'farm_id' => $destinationFarm->id,
+            'name' => 'Destination Shed',
+            'code' => 'MOVE-DEST',
+        ]);
+        $destinationGroup = AnimalGroup::create([
+            'organization_id' => $data['organization']->id,
+            'farm_id' => $destinationFarm->id,
+            'default_shed_id' => $destinationShed->id,
+            'code' => 'MOVE-DEST',
+            'name' => 'Destination Group',
+            'normalized_name' => 'destination group',
+        ]);
+        $animal = Animal::create([
+            'organization_id' => $data['organization']->id,
+            'animal_number' => 'AN-CONCURRENT-MOVE',
+            'species_id' => $references['species']->id,
+            'breed_id' => $references['breed']->id,
+            'sex' => 'female',
+            'life_stage' => 'adult',
+            'current_farm_id' => $data['farm']->id,
+            'current_shed_id' => $data['shed']->id,
+            'current_animal_group_id' => $references['group']->id,
+            'origin' => 'born_on_farm',
+        ]);
+        $requesterToken = $this->loginToken();
+        $movementId = $this->postJson(
+            "/api/v1/animals/{$animal->id}/movements",
+            [
+                'source_farm_id' => $data['farm']->id,
+                'source_shed_id' => $data['shed']->id,
+                'source_animal_group_id' => $references['group']->id,
+                'destination_farm_id' => $destinationFarm->id,
+                'destination_shed_id' => $destinationShed->id,
+                'destination_animal_group_id' => $destinationGroup->id,
+                'requested_effective_at' => now()->subMinute()->toISOString(),
+                'reason' => 'Concurrent approval test',
+            ],
+            $this->bearer($requesterToken) + ['Idempotency-Key' => 'concurrent-movement-request'],
+        )->assertCreated()->json('data.id');
+
+        $approverTokens = [];
+        foreach (['approver-one@example.test', 'approver-two@example.test'] as $index => $email) {
+            $user = User::create([
+                'name' => 'Approver '.($index + 1),
+                'email' => $email,
+                'password' => Hash::make('Correct-Horse-2026'),
+                'is_active' => true,
+            ]);
+            $membership = OrganizationMembership::create([
+                'organization_id' => $data['organization']->id,
+                'user_id' => $user->id,
+                'status' => 'active',
+                'all_farms' => true,
+            ]);
+            $role = Role::create([
+                'organization_id' => $data['organization']->id,
+                'name' => 'Approver '.($index + 1),
+                'slug' => 'approver-'.($index + 1),
+            ]);
+            foreach (['animal_movements.view', 'animal_movements.approve'] as $permission) {
+                $role->permissions()->attach(Permission::firstOrCreate(['name' => $permission])->id);
+            }
+            $membership->roles()->attach($role->id, ['organization_id' => $data['organization']->id]);
+            $approverTokens[] = $this->loginToken($email);
+        }
+
+        $results = $this->runConcurrently([
+            $this->requestPayload(
+                "/api/v1/animal-movements/{$movementId}/approve",
+                ['version' => 1],
+                $this->bearer($approverTokens[0]) + ['Idempotency-Key' => 'concurrent-approval-a'],
+            ),
+            $this->requestPayload(
+                "/api/v1/animal-movements/{$movementId}/approve",
+                ['version' => 1],
+                $this->bearer($approverTokens[1]) + ['Idempotency-Key' => 'concurrent-approval-b'],
+            ),
+        ]);
+
+        $this->assertSame([200, 412], collect($results)->pluck('status')->sort()->values()->all());
+        $this->assertSame('approved', AnimalMovement::query()->findOrFail($movementId)->status);
+        $animal->refresh();
+        $this->assertSame($destinationFarm->id, $animal->current_farm_id);
+        $this->assertSame($destinationShed->id, $animal->current_shed_id);
+        $this->assertSame($destinationGroup->id, $animal->current_animal_group_id);
+        $this->assertSame(2, $animal->version);
+        $this->assertSame(1, AuditLog::query()->where('action', 'animal.movement_approved')->count());
+        $this->assertSame(1, AuditLog::query()->where('action', 'animal.location_changed')->count());
     }
 
     /**

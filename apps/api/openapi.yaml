@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: DairyCare Foundation API
-  version: 2.0.0-phase2a
-  description: Phase 1 foundation plus the Phase 2A online animal registry and authorized reference synchronization API.
+  version: 2.1.0-phase2b
+  description: Phase 1 foundation plus the Phase 2A animal registry and Phase 2B online animal movement workflow.
 servers:
   - url: http://127.0.0.1:8000/api/v1
 security:
@@ -431,6 +431,113 @@ paths:
       responses:
         '200': { $ref: '#/components/responses/SuccessResponse' }
         '412': { $ref: '#/components/responses/ErrorResponse' }
+  /animals/{animal}/movements:
+    parameters:
+      - $ref: '#/components/parameters/AnimalId'
+    get:
+      summary: List authorized movement history for an animal
+      operationId: listAnimalMovements
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - name: 'filter[status]'
+          in: query
+          schema: { $ref: '#/components/schemas/AnimalMovementStatus' }
+        - name: 'filter[search]'
+          in: query
+          schema: { type: string, maxLength: 120 }
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [requested_effective_at, -requested_effective_at, created_at, -created_at]
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+    post:
+      summary: Request an online animal location movement
+      operationId: requestAnimalMovement
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AnimalMovementCreate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /animal-movements/{movement}:
+    parameters:
+      - $ref: '#/components/parameters/AnimalMovementId'
+    get:
+      summary: Read one authorized animal movement
+      operationId: getAnimalMovement
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+  /animal-movements/{movement}/approve:
+    parameters:
+      - $ref: '#/components/parameters/AnimalMovementId'
+    post:
+      summary: Approve and atomically apply a pending animal movement
+      operationId: approveAnimalMovement
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AnimalMovementDecision' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '412': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /animal-movements/{movement}/reject:
+    parameters:
+      - $ref: '#/components/parameters/AnimalMovementId'
+    post:
+      summary: Reject a pending animal movement
+      operationId: rejectAnimalMovement
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AnimalMovementReasonDecision' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '412': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /animal-movements/{movement}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/AnimalMovementId'
+    post:
+      summary: Cancel a pending animal movement
+      operationId: cancelAnimalMovement
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AnimalMovementReasonDecision' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '412': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
   /sync/bootstrap:
     get:
       summary: Bootstrap authorized reference data
@@ -463,6 +570,7 @@ components:
     BreedId: { name: breed, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     GroupId: { name: group, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     AnimalId: { name: animal, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    AnimalMovementId: { name: movement, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     IdempotencyKey: { name: Idempotency-Key, in: header, required: false, schema: { type: string, maxLength: 160 } }
     PageSize: { name: 'page[size]', in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 25 } }
     ArchiveState: { name: 'filter[archive_state]', in: query, required: false, schema: { type: string, enum: [active, archived, all], default: active } }
@@ -472,6 +580,7 @@ components:
     AnimalLifeStage: { type: string, enum: [calf, juvenile, adult] }
     AnimalOperationalStatus: { type: string, enum: [active, inactive, missing] }
     AnimalOrigin: { type: string, enum: [born_on_farm, purchased, transferred_in, other] }
+    AnimalMovementStatus: { type: string, enum: [pending, approved, rejected, cancelled] }
     LoginRequest:
       type: object
       required: [email, password]
@@ -597,6 +706,97 @@ components:
       allOf:
         - $ref: '#/components/schemas/AnimalWriteFields'
         - $ref: '#/components/schemas/VersionedMutation'
+    AnimalMovementCreate:
+      type: object
+      required:
+        - source_farm_id
+        - source_shed_id
+        - destination_farm_id
+        - destination_shed_id
+        - requested_effective_at
+        - reason
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        source_farm_id: { $ref: '#/components/schemas/Uuid' }
+        source_shed_id: { $ref: '#/components/schemas/Uuid' }
+        source_animal_group_id:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        destination_farm_id: { $ref: '#/components/schemas/Uuid' }
+        destination_shed_id: { $ref: '#/components/schemas/Uuid' }
+        destination_animal_group_id:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        requested_effective_at:
+          type: string
+          format: date-time
+          description: Requested business time, which cannot be in the future in Phase 2B.
+        reason: { type: string, maxLength: 255 }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+    AnimalMovementDecision:
+      type: object
+      required: [version]
+      properties:
+        version: { type: integer, minimum: 1 }
+    AnimalMovementReasonDecision:
+      type: object
+      required: [version, reason]
+      properties:
+        version: { type: integer, minimum: 1 }
+        reason: { type: string, maxLength: 1000 }
+    AnimalMovement:
+      type: object
+      required:
+        - id
+        - organization_id
+        - animal_id
+        - source_farm_id
+        - source_shed_id
+        - destination_farm_id
+        - destination_shed_id
+        - requested_effective_at
+        - reason
+        - status
+        - approval_required
+        - requested_by
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        organization_id: { $ref: '#/components/schemas/Uuid' }
+        animal_id: { $ref: '#/components/schemas/Uuid' }
+        source_farm_id: { $ref: '#/components/schemas/Uuid' }
+        source_shed_id: { $ref: '#/components/schemas/Uuid' }
+        source_animal_group_id:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        destination_farm_id: { $ref: '#/components/schemas/Uuid' }
+        destination_shed_id: { $ref: '#/components/schemas/Uuid' }
+        destination_animal_group_id:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        requested_effective_at: { type: string, format: date-time }
+        actual_effective_at: { type: [string, 'null'], format: date-time }
+        reason: { type: string, maxLength: 255 }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+        status: { $ref: '#/components/schemas/AnimalMovementStatus' }
+        approval_required: { type: boolean }
+        requested_by: { $ref: '#/components/schemas/Uuid' }
+        decided_by:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        decision_at: { type: [string, 'null'], format: date-time }
+        rejection_reason: { type: [string, 'null'], maxLength: 1000 }
+        cancellation_reason: { type: [string, 'null'], maxLength: 1000 }
+        version: { type: integer, minimum: 1 }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
     SuccessEnvelope:
       type: object
       required: [data, meta]
@@ -626,7 +826,7 @@ components:
       properties:
         data:
           type: object
-          required: [organizations, farms, sheds, animal_species, animal_breeds, animal_groups, animals, authorized_farm_ids, next_cursor]
+          required: [organizations, farms, sheds, animal_species, animal_breeds, animal_groups, animals, animal_movements, animal_movements_authorized, authorized_farm_ids, next_cursor]
           properties:
             organizations: { type: array, items: { type: object, additionalProperties: true } }
             farms: { type: array, items: { type: object, additionalProperties: true } }
@@ -635,6 +835,8 @@ components:
             animal_breeds: { type: array, items: { type: object, additionalProperties: true } }
             animal_groups: { type: array, items: { type: object, additionalProperties: true } }
             animals: { type: array, items: { type: object, additionalProperties: true } }
+            animal_movements: { type: array, items: { $ref: '#/components/schemas/AnimalMovement' } }
+            animal_movements_authorized: { type: boolean }
             authorized_farm_ids: { type: array, items: { $ref: '#/components/schemas/Uuid' } }
             next_cursor: { type: string, description: Opaque versioned cursor with a replay-safe overlap watermark. }
         meta:

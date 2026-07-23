@@ -20,6 +20,12 @@ class AnimalPolicy
             && $membership->can('animals.update');
     }
 
+    public function move(User $user, Animal $animal, OrganizationMembership $membership): bool
+    {
+        return $this->inScope($user, $membership, $animal)
+            && $membership->can('animals.move');
+    }
+
     public function archive(User $user, Animal $animal, OrganizationMembership $membership): bool
     {
         return $this->inScope($user, $membership, $animal)

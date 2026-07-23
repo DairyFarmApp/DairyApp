@@ -36,6 +36,18 @@ The seeder and this table share the same explicit catalog. API middleware applie
 
 An explicitly customized role may grant worker create or manager archive, but the seeded defaults remain conservative. Permission alone never expands organization membership or farm grants. Identifier management controls user-supplied animal numbers and edits to animal number/ear tag/RFID.
 
+## Implemented Phase 2B movement permissions
+
+| Permission | Organization Owner | Farm Manager | Farm Worker | Viewer |
+|---|---:|---:|---:|---:|
+| `animals.move` | Yes | Yes, both authorized farms | Yes, both authorized farms | No |
+| `animal_movements.view` | Yes | Yes, both authorized farms | Yes, both authorized farms | Yes, both authorized farms |
+| `animal_movements.approve` | Yes | Yes, both authorized farms | No | No |
+| `animal_movements.reject` | Yes | Yes, both authorized farms | No | No |
+| `animal_movements.cancel` | Yes | Yes, both authorized farms | No | No |
+
+The seeded approval setting requires a requester and approver to be different users. Permission alone does not bypass this rule. When approval is disabled, immediate application still requires both `animals.move` and `animal_movements.approve`; it never grants a worker implicit approval. Every movement read/decision requires access to both its source and destination farms.
+
 ## Product-wide proposed baseline
 
 This is a conservative baseline. Organization owners can customize roles but cannot bypass platform boundaries. `Scope` is additionally restricted by membership and farm grants.
@@ -60,6 +72,6 @@ Legend: M = manage/create/update, V = view, A = approve/override, — = none by 
 
 ## Permission naming
 
-Use explicit abilities such as `animals.view`, `animals.create`, `animals.update`, `animals.transfer.request`, `animals.transfer.approve`, `animals.record_death`, `milk.create`, `milk.correct.request`, `milk.correct.approve`, `health.manage`, `withdrawals.override`, `inventory.issue`, `inventory.adjust.request`, `inventory.adjust.approve`, `sales.create`, `payments.receive`, `expenses.approve`, `payroll.process`, `reports.export`, `users.manage`, `audit_logs.view`, and `backups.restore`.
+Use explicit abilities such as the implemented `animals.view`, `animals.create`, `animals.update`, `animals.move`, `animal_movements.view`, `animal_movements.approve`, `animal_movements.reject`, and `animal_movements.cancel`, plus future abilities such as `animals.record_death`, `milk.create`, `milk.correct.request`, `milk.correct.approve`, `health.manage`, `withdrawals.override`, `inventory.issue`, `inventory.adjust.request`, `inventory.adjust.approve`, `sales.create`, `payments.receive`, `expenses.approve`, `payroll.process`, `reports.export`, `users.manage`, `audit_logs.view`, and `backups.restore`.
 
 Approval requires a distinct ability and, by default, requester and approver separation. No role implicitly gains financial reporting from general farm access. Veterinarian and worker defaults deliberately exclude customer balances and payroll. Field-level filtering protects employee identity/bank data and confidential finance data even when a broader record is viewable.

@@ -5,6 +5,7 @@ import 'package:dairycare_mobile/features/animals/presentation/animal_detail_scr
 import 'package:dairycare_mobile/features/animals/presentation/animal_form_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_group_management_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_list_screen.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_movement_form_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/breed_management_screen.dart';
 import 'package:dairycare_mobile/features/farms/presentation/farm_selection_screen.dart';
 import 'package:dairycare_mobile/features/farms/presentation/farm_list_screen.dart';
@@ -59,6 +60,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/animals/:animalId/edit',
             builder: (_, state) =>
                 AnimalFormScreen(animalId: state.pathParameters['animalId']!),
+          ),
+          GoRoute(
+            path: '/animals/:animalId/movements/new',
+            builder: (_, state) => AnimalMovementFormScreen(
+              animalId: state.pathParameters['animalId']!,
+            ),
           ),
           GoRoute(
             path: '/animals/:animalId',

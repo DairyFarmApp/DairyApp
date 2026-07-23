@@ -146,6 +146,46 @@ class LocalAnimals extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+class LocalAnimalMovements extends Table {
+  TextColumn get id => text()();
+  TextColumn get organizationId => text()();
+  TextColumn get animalId => text()();
+  TextColumn get animalNumber => text()();
+  TextColumn get sourceFarmId => text()();
+  TextColumn get sourceFarmName => text()();
+  TextColumn get sourceShedId => text()();
+  TextColumn get sourceShedName => text()();
+  TextColumn get sourceAnimalGroupId => text().nullable()();
+  TextColumn get sourceAnimalGroupName => text().nullable()();
+  TextColumn get destinationFarmId => text()();
+  TextColumn get destinationFarmName => text()();
+  TextColumn get destinationShedId => text()();
+  TextColumn get destinationShedName => text()();
+  TextColumn get destinationAnimalGroupId => text().nullable()();
+  TextColumn get destinationAnimalGroupName => text().nullable()();
+  DateTimeColumn get requestedEffectiveAt => dateTime()();
+  DateTimeColumn get actualEffectiveAt => dateTime().nullable()();
+  TextColumn get reason => text()();
+  TextColumn get notes => text().nullable()();
+  TextColumn get status => text()();
+  BoolColumn get approvalRequired =>
+      boolean().withDefault(const Constant(true))();
+  TextColumn get requestedBy => text()();
+  TextColumn get requestedByName => text()();
+  TextColumn get decidedBy => text().nullable()();
+  TextColumn get decidedByName => text().nullable()();
+  DateTimeColumn get decisionAt => dateTime().nullable()();
+  TextColumn get rejectionReason => text().nullable()();
+  TextColumn get cancellationReason => text().nullable()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  DateTimeColumn get serverUpdatedAt => dateTime()();
+  DateTimeColumn get cachedAt => dateTime()();
+  BoolColumn get isAccessible => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 class SyncDevices extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
@@ -231,6 +271,7 @@ class LocalApplicationSettings extends Table {
     LocalAnimalBreeds,
     LocalAnimalGroups,
     LocalAnimals,
+    LocalAnimalMovements,
     SyncDevices,
     SyncCursors,
     SyncOutbox,
@@ -243,7 +284,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'dairycare'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -254,6 +295,9 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(localAnimalBreeds);
         await migrator.createTable(localAnimalGroups);
         await migrator.createTable(localAnimals);
+      }
+      if (from < 3) {
+        await migrator.createTable(localAnimalMovements);
       }
     },
   );
@@ -366,6 +410,25 @@ class AppDatabase extends _$AppDatabase {
       );
     }
     query.orderBy([(row) => OrderingTerm.asc(row.animalNumber)]);
+
+    return query.watch();
+  }
+
+  Stream<List<LocalAnimalMovement>> watchAnimalMovements({
+    required String organizationId,
+    required String animalId,
+  }) {
+    final query = select(localAnimalMovements)
+      ..where(
+        (row) =>
+            row.organizationId.equals(organizationId) &
+            row.animalId.equals(animalId) &
+            row.isAccessible.equals(true),
+      )
+      ..orderBy([
+        (row) => OrderingTerm.desc(row.requestedEffectiveAt),
+        (row) => OrderingTerm.desc(row.id),
+      ]);
 
     return query.watch();
   }

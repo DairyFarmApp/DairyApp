@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-07-23 — Phase 2B online animal movements
+
+- Added immutable, tenant-constrained movement history with source/destination snapshots, approval-setting snapshot, optimistic versions, and UUIDv7 records.
+- Added transactional request/approve/reject/cancel actions, atomic current-location updates, row locking, stale-source protection, and one-pending-movement enforcement.
+- Added five movement permissions, separation of duties, both-farm authorization, idempotent decisions, stable conflicts, and five audit events.
+- Added six API operations and OpenAPI coverage, bringing the documented API inventory to 46 routes.
+- Added responsive Flutter movement history/request/decision workflows and Drift schema version 3 authorized movement caching.
+- Passed 56 MySQL tests with 501 assertions, SQLite portability with 409 assertions, 46 Flutter tests, analysis, Pint, Composer audit, OpenAPI validation, and Android debug build.
+
+No offline movement mutation, weights, status history, QR, photos, timeline, milk, breeding, health, inventory, finance, or later-domain implementation was added.
+
 ## 2026-07-23 — Phase 2A animal registry core
 
 - Added controlled cattle/buffalo species, six organization breeds, farm-specific animal groups, and a 20-animal repeatable seed.

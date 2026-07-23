@@ -1,6 +1,6 @@
 # ERD
 
-## Implemented Phase 2A registry
+## Implemented Phase 2A registry and Phase 2B movements
 
 ```mermaid
 erDiagram
@@ -19,10 +19,20 @@ erDiagram
   ANIMAL o|--o{ ANIMAL : mother
   ANIMAL o|--o{ ANIMAL : father
   USER ||--o{ ANIMAL : creates_or_updates
+  ANIMAL ||--o{ ANIMAL_MOVEMENT : has_history
+  ORGANIZATION ||--o{ ANIMAL_MOVEMENT : owns
+  FARM ||--o{ ANIMAL_MOVEMENT : source
+  FARM ||--o{ ANIMAL_MOVEMENT : destination
+  SHED ||--o{ ANIMAL_MOVEMENT : source
+  SHED ||--o{ ANIMAL_MOVEMENT : destination
+  ANIMAL_GROUP o|--o{ ANIMAL_MOVEMENT : source
+  ANIMAL_GROUP o|--o{ ANIMAL_MOVEMENT : destination
+  USER ||--o{ ANIMAL_MOVEMENT : requests
+  USER o|--o{ ANIMAL_MOVEMENT : decides
   ORGANIZATION ||--o{ AUDIT_LOG : records
 ```
 
-Every tenant relationship shown above is constrained or scoped by organization; farm/shed/group links additionally use composite keys so a valid UUID from another tenant/farm cannot be linked. Parent links preserve historical archived rows.
+Every tenant relationship shown above is constrained or scoped by organization; animal, farm, shed, and group movement links additionally use composite keys so a valid UUID from another tenant/farm cannot be linked. Parent links preserve historical archived rows. An approved movement atomically advances the animal's current-location projection; the movement row preserves the transition.
 
 ## Product-wide preliminary ERD
 

@@ -27,13 +27,23 @@ Phase 2A adds:
 
 Composite foreign keys enforce breed/species, group/farm/shed, animal farm/shed/group, and parent organization consistency. Animal archive uses soft deletion while operational status remains `active`, `inactive`, or `missing`. See `docs/ANIMAL_REGISTRY.md` for field-level rules.
 
+## Implemented Phase 2B animal movements
+
+| Table | Scope and key constraints |
+|---|---|
+| `animal_movements` | Organization + animal, immutable source and destination farm/shed/group snapshots, requested/actual effective time, decision state/actors/reasons, approval-setting snapshot, version, timestamps |
+
+The table uses composite foreign keys for animal/organization, source farm/organization, source shed/farm/organization, optional source group/farm/organization, and the equivalent destination hierarchy. Indexes support animal history/status/time, source/destination farm authorization, and incremental organization updates.
+
+The request action locks the animal before validating the source snapshot and checking for an existing pending movement. Approval locks the movement and animal, verifies status/version/current source, then updates the movement and `animals` current-location projection atomically. Pending/rejected/cancelled rows never update the projection. Approved rows have no ordinary update route; corrections append a new movement.
+
 ## Modules and principal tables
 
 | Module | Principal data | Key relationships/invariants |
 |---|---|---|
 | Tenancy/settings | organizations, farms, branches, sheds, pens, warehouses, milk_tanks, cost_centres, settings | All descendants belong to one organization; locations cannot cross-link tenants |
 | Identity/access | users, organization_memberships, roles, permissions, role_permissions, membership_roles, user_farm_access, api_sessions, sync_devices | Roles are organization scoped; sessions bind active membership and device |
-| Animals | Implemented: animal_species, animal_breeds, animal_groups, organization_sequences, animals. Future: memberships, movements, weights, purchases, sales, mortalities | Animal identity unique within organization; initial location is immutable through profile edit; a future approved movement owns location transitions |
+| Animals | Implemented: animal_species, animal_breeds, animal_groups, organization_sequences, animals, animal_movements. Future: memberships, weights, purchases, sales, mortalities | Animal identity unique within organization; profile edits cannot change location; approved movements own atomic location transitions and immutable history |
 | Milk | milk_sessions, milk_entries, milk_collection_batches, milk_batch_sources, milk_tank_movements, milk_quality_tests, milk_restrictions | Unique normal entry per animal/date/session; tank balance derives from movements; restricted quantity excluded from sellable stock |
 | Breeding/calving | heat_records, breeding_services, pregnancy_checks, pregnancies, calving_events, calving_offspring | Female/age rules; calving closes pregnancy and links newly created animal records |
 | Health | health_cases, treatments, medicines, treatment_medicines, vaccinations, vaccination_schedules, deworming_records | Medicine treatment can create withdrawal restriction; histories are retained |
@@ -49,7 +59,7 @@ Composite foreign keys enforce breed/species, group/farm/shed, animal farm/shed/
 
 - User identity is platform-wide; `organization_memberships` gives tenant status. Employee may optionally link one membership without making every user an employee.
 - Farm is the stable operational boundary. Branch is an optional administrative/site subdivision; shed, pen, warehouse, tank, and cost centre reference farm directly to simplify scoping.
-- Phase 2A animals store their validated initial/current location projection. After Phase 2B approval, only an approved movement action may update it and movement history becomes the transition source of truth.
+- Phase 2A animals store their validated initial/current location projection. Phase 2B permits only an approved movement action to update it; `animal_movements` is the transition source of truth.
 - Do not create a separate `calves` identity table: offspring are rows in `animals`; `calving_offspring` carries birth-event-specific facts.
 - Inventory item definition is organization-wide; batches and movements are warehouse/farm scoped. Feed and medicines specialize/reference inventory items rather than duplicating stock.
 - Customer/supplier balances and milk/tank quantities are projections of immutable ledgers, optionally cached with reconciliation controls.
@@ -57,7 +67,7 @@ Composite foreign keys enforce breed/species, group/farm/shed, animal farm/shed/
 
 ## Index/uniqueness baseline
 
-Examples: `(organization_id, animal_number)` unique; nullable tag identifiers unique per organization when present; `(organization_id, animal_id, milk_date, session_id)` unique for active normal milk entries; `(organization_id, idempotency_key, actor_id)` unique; indexes on `(organization_id, farm_id, occurred_at)`, sync `updated_at/uuid`, alert status/due date, ledger account/date, and foreign keys. Exact precision/indexes are finalized per migration in its implementation phase.
+Examples: `(organization_id, animal_number)` unique; nullable tag identifiers unique per organization when present; movement indexes on `(organization_id, animal_id, status, requested_effective_at)`, `(organization_id, source_farm_id, destination_farm_id, status)`, and `(organization_id, updated_at)`; `(organization_id, animal_id, milk_date, session_id)` unique for future active normal milk entries; `(organization_id, idempotency_key, actor_id)` unique; indexes on tenant/time access paths and foreign keys. Exact precision/indexes are finalized per migration in its implementation phase.
 
 ## Deletion and retention
 

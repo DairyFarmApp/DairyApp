@@ -105,7 +105,7 @@ void main() {
 
     expect(
       find.text(
-        'Location changes are handled by the movement workflow in Phase 2B.',
+        'Location changes are recorded through the animal movement workflow.',
       ),
       findsOneWidget,
     );

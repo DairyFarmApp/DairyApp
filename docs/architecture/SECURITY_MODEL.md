@@ -18,6 +18,8 @@ Permissions are granular capabilities assigned through organization-scoped roles
 
 Baseline roles are documented in `PERMISSION_MATRIX.md`; custom roles may combine permissions but cannot grant platform super-admin. Support access is time-bound and audited.
 
+Phase 2B movement policies require active organization membership, the explicit operation permission, and access to both source and destination farms. Approval-required requests enforce requester/approver separation inside the locked transaction, not only in Flutter. When approval is disabled, immediate application still requires separate request and approval capabilities. Cross-organization and unauthorized-farm identifiers are concealed, and composite database keys prevent cross-tenant/farm location links even if application validation regresses.
+
 ## Tenant and data protection
 
 - Resolve active organization from authenticated membership. Ignore/reject mismatched payload tenant IDs.

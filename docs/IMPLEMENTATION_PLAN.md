@@ -40,13 +40,15 @@ Phase 2A explicitly excludes movements, weights, status history, QR, photos, off
 
 Completion evidence is recorded in `docs/PHASE_2A_COMPLETION.md`.
 
-## Recommended Phase 2B — Online animal movements (not started)
+## Phase 2B — Online animal movements (implemented 2026-07-23)
 
-After explicit approval, implement only request/approve/reject/cancel movement commands, tenant/farm/shed/group validation, atomic current-location projection updates, immutable movement history, audit, and responsive Flutter review/history UI. Do not include weight history, QR, photos, offline mutations, or a combined timeline in this subphase.
+Implemented request/approve/reject/cancel movement commands, tenant/farm/shed/group validation, row-locked atomic current-location projection updates, immutable movement history, separation of duties, permissions, audit, responsive Flutter review/history UI, and authorized Drift read caching. MySQL has 56 passing tests with 501 assertions; SQLite portability has 409 assertions; Flutter has 46 passing tests; Android debug compilation passes.
+
+Completion evidence is recorded in `docs/PHASE_2B_COMPLETION.md`.
 
 ## Recommended Phase 2C — Approved offline animal workflows (not started)
 
-After the online workflow is stable and separately approved, extend the existing outbox/conflict model to specifically approved animal creates/edits/movements. Define field-level conflict behavior and scale/performance limits before implementation.
+After separate approval, extend the existing outbox/conflict model only to specifically approved animal creates/edits/movements. Define dependency ordering, source-snapshot and field-level conflict behavior, resolution UX, restart/replay guarantees, and scale/performance limits before implementation.
 
 ## Later phases
 

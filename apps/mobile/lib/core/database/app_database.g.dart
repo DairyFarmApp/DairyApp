@@ -5818,6 +5818,1920 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
   }
 }
 
+class $LocalAnimalMovementsTable extends LocalAnimalMovements
+    with TableInfo<$LocalAnimalMovementsTable, LocalAnimalMovement> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalAnimalMovementsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _organizationIdMeta = const VerificationMeta(
+    'organizationId',
+  );
+  @override
+  late final GeneratedColumn<String> organizationId = GeneratedColumn<String>(
+    'organization_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _animalIdMeta = const VerificationMeta(
+    'animalId',
+  );
+  @override
+  late final GeneratedColumn<String> animalId = GeneratedColumn<String>(
+    'animal_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _animalNumberMeta = const VerificationMeta(
+    'animalNumber',
+  );
+  @override
+  late final GeneratedColumn<String> animalNumber = GeneratedColumn<String>(
+    'animal_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceFarmIdMeta = const VerificationMeta(
+    'sourceFarmId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceFarmId = GeneratedColumn<String>(
+    'source_farm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceFarmNameMeta = const VerificationMeta(
+    'sourceFarmName',
+  );
+  @override
+  late final GeneratedColumn<String> sourceFarmName = GeneratedColumn<String>(
+    'source_farm_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceShedIdMeta = const VerificationMeta(
+    'sourceShedId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceShedId = GeneratedColumn<String>(
+    'source_shed_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceShedNameMeta = const VerificationMeta(
+    'sourceShedName',
+  );
+  @override
+  late final GeneratedColumn<String> sourceShedName = GeneratedColumn<String>(
+    'source_shed_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceAnimalGroupIdMeta =
+      const VerificationMeta('sourceAnimalGroupId');
+  @override
+  late final GeneratedColumn<String> sourceAnimalGroupId =
+      GeneratedColumn<String>(
+        'source_animal_group_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _sourceAnimalGroupNameMeta =
+      const VerificationMeta('sourceAnimalGroupName');
+  @override
+  late final GeneratedColumn<String> sourceAnimalGroupName =
+      GeneratedColumn<String>(
+        'source_animal_group_name',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _destinationFarmIdMeta = const VerificationMeta(
+    'destinationFarmId',
+  );
+  @override
+  late final GeneratedColumn<String> destinationFarmId =
+      GeneratedColumn<String>(
+        'destination_farm_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _destinationFarmNameMeta =
+      const VerificationMeta('destinationFarmName');
+  @override
+  late final GeneratedColumn<String> destinationFarmName =
+      GeneratedColumn<String>(
+        'destination_farm_name',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _destinationShedIdMeta = const VerificationMeta(
+    'destinationShedId',
+  );
+  @override
+  late final GeneratedColumn<String> destinationShedId =
+      GeneratedColumn<String>(
+        'destination_shed_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _destinationShedNameMeta =
+      const VerificationMeta('destinationShedName');
+  @override
+  late final GeneratedColumn<String> destinationShedName =
+      GeneratedColumn<String>(
+        'destination_shed_name',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _destinationAnimalGroupIdMeta =
+      const VerificationMeta('destinationAnimalGroupId');
+  @override
+  late final GeneratedColumn<String> destinationAnimalGroupId =
+      GeneratedColumn<String>(
+        'destination_animal_group_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _destinationAnimalGroupNameMeta =
+      const VerificationMeta('destinationAnimalGroupName');
+  @override
+  late final GeneratedColumn<String> destinationAnimalGroupName =
+      GeneratedColumn<String>(
+        'destination_animal_group_name',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _requestedEffectiveAtMeta =
+      const VerificationMeta('requestedEffectiveAt');
+  @override
+  late final GeneratedColumn<DateTime> requestedEffectiveAt =
+      GeneratedColumn<DateTime>(
+        'requested_effective_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _actualEffectiveAtMeta = const VerificationMeta(
+    'actualEffectiveAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> actualEffectiveAt =
+      GeneratedColumn<DateTime>(
+        'actual_effective_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _approvalRequiredMeta = const VerificationMeta(
+    'approvalRequired',
+  );
+  @override
+  late final GeneratedColumn<bool> approvalRequired = GeneratedColumn<bool>(
+    'approval_required',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("approval_required" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _requestedByMeta = const VerificationMeta(
+    'requestedBy',
+  );
+  @override
+  late final GeneratedColumn<String> requestedBy = GeneratedColumn<String>(
+    'requested_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _requestedByNameMeta = const VerificationMeta(
+    'requestedByName',
+  );
+  @override
+  late final GeneratedColumn<String> requestedByName = GeneratedColumn<String>(
+    'requested_by_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _decidedByMeta = const VerificationMeta(
+    'decidedBy',
+  );
+  @override
+  late final GeneratedColumn<String> decidedBy = GeneratedColumn<String>(
+    'decided_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _decidedByNameMeta = const VerificationMeta(
+    'decidedByName',
+  );
+  @override
+  late final GeneratedColumn<String> decidedByName = GeneratedColumn<String>(
+    'decided_by_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _decisionAtMeta = const VerificationMeta(
+    'decisionAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> decisionAt = GeneratedColumn<DateTime>(
+    'decision_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rejectionReasonMeta = const VerificationMeta(
+    'rejectionReason',
+  );
+  @override
+  late final GeneratedColumn<String> rejectionReason = GeneratedColumn<String>(
+    'rejection_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cancellationReasonMeta =
+      const VerificationMeta('cancellationReason');
+  @override
+  late final GeneratedColumn<String> cancellationReason =
+      GeneratedColumn<String>(
+        'cancellation_reason',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _cachedAtMeta = const VerificationMeta(
+    'cachedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+    'cached_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isAccessibleMeta = const VerificationMeta(
+    'isAccessible',
+  );
+  @override
+  late final GeneratedColumn<bool> isAccessible = GeneratedColumn<bool>(
+    'is_accessible',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_accessible" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    organizationId,
+    animalId,
+    animalNumber,
+    sourceFarmId,
+    sourceFarmName,
+    sourceShedId,
+    sourceShedName,
+    sourceAnimalGroupId,
+    sourceAnimalGroupName,
+    destinationFarmId,
+    destinationFarmName,
+    destinationShedId,
+    destinationShedName,
+    destinationAnimalGroupId,
+    destinationAnimalGroupName,
+    requestedEffectiveAt,
+    actualEffectiveAt,
+    reason,
+    notes,
+    status,
+    approvalRequired,
+    requestedBy,
+    requestedByName,
+    decidedBy,
+    decidedByName,
+    decisionAt,
+    rejectionReason,
+    cancellationReason,
+    version,
+    serverUpdatedAt,
+    cachedAt,
+    isAccessible,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_animal_movements';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalAnimalMovement> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('organization_id')) {
+      context.handle(
+        _organizationIdMeta,
+        organizationId.isAcceptableOrUnknown(
+          data['organization_id']!,
+          _organizationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_organizationIdMeta);
+    }
+    if (data.containsKey('animal_id')) {
+      context.handle(
+        _animalIdMeta,
+        animalId.isAcceptableOrUnknown(data['animal_id']!, _animalIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_animalIdMeta);
+    }
+    if (data.containsKey('animal_number')) {
+      context.handle(
+        _animalNumberMeta,
+        animalNumber.isAcceptableOrUnknown(
+          data['animal_number']!,
+          _animalNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_animalNumberMeta);
+    }
+    if (data.containsKey('source_farm_id')) {
+      context.handle(
+        _sourceFarmIdMeta,
+        sourceFarmId.isAcceptableOrUnknown(
+          data['source_farm_id']!,
+          _sourceFarmIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceFarmIdMeta);
+    }
+    if (data.containsKey('source_farm_name')) {
+      context.handle(
+        _sourceFarmNameMeta,
+        sourceFarmName.isAcceptableOrUnknown(
+          data['source_farm_name']!,
+          _sourceFarmNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceFarmNameMeta);
+    }
+    if (data.containsKey('source_shed_id')) {
+      context.handle(
+        _sourceShedIdMeta,
+        sourceShedId.isAcceptableOrUnknown(
+          data['source_shed_id']!,
+          _sourceShedIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceShedIdMeta);
+    }
+    if (data.containsKey('source_shed_name')) {
+      context.handle(
+        _sourceShedNameMeta,
+        sourceShedName.isAcceptableOrUnknown(
+          data['source_shed_name']!,
+          _sourceShedNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceShedNameMeta);
+    }
+    if (data.containsKey('source_animal_group_id')) {
+      context.handle(
+        _sourceAnimalGroupIdMeta,
+        sourceAnimalGroupId.isAcceptableOrUnknown(
+          data['source_animal_group_id']!,
+          _sourceAnimalGroupIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('source_animal_group_name')) {
+      context.handle(
+        _sourceAnimalGroupNameMeta,
+        sourceAnimalGroupName.isAcceptableOrUnknown(
+          data['source_animal_group_name']!,
+          _sourceAnimalGroupNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('destination_farm_id')) {
+      context.handle(
+        _destinationFarmIdMeta,
+        destinationFarmId.isAcceptableOrUnknown(
+          data['destination_farm_id']!,
+          _destinationFarmIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_destinationFarmIdMeta);
+    }
+    if (data.containsKey('destination_farm_name')) {
+      context.handle(
+        _destinationFarmNameMeta,
+        destinationFarmName.isAcceptableOrUnknown(
+          data['destination_farm_name']!,
+          _destinationFarmNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_destinationFarmNameMeta);
+    }
+    if (data.containsKey('destination_shed_id')) {
+      context.handle(
+        _destinationShedIdMeta,
+        destinationShedId.isAcceptableOrUnknown(
+          data['destination_shed_id']!,
+          _destinationShedIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_destinationShedIdMeta);
+    }
+    if (data.containsKey('destination_shed_name')) {
+      context.handle(
+        _destinationShedNameMeta,
+        destinationShedName.isAcceptableOrUnknown(
+          data['destination_shed_name']!,
+          _destinationShedNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_destinationShedNameMeta);
+    }
+    if (data.containsKey('destination_animal_group_id')) {
+      context.handle(
+        _destinationAnimalGroupIdMeta,
+        destinationAnimalGroupId.isAcceptableOrUnknown(
+          data['destination_animal_group_id']!,
+          _destinationAnimalGroupIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('destination_animal_group_name')) {
+      context.handle(
+        _destinationAnimalGroupNameMeta,
+        destinationAnimalGroupName.isAcceptableOrUnknown(
+          data['destination_animal_group_name']!,
+          _destinationAnimalGroupNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('requested_effective_at')) {
+      context.handle(
+        _requestedEffectiveAtMeta,
+        requestedEffectiveAt.isAcceptableOrUnknown(
+          data['requested_effective_at']!,
+          _requestedEffectiveAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_requestedEffectiveAtMeta);
+    }
+    if (data.containsKey('actual_effective_at')) {
+      context.handle(
+        _actualEffectiveAtMeta,
+        actualEffectiveAt.isAcceptableOrUnknown(
+          data['actual_effective_at']!,
+          _actualEffectiveAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_reasonMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('approval_required')) {
+      context.handle(
+        _approvalRequiredMeta,
+        approvalRequired.isAcceptableOrUnknown(
+          data['approval_required']!,
+          _approvalRequiredMeta,
+        ),
+      );
+    }
+    if (data.containsKey('requested_by')) {
+      context.handle(
+        _requestedByMeta,
+        requestedBy.isAcceptableOrUnknown(
+          data['requested_by']!,
+          _requestedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_requestedByMeta);
+    }
+    if (data.containsKey('requested_by_name')) {
+      context.handle(
+        _requestedByNameMeta,
+        requestedByName.isAcceptableOrUnknown(
+          data['requested_by_name']!,
+          _requestedByNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_requestedByNameMeta);
+    }
+    if (data.containsKey('decided_by')) {
+      context.handle(
+        _decidedByMeta,
+        decidedBy.isAcceptableOrUnknown(data['decided_by']!, _decidedByMeta),
+      );
+    }
+    if (data.containsKey('decided_by_name')) {
+      context.handle(
+        _decidedByNameMeta,
+        decidedByName.isAcceptableOrUnknown(
+          data['decided_by_name']!,
+          _decidedByNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('decision_at')) {
+      context.handle(
+        _decisionAtMeta,
+        decisionAt.isAcceptableOrUnknown(data['decision_at']!, _decisionAtMeta),
+      );
+    }
+    if (data.containsKey('rejection_reason')) {
+      context.handle(
+        _rejectionReasonMeta,
+        rejectionReason.isAcceptableOrUnknown(
+          data['rejection_reason']!,
+          _rejectionReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cancellation_reason')) {
+      context.handle(
+        _cancellationReasonMeta,
+        cancellationReason.isAcceptableOrUnknown(
+          data['cancellation_reason']!,
+          _cancellationReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_serverUpdatedAtMeta);
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(
+        _cachedAtMeta,
+        cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    if (data.containsKey('is_accessible')) {
+      context.handle(
+        _isAccessibleMeta,
+        isAccessible.isAcceptableOrUnknown(
+          data['is_accessible']!,
+          _isAccessibleMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalAnimalMovement map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalAnimalMovement(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      organizationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}organization_id'],
+      )!,
+      animalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_id'],
+      )!,
+      animalNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_number'],
+      )!,
+      sourceFarmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_farm_id'],
+      )!,
+      sourceFarmName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_farm_name'],
+      )!,
+      sourceShedId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_shed_id'],
+      )!,
+      sourceShedName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_shed_name'],
+      )!,
+      sourceAnimalGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_animal_group_id'],
+      ),
+      sourceAnimalGroupName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_animal_group_name'],
+      ),
+      destinationFarmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_farm_id'],
+      )!,
+      destinationFarmName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_farm_name'],
+      )!,
+      destinationShedId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_shed_id'],
+      )!,
+      destinationShedName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_shed_name'],
+      )!,
+      destinationAnimalGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_animal_group_id'],
+      ),
+      destinationAnimalGroupName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_animal_group_name'],
+      ),
+      requestedEffectiveAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}requested_effective_at'],
+      )!,
+      actualEffectiveAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}actual_effective_at'],
+      ),
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      approvalRequired: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}approval_required'],
+      )!,
+      requestedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}requested_by'],
+      )!,
+      requestedByName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}requested_by_name'],
+      )!,
+      decidedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}decided_by'],
+      ),
+      decidedByName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}decided_by_name'],
+      ),
+      decisionAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}decision_at'],
+      ),
+      rejectionReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rejection_reason'],
+      ),
+      cancellationReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cancellation_reason'],
+      ),
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      )!,
+      cachedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}cached_at'],
+      )!,
+      isAccessible: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_accessible'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalAnimalMovementsTable createAlias(String alias) {
+    return $LocalAnimalMovementsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalAnimalMovement extends DataClass
+    implements Insertable<LocalAnimalMovement> {
+  final String id;
+  final String organizationId;
+  final String animalId;
+  final String animalNumber;
+  final String sourceFarmId;
+  final String sourceFarmName;
+  final String sourceShedId;
+  final String sourceShedName;
+  final String? sourceAnimalGroupId;
+  final String? sourceAnimalGroupName;
+  final String destinationFarmId;
+  final String destinationFarmName;
+  final String destinationShedId;
+  final String destinationShedName;
+  final String? destinationAnimalGroupId;
+  final String? destinationAnimalGroupName;
+  final DateTime requestedEffectiveAt;
+  final DateTime? actualEffectiveAt;
+  final String reason;
+  final String? notes;
+  final String status;
+  final bool approvalRequired;
+  final String requestedBy;
+  final String requestedByName;
+  final String? decidedBy;
+  final String? decidedByName;
+  final DateTime? decisionAt;
+  final String? rejectionReason;
+  final String? cancellationReason;
+  final int version;
+  final DateTime serverUpdatedAt;
+  final DateTime cachedAt;
+  final bool isAccessible;
+  const LocalAnimalMovement({
+    required this.id,
+    required this.organizationId,
+    required this.animalId,
+    required this.animalNumber,
+    required this.sourceFarmId,
+    required this.sourceFarmName,
+    required this.sourceShedId,
+    required this.sourceShedName,
+    this.sourceAnimalGroupId,
+    this.sourceAnimalGroupName,
+    required this.destinationFarmId,
+    required this.destinationFarmName,
+    required this.destinationShedId,
+    required this.destinationShedName,
+    this.destinationAnimalGroupId,
+    this.destinationAnimalGroupName,
+    required this.requestedEffectiveAt,
+    this.actualEffectiveAt,
+    required this.reason,
+    this.notes,
+    required this.status,
+    required this.approvalRequired,
+    required this.requestedBy,
+    required this.requestedByName,
+    this.decidedBy,
+    this.decidedByName,
+    this.decisionAt,
+    this.rejectionReason,
+    this.cancellationReason,
+    required this.version,
+    required this.serverUpdatedAt,
+    required this.cachedAt,
+    required this.isAccessible,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['organization_id'] = Variable<String>(organizationId);
+    map['animal_id'] = Variable<String>(animalId);
+    map['animal_number'] = Variable<String>(animalNumber);
+    map['source_farm_id'] = Variable<String>(sourceFarmId);
+    map['source_farm_name'] = Variable<String>(sourceFarmName);
+    map['source_shed_id'] = Variable<String>(sourceShedId);
+    map['source_shed_name'] = Variable<String>(sourceShedName);
+    if (!nullToAbsent || sourceAnimalGroupId != null) {
+      map['source_animal_group_id'] = Variable<String>(sourceAnimalGroupId);
+    }
+    if (!nullToAbsent || sourceAnimalGroupName != null) {
+      map['source_animal_group_name'] = Variable<String>(sourceAnimalGroupName);
+    }
+    map['destination_farm_id'] = Variable<String>(destinationFarmId);
+    map['destination_farm_name'] = Variable<String>(destinationFarmName);
+    map['destination_shed_id'] = Variable<String>(destinationShedId);
+    map['destination_shed_name'] = Variable<String>(destinationShedName);
+    if (!nullToAbsent || destinationAnimalGroupId != null) {
+      map['destination_animal_group_id'] = Variable<String>(
+        destinationAnimalGroupId,
+      );
+    }
+    if (!nullToAbsent || destinationAnimalGroupName != null) {
+      map['destination_animal_group_name'] = Variable<String>(
+        destinationAnimalGroupName,
+      );
+    }
+    map['requested_effective_at'] = Variable<DateTime>(requestedEffectiveAt);
+    if (!nullToAbsent || actualEffectiveAt != null) {
+      map['actual_effective_at'] = Variable<DateTime>(actualEffectiveAt);
+    }
+    map['reason'] = Variable<String>(reason);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['status'] = Variable<String>(status);
+    map['approval_required'] = Variable<bool>(approvalRequired);
+    map['requested_by'] = Variable<String>(requestedBy);
+    map['requested_by_name'] = Variable<String>(requestedByName);
+    if (!nullToAbsent || decidedBy != null) {
+      map['decided_by'] = Variable<String>(decidedBy);
+    }
+    if (!nullToAbsent || decidedByName != null) {
+      map['decided_by_name'] = Variable<String>(decidedByName);
+    }
+    if (!nullToAbsent || decisionAt != null) {
+      map['decision_at'] = Variable<DateTime>(decisionAt);
+    }
+    if (!nullToAbsent || rejectionReason != null) {
+      map['rejection_reason'] = Variable<String>(rejectionReason);
+    }
+    if (!nullToAbsent || cancellationReason != null) {
+      map['cancellation_reason'] = Variable<String>(cancellationReason);
+    }
+    map['version'] = Variable<int>(version);
+    map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    map['is_accessible'] = Variable<bool>(isAccessible);
+    return map;
+  }
+
+  LocalAnimalMovementsCompanion toCompanion(bool nullToAbsent) {
+    return LocalAnimalMovementsCompanion(
+      id: Value(id),
+      organizationId: Value(organizationId),
+      animalId: Value(animalId),
+      animalNumber: Value(animalNumber),
+      sourceFarmId: Value(sourceFarmId),
+      sourceFarmName: Value(sourceFarmName),
+      sourceShedId: Value(sourceShedId),
+      sourceShedName: Value(sourceShedName),
+      sourceAnimalGroupId: sourceAnimalGroupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceAnimalGroupId),
+      sourceAnimalGroupName: sourceAnimalGroupName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceAnimalGroupName),
+      destinationFarmId: Value(destinationFarmId),
+      destinationFarmName: Value(destinationFarmName),
+      destinationShedId: Value(destinationShedId),
+      destinationShedName: Value(destinationShedName),
+      destinationAnimalGroupId: destinationAnimalGroupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationAnimalGroupId),
+      destinationAnimalGroupName:
+          destinationAnimalGroupName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationAnimalGroupName),
+      requestedEffectiveAt: Value(requestedEffectiveAt),
+      actualEffectiveAt: actualEffectiveAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(actualEffectiveAt),
+      reason: Value(reason),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      status: Value(status),
+      approvalRequired: Value(approvalRequired),
+      requestedBy: Value(requestedBy),
+      requestedByName: Value(requestedByName),
+      decidedBy: decidedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(decidedBy),
+      decidedByName: decidedByName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(decidedByName),
+      decisionAt: decisionAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(decisionAt),
+      rejectionReason: rejectionReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rejectionReason),
+      cancellationReason: cancellationReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cancellationReason),
+      version: Value(version),
+      serverUpdatedAt: Value(serverUpdatedAt),
+      cachedAt: Value(cachedAt),
+      isAccessible: Value(isAccessible),
+    );
+  }
+
+  factory LocalAnimalMovement.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalAnimalMovement(
+      id: serializer.fromJson<String>(json['id']),
+      organizationId: serializer.fromJson<String>(json['organizationId']),
+      animalId: serializer.fromJson<String>(json['animalId']),
+      animalNumber: serializer.fromJson<String>(json['animalNumber']),
+      sourceFarmId: serializer.fromJson<String>(json['sourceFarmId']),
+      sourceFarmName: serializer.fromJson<String>(json['sourceFarmName']),
+      sourceShedId: serializer.fromJson<String>(json['sourceShedId']),
+      sourceShedName: serializer.fromJson<String>(json['sourceShedName']),
+      sourceAnimalGroupId: serializer.fromJson<String?>(
+        json['sourceAnimalGroupId'],
+      ),
+      sourceAnimalGroupName: serializer.fromJson<String?>(
+        json['sourceAnimalGroupName'],
+      ),
+      destinationFarmId: serializer.fromJson<String>(json['destinationFarmId']),
+      destinationFarmName: serializer.fromJson<String>(
+        json['destinationFarmName'],
+      ),
+      destinationShedId: serializer.fromJson<String>(json['destinationShedId']),
+      destinationShedName: serializer.fromJson<String>(
+        json['destinationShedName'],
+      ),
+      destinationAnimalGroupId: serializer.fromJson<String?>(
+        json['destinationAnimalGroupId'],
+      ),
+      destinationAnimalGroupName: serializer.fromJson<String?>(
+        json['destinationAnimalGroupName'],
+      ),
+      requestedEffectiveAt: serializer.fromJson<DateTime>(
+        json['requestedEffectiveAt'],
+      ),
+      actualEffectiveAt: serializer.fromJson<DateTime?>(
+        json['actualEffectiveAt'],
+      ),
+      reason: serializer.fromJson<String>(json['reason']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      status: serializer.fromJson<String>(json['status']),
+      approvalRequired: serializer.fromJson<bool>(json['approvalRequired']),
+      requestedBy: serializer.fromJson<String>(json['requestedBy']),
+      requestedByName: serializer.fromJson<String>(json['requestedByName']),
+      decidedBy: serializer.fromJson<String?>(json['decidedBy']),
+      decidedByName: serializer.fromJson<String?>(json['decidedByName']),
+      decisionAt: serializer.fromJson<DateTime?>(json['decisionAt']),
+      rejectionReason: serializer.fromJson<String?>(json['rejectionReason']),
+      cancellationReason: serializer.fromJson<String?>(
+        json['cancellationReason'],
+      ),
+      version: serializer.fromJson<int>(json['version']),
+      serverUpdatedAt: serializer.fromJson<DateTime>(json['serverUpdatedAt']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+      isAccessible: serializer.fromJson<bool>(json['isAccessible']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'organizationId': serializer.toJson<String>(organizationId),
+      'animalId': serializer.toJson<String>(animalId),
+      'animalNumber': serializer.toJson<String>(animalNumber),
+      'sourceFarmId': serializer.toJson<String>(sourceFarmId),
+      'sourceFarmName': serializer.toJson<String>(sourceFarmName),
+      'sourceShedId': serializer.toJson<String>(sourceShedId),
+      'sourceShedName': serializer.toJson<String>(sourceShedName),
+      'sourceAnimalGroupId': serializer.toJson<String?>(sourceAnimalGroupId),
+      'sourceAnimalGroupName': serializer.toJson<String?>(
+        sourceAnimalGroupName,
+      ),
+      'destinationFarmId': serializer.toJson<String>(destinationFarmId),
+      'destinationFarmName': serializer.toJson<String>(destinationFarmName),
+      'destinationShedId': serializer.toJson<String>(destinationShedId),
+      'destinationShedName': serializer.toJson<String>(destinationShedName),
+      'destinationAnimalGroupId': serializer.toJson<String?>(
+        destinationAnimalGroupId,
+      ),
+      'destinationAnimalGroupName': serializer.toJson<String?>(
+        destinationAnimalGroupName,
+      ),
+      'requestedEffectiveAt': serializer.toJson<DateTime>(requestedEffectiveAt),
+      'actualEffectiveAt': serializer.toJson<DateTime?>(actualEffectiveAt),
+      'reason': serializer.toJson<String>(reason),
+      'notes': serializer.toJson<String?>(notes),
+      'status': serializer.toJson<String>(status),
+      'approvalRequired': serializer.toJson<bool>(approvalRequired),
+      'requestedBy': serializer.toJson<String>(requestedBy),
+      'requestedByName': serializer.toJson<String>(requestedByName),
+      'decidedBy': serializer.toJson<String?>(decidedBy),
+      'decidedByName': serializer.toJson<String?>(decidedByName),
+      'decisionAt': serializer.toJson<DateTime?>(decisionAt),
+      'rejectionReason': serializer.toJson<String?>(rejectionReason),
+      'cancellationReason': serializer.toJson<String?>(cancellationReason),
+      'version': serializer.toJson<int>(version),
+      'serverUpdatedAt': serializer.toJson<DateTime>(serverUpdatedAt),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+      'isAccessible': serializer.toJson<bool>(isAccessible),
+    };
+  }
+
+  LocalAnimalMovement copyWith({
+    String? id,
+    String? organizationId,
+    String? animalId,
+    String? animalNumber,
+    String? sourceFarmId,
+    String? sourceFarmName,
+    String? sourceShedId,
+    String? sourceShedName,
+    Value<String?> sourceAnimalGroupId = const Value.absent(),
+    Value<String?> sourceAnimalGroupName = const Value.absent(),
+    String? destinationFarmId,
+    String? destinationFarmName,
+    String? destinationShedId,
+    String? destinationShedName,
+    Value<String?> destinationAnimalGroupId = const Value.absent(),
+    Value<String?> destinationAnimalGroupName = const Value.absent(),
+    DateTime? requestedEffectiveAt,
+    Value<DateTime?> actualEffectiveAt = const Value.absent(),
+    String? reason,
+    Value<String?> notes = const Value.absent(),
+    String? status,
+    bool? approvalRequired,
+    String? requestedBy,
+    String? requestedByName,
+    Value<String?> decidedBy = const Value.absent(),
+    Value<String?> decidedByName = const Value.absent(),
+    Value<DateTime?> decisionAt = const Value.absent(),
+    Value<String?> rejectionReason = const Value.absent(),
+    Value<String?> cancellationReason = const Value.absent(),
+    int? version,
+    DateTime? serverUpdatedAt,
+    DateTime? cachedAt,
+    bool? isAccessible,
+  }) => LocalAnimalMovement(
+    id: id ?? this.id,
+    organizationId: organizationId ?? this.organizationId,
+    animalId: animalId ?? this.animalId,
+    animalNumber: animalNumber ?? this.animalNumber,
+    sourceFarmId: sourceFarmId ?? this.sourceFarmId,
+    sourceFarmName: sourceFarmName ?? this.sourceFarmName,
+    sourceShedId: sourceShedId ?? this.sourceShedId,
+    sourceShedName: sourceShedName ?? this.sourceShedName,
+    sourceAnimalGroupId: sourceAnimalGroupId.present
+        ? sourceAnimalGroupId.value
+        : this.sourceAnimalGroupId,
+    sourceAnimalGroupName: sourceAnimalGroupName.present
+        ? sourceAnimalGroupName.value
+        : this.sourceAnimalGroupName,
+    destinationFarmId: destinationFarmId ?? this.destinationFarmId,
+    destinationFarmName: destinationFarmName ?? this.destinationFarmName,
+    destinationShedId: destinationShedId ?? this.destinationShedId,
+    destinationShedName: destinationShedName ?? this.destinationShedName,
+    destinationAnimalGroupId: destinationAnimalGroupId.present
+        ? destinationAnimalGroupId.value
+        : this.destinationAnimalGroupId,
+    destinationAnimalGroupName: destinationAnimalGroupName.present
+        ? destinationAnimalGroupName.value
+        : this.destinationAnimalGroupName,
+    requestedEffectiveAt: requestedEffectiveAt ?? this.requestedEffectiveAt,
+    actualEffectiveAt: actualEffectiveAt.present
+        ? actualEffectiveAt.value
+        : this.actualEffectiveAt,
+    reason: reason ?? this.reason,
+    notes: notes.present ? notes.value : this.notes,
+    status: status ?? this.status,
+    approvalRequired: approvalRequired ?? this.approvalRequired,
+    requestedBy: requestedBy ?? this.requestedBy,
+    requestedByName: requestedByName ?? this.requestedByName,
+    decidedBy: decidedBy.present ? decidedBy.value : this.decidedBy,
+    decidedByName: decidedByName.present
+        ? decidedByName.value
+        : this.decidedByName,
+    decisionAt: decisionAt.present ? decisionAt.value : this.decisionAt,
+    rejectionReason: rejectionReason.present
+        ? rejectionReason.value
+        : this.rejectionReason,
+    cancellationReason: cancellationReason.present
+        ? cancellationReason.value
+        : this.cancellationReason,
+    version: version ?? this.version,
+    serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+    cachedAt: cachedAt ?? this.cachedAt,
+    isAccessible: isAccessible ?? this.isAccessible,
+  );
+  LocalAnimalMovement copyWithCompanion(LocalAnimalMovementsCompanion data) {
+    return LocalAnimalMovement(
+      id: data.id.present ? data.id.value : this.id,
+      organizationId: data.organizationId.present
+          ? data.organizationId.value
+          : this.organizationId,
+      animalId: data.animalId.present ? data.animalId.value : this.animalId,
+      animalNumber: data.animalNumber.present
+          ? data.animalNumber.value
+          : this.animalNumber,
+      sourceFarmId: data.sourceFarmId.present
+          ? data.sourceFarmId.value
+          : this.sourceFarmId,
+      sourceFarmName: data.sourceFarmName.present
+          ? data.sourceFarmName.value
+          : this.sourceFarmName,
+      sourceShedId: data.sourceShedId.present
+          ? data.sourceShedId.value
+          : this.sourceShedId,
+      sourceShedName: data.sourceShedName.present
+          ? data.sourceShedName.value
+          : this.sourceShedName,
+      sourceAnimalGroupId: data.sourceAnimalGroupId.present
+          ? data.sourceAnimalGroupId.value
+          : this.sourceAnimalGroupId,
+      sourceAnimalGroupName: data.sourceAnimalGroupName.present
+          ? data.sourceAnimalGroupName.value
+          : this.sourceAnimalGroupName,
+      destinationFarmId: data.destinationFarmId.present
+          ? data.destinationFarmId.value
+          : this.destinationFarmId,
+      destinationFarmName: data.destinationFarmName.present
+          ? data.destinationFarmName.value
+          : this.destinationFarmName,
+      destinationShedId: data.destinationShedId.present
+          ? data.destinationShedId.value
+          : this.destinationShedId,
+      destinationShedName: data.destinationShedName.present
+          ? data.destinationShedName.value
+          : this.destinationShedName,
+      destinationAnimalGroupId: data.destinationAnimalGroupId.present
+          ? data.destinationAnimalGroupId.value
+          : this.destinationAnimalGroupId,
+      destinationAnimalGroupName: data.destinationAnimalGroupName.present
+          ? data.destinationAnimalGroupName.value
+          : this.destinationAnimalGroupName,
+      requestedEffectiveAt: data.requestedEffectiveAt.present
+          ? data.requestedEffectiveAt.value
+          : this.requestedEffectiveAt,
+      actualEffectiveAt: data.actualEffectiveAt.present
+          ? data.actualEffectiveAt.value
+          : this.actualEffectiveAt,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      status: data.status.present ? data.status.value : this.status,
+      approvalRequired: data.approvalRequired.present
+          ? data.approvalRequired.value
+          : this.approvalRequired,
+      requestedBy: data.requestedBy.present
+          ? data.requestedBy.value
+          : this.requestedBy,
+      requestedByName: data.requestedByName.present
+          ? data.requestedByName.value
+          : this.requestedByName,
+      decidedBy: data.decidedBy.present ? data.decidedBy.value : this.decidedBy,
+      decidedByName: data.decidedByName.present
+          ? data.decidedByName.value
+          : this.decidedByName,
+      decisionAt: data.decisionAt.present
+          ? data.decisionAt.value
+          : this.decisionAt,
+      rejectionReason: data.rejectionReason.present
+          ? data.rejectionReason.value
+          : this.rejectionReason,
+      cancellationReason: data.cancellationReason.present
+          ? data.cancellationReason.value
+          : this.cancellationReason,
+      version: data.version.present ? data.version.value : this.version,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      cachedAt: data.cachedAt.present ? data.cachedAt.value : this.cachedAt,
+      isAccessible: data.isAccessible.present
+          ? data.isAccessible.value
+          : this.isAccessible,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalAnimalMovement(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('animalId: $animalId, ')
+          ..write('animalNumber: $animalNumber, ')
+          ..write('sourceFarmId: $sourceFarmId, ')
+          ..write('sourceFarmName: $sourceFarmName, ')
+          ..write('sourceShedId: $sourceShedId, ')
+          ..write('sourceShedName: $sourceShedName, ')
+          ..write('sourceAnimalGroupId: $sourceAnimalGroupId, ')
+          ..write('sourceAnimalGroupName: $sourceAnimalGroupName, ')
+          ..write('destinationFarmId: $destinationFarmId, ')
+          ..write('destinationFarmName: $destinationFarmName, ')
+          ..write('destinationShedId: $destinationShedId, ')
+          ..write('destinationShedName: $destinationShedName, ')
+          ..write('destinationAnimalGroupId: $destinationAnimalGroupId, ')
+          ..write('destinationAnimalGroupName: $destinationAnimalGroupName, ')
+          ..write('requestedEffectiveAt: $requestedEffectiveAt, ')
+          ..write('actualEffectiveAt: $actualEffectiveAt, ')
+          ..write('reason: $reason, ')
+          ..write('notes: $notes, ')
+          ..write('status: $status, ')
+          ..write('approvalRequired: $approvalRequired, ')
+          ..write('requestedBy: $requestedBy, ')
+          ..write('requestedByName: $requestedByName, ')
+          ..write('decidedBy: $decidedBy, ')
+          ..write('decidedByName: $decidedByName, ')
+          ..write('decisionAt: $decisionAt, ')
+          ..write('rejectionReason: $rejectionReason, ')
+          ..write('cancellationReason: $cancellationReason, ')
+          ..write('version: $version, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('isAccessible: $isAccessible')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    organizationId,
+    animalId,
+    animalNumber,
+    sourceFarmId,
+    sourceFarmName,
+    sourceShedId,
+    sourceShedName,
+    sourceAnimalGroupId,
+    sourceAnimalGroupName,
+    destinationFarmId,
+    destinationFarmName,
+    destinationShedId,
+    destinationShedName,
+    destinationAnimalGroupId,
+    destinationAnimalGroupName,
+    requestedEffectiveAt,
+    actualEffectiveAt,
+    reason,
+    notes,
+    status,
+    approvalRequired,
+    requestedBy,
+    requestedByName,
+    decidedBy,
+    decidedByName,
+    decisionAt,
+    rejectionReason,
+    cancellationReason,
+    version,
+    serverUpdatedAt,
+    cachedAt,
+    isAccessible,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalAnimalMovement &&
+          other.id == this.id &&
+          other.organizationId == this.organizationId &&
+          other.animalId == this.animalId &&
+          other.animalNumber == this.animalNumber &&
+          other.sourceFarmId == this.sourceFarmId &&
+          other.sourceFarmName == this.sourceFarmName &&
+          other.sourceShedId == this.sourceShedId &&
+          other.sourceShedName == this.sourceShedName &&
+          other.sourceAnimalGroupId == this.sourceAnimalGroupId &&
+          other.sourceAnimalGroupName == this.sourceAnimalGroupName &&
+          other.destinationFarmId == this.destinationFarmId &&
+          other.destinationFarmName == this.destinationFarmName &&
+          other.destinationShedId == this.destinationShedId &&
+          other.destinationShedName == this.destinationShedName &&
+          other.destinationAnimalGroupId == this.destinationAnimalGroupId &&
+          other.destinationAnimalGroupName == this.destinationAnimalGroupName &&
+          other.requestedEffectiveAt == this.requestedEffectiveAt &&
+          other.actualEffectiveAt == this.actualEffectiveAt &&
+          other.reason == this.reason &&
+          other.notes == this.notes &&
+          other.status == this.status &&
+          other.approvalRequired == this.approvalRequired &&
+          other.requestedBy == this.requestedBy &&
+          other.requestedByName == this.requestedByName &&
+          other.decidedBy == this.decidedBy &&
+          other.decidedByName == this.decidedByName &&
+          other.decisionAt == this.decisionAt &&
+          other.rejectionReason == this.rejectionReason &&
+          other.cancellationReason == this.cancellationReason &&
+          other.version == this.version &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.cachedAt == this.cachedAt &&
+          other.isAccessible == this.isAccessible);
+}
+
+class LocalAnimalMovementsCompanion
+    extends UpdateCompanion<LocalAnimalMovement> {
+  final Value<String> id;
+  final Value<String> organizationId;
+  final Value<String> animalId;
+  final Value<String> animalNumber;
+  final Value<String> sourceFarmId;
+  final Value<String> sourceFarmName;
+  final Value<String> sourceShedId;
+  final Value<String> sourceShedName;
+  final Value<String?> sourceAnimalGroupId;
+  final Value<String?> sourceAnimalGroupName;
+  final Value<String> destinationFarmId;
+  final Value<String> destinationFarmName;
+  final Value<String> destinationShedId;
+  final Value<String> destinationShedName;
+  final Value<String?> destinationAnimalGroupId;
+  final Value<String?> destinationAnimalGroupName;
+  final Value<DateTime> requestedEffectiveAt;
+  final Value<DateTime?> actualEffectiveAt;
+  final Value<String> reason;
+  final Value<String?> notes;
+  final Value<String> status;
+  final Value<bool> approvalRequired;
+  final Value<String> requestedBy;
+  final Value<String> requestedByName;
+  final Value<String?> decidedBy;
+  final Value<String?> decidedByName;
+  final Value<DateTime?> decisionAt;
+  final Value<String?> rejectionReason;
+  final Value<String?> cancellationReason;
+  final Value<int> version;
+  final Value<DateTime> serverUpdatedAt;
+  final Value<DateTime> cachedAt;
+  final Value<bool> isAccessible;
+  final Value<int> rowid;
+  const LocalAnimalMovementsCompanion({
+    this.id = const Value.absent(),
+    this.organizationId = const Value.absent(),
+    this.animalId = const Value.absent(),
+    this.animalNumber = const Value.absent(),
+    this.sourceFarmId = const Value.absent(),
+    this.sourceFarmName = const Value.absent(),
+    this.sourceShedId = const Value.absent(),
+    this.sourceShedName = const Value.absent(),
+    this.sourceAnimalGroupId = const Value.absent(),
+    this.sourceAnimalGroupName = const Value.absent(),
+    this.destinationFarmId = const Value.absent(),
+    this.destinationFarmName = const Value.absent(),
+    this.destinationShedId = const Value.absent(),
+    this.destinationShedName = const Value.absent(),
+    this.destinationAnimalGroupId = const Value.absent(),
+    this.destinationAnimalGroupName = const Value.absent(),
+    this.requestedEffectiveAt = const Value.absent(),
+    this.actualEffectiveAt = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.status = const Value.absent(),
+    this.approvalRequired = const Value.absent(),
+    this.requestedBy = const Value.absent(),
+    this.requestedByName = const Value.absent(),
+    this.decidedBy = const Value.absent(),
+    this.decidedByName = const Value.absent(),
+    this.decisionAt = const Value.absent(),
+    this.rejectionReason = const Value.absent(),
+    this.cancellationReason = const Value.absent(),
+    this.version = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.isAccessible = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalAnimalMovementsCompanion.insert({
+    required String id,
+    required String organizationId,
+    required String animalId,
+    required String animalNumber,
+    required String sourceFarmId,
+    required String sourceFarmName,
+    required String sourceShedId,
+    required String sourceShedName,
+    this.sourceAnimalGroupId = const Value.absent(),
+    this.sourceAnimalGroupName = const Value.absent(),
+    required String destinationFarmId,
+    required String destinationFarmName,
+    required String destinationShedId,
+    required String destinationShedName,
+    this.destinationAnimalGroupId = const Value.absent(),
+    this.destinationAnimalGroupName = const Value.absent(),
+    required DateTime requestedEffectiveAt,
+    this.actualEffectiveAt = const Value.absent(),
+    required String reason,
+    this.notes = const Value.absent(),
+    required String status,
+    this.approvalRequired = const Value.absent(),
+    required String requestedBy,
+    required String requestedByName,
+    this.decidedBy = const Value.absent(),
+    this.decidedByName = const Value.absent(),
+    this.decisionAt = const Value.absent(),
+    this.rejectionReason = const Value.absent(),
+    this.cancellationReason = const Value.absent(),
+    this.version = const Value.absent(),
+    required DateTime serverUpdatedAt,
+    required DateTime cachedAt,
+    this.isAccessible = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       organizationId = Value(organizationId),
+       animalId = Value(animalId),
+       animalNumber = Value(animalNumber),
+       sourceFarmId = Value(sourceFarmId),
+       sourceFarmName = Value(sourceFarmName),
+       sourceShedId = Value(sourceShedId),
+       sourceShedName = Value(sourceShedName),
+       destinationFarmId = Value(destinationFarmId),
+       destinationFarmName = Value(destinationFarmName),
+       destinationShedId = Value(destinationShedId),
+       destinationShedName = Value(destinationShedName),
+       requestedEffectiveAt = Value(requestedEffectiveAt),
+       reason = Value(reason),
+       status = Value(status),
+       requestedBy = Value(requestedBy),
+       requestedByName = Value(requestedByName),
+       serverUpdatedAt = Value(serverUpdatedAt),
+       cachedAt = Value(cachedAt);
+  static Insertable<LocalAnimalMovement> custom({
+    Expression<String>? id,
+    Expression<String>? organizationId,
+    Expression<String>? animalId,
+    Expression<String>? animalNumber,
+    Expression<String>? sourceFarmId,
+    Expression<String>? sourceFarmName,
+    Expression<String>? sourceShedId,
+    Expression<String>? sourceShedName,
+    Expression<String>? sourceAnimalGroupId,
+    Expression<String>? sourceAnimalGroupName,
+    Expression<String>? destinationFarmId,
+    Expression<String>? destinationFarmName,
+    Expression<String>? destinationShedId,
+    Expression<String>? destinationShedName,
+    Expression<String>? destinationAnimalGroupId,
+    Expression<String>? destinationAnimalGroupName,
+    Expression<DateTime>? requestedEffectiveAt,
+    Expression<DateTime>? actualEffectiveAt,
+    Expression<String>? reason,
+    Expression<String>? notes,
+    Expression<String>? status,
+    Expression<bool>? approvalRequired,
+    Expression<String>? requestedBy,
+    Expression<String>? requestedByName,
+    Expression<String>? decidedBy,
+    Expression<String>? decidedByName,
+    Expression<DateTime>? decisionAt,
+    Expression<String>? rejectionReason,
+    Expression<String>? cancellationReason,
+    Expression<int>? version,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<DateTime>? cachedAt,
+    Expression<bool>? isAccessible,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (organizationId != null) 'organization_id': organizationId,
+      if (animalId != null) 'animal_id': animalId,
+      if (animalNumber != null) 'animal_number': animalNumber,
+      if (sourceFarmId != null) 'source_farm_id': sourceFarmId,
+      if (sourceFarmName != null) 'source_farm_name': sourceFarmName,
+      if (sourceShedId != null) 'source_shed_id': sourceShedId,
+      if (sourceShedName != null) 'source_shed_name': sourceShedName,
+      if (sourceAnimalGroupId != null)
+        'source_animal_group_id': sourceAnimalGroupId,
+      if (sourceAnimalGroupName != null)
+        'source_animal_group_name': sourceAnimalGroupName,
+      if (destinationFarmId != null) 'destination_farm_id': destinationFarmId,
+      if (destinationFarmName != null)
+        'destination_farm_name': destinationFarmName,
+      if (destinationShedId != null) 'destination_shed_id': destinationShedId,
+      if (destinationShedName != null)
+        'destination_shed_name': destinationShedName,
+      if (destinationAnimalGroupId != null)
+        'destination_animal_group_id': destinationAnimalGroupId,
+      if (destinationAnimalGroupName != null)
+        'destination_animal_group_name': destinationAnimalGroupName,
+      if (requestedEffectiveAt != null)
+        'requested_effective_at': requestedEffectiveAt,
+      if (actualEffectiveAt != null) 'actual_effective_at': actualEffectiveAt,
+      if (reason != null) 'reason': reason,
+      if (notes != null) 'notes': notes,
+      if (status != null) 'status': status,
+      if (approvalRequired != null) 'approval_required': approvalRequired,
+      if (requestedBy != null) 'requested_by': requestedBy,
+      if (requestedByName != null) 'requested_by_name': requestedByName,
+      if (decidedBy != null) 'decided_by': decidedBy,
+      if (decidedByName != null) 'decided_by_name': decidedByName,
+      if (decisionAt != null) 'decision_at': decisionAt,
+      if (rejectionReason != null) 'rejection_reason': rejectionReason,
+      if (cancellationReason != null) 'cancellation_reason': cancellationReason,
+      if (version != null) 'version': version,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (isAccessible != null) 'is_accessible': isAccessible,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalAnimalMovementsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? organizationId,
+    Value<String>? animalId,
+    Value<String>? animalNumber,
+    Value<String>? sourceFarmId,
+    Value<String>? sourceFarmName,
+    Value<String>? sourceShedId,
+    Value<String>? sourceShedName,
+    Value<String?>? sourceAnimalGroupId,
+    Value<String?>? sourceAnimalGroupName,
+    Value<String>? destinationFarmId,
+    Value<String>? destinationFarmName,
+    Value<String>? destinationShedId,
+    Value<String>? destinationShedName,
+    Value<String?>? destinationAnimalGroupId,
+    Value<String?>? destinationAnimalGroupName,
+    Value<DateTime>? requestedEffectiveAt,
+    Value<DateTime?>? actualEffectiveAt,
+    Value<String>? reason,
+    Value<String?>? notes,
+    Value<String>? status,
+    Value<bool>? approvalRequired,
+    Value<String>? requestedBy,
+    Value<String>? requestedByName,
+    Value<String?>? decidedBy,
+    Value<String?>? decidedByName,
+    Value<DateTime?>? decisionAt,
+    Value<String?>? rejectionReason,
+    Value<String?>? cancellationReason,
+    Value<int>? version,
+    Value<DateTime>? serverUpdatedAt,
+    Value<DateTime>? cachedAt,
+    Value<bool>? isAccessible,
+    Value<int>? rowid,
+  }) {
+    return LocalAnimalMovementsCompanion(
+      id: id ?? this.id,
+      organizationId: organizationId ?? this.organizationId,
+      animalId: animalId ?? this.animalId,
+      animalNumber: animalNumber ?? this.animalNumber,
+      sourceFarmId: sourceFarmId ?? this.sourceFarmId,
+      sourceFarmName: sourceFarmName ?? this.sourceFarmName,
+      sourceShedId: sourceShedId ?? this.sourceShedId,
+      sourceShedName: sourceShedName ?? this.sourceShedName,
+      sourceAnimalGroupId: sourceAnimalGroupId ?? this.sourceAnimalGroupId,
+      sourceAnimalGroupName:
+          sourceAnimalGroupName ?? this.sourceAnimalGroupName,
+      destinationFarmId: destinationFarmId ?? this.destinationFarmId,
+      destinationFarmName: destinationFarmName ?? this.destinationFarmName,
+      destinationShedId: destinationShedId ?? this.destinationShedId,
+      destinationShedName: destinationShedName ?? this.destinationShedName,
+      destinationAnimalGroupId:
+          destinationAnimalGroupId ?? this.destinationAnimalGroupId,
+      destinationAnimalGroupName:
+          destinationAnimalGroupName ?? this.destinationAnimalGroupName,
+      requestedEffectiveAt: requestedEffectiveAt ?? this.requestedEffectiveAt,
+      actualEffectiveAt: actualEffectiveAt ?? this.actualEffectiveAt,
+      reason: reason ?? this.reason,
+      notes: notes ?? this.notes,
+      status: status ?? this.status,
+      approvalRequired: approvalRequired ?? this.approvalRequired,
+      requestedBy: requestedBy ?? this.requestedBy,
+      requestedByName: requestedByName ?? this.requestedByName,
+      decidedBy: decidedBy ?? this.decidedBy,
+      decidedByName: decidedByName ?? this.decidedByName,
+      decisionAt: decisionAt ?? this.decisionAt,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
+      cancellationReason: cancellationReason ?? this.cancellationReason,
+      version: version ?? this.version,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      cachedAt: cachedAt ?? this.cachedAt,
+      isAccessible: isAccessible ?? this.isAccessible,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (organizationId.present) {
+      map['organization_id'] = Variable<String>(organizationId.value);
+    }
+    if (animalId.present) {
+      map['animal_id'] = Variable<String>(animalId.value);
+    }
+    if (animalNumber.present) {
+      map['animal_number'] = Variable<String>(animalNumber.value);
+    }
+    if (sourceFarmId.present) {
+      map['source_farm_id'] = Variable<String>(sourceFarmId.value);
+    }
+    if (sourceFarmName.present) {
+      map['source_farm_name'] = Variable<String>(sourceFarmName.value);
+    }
+    if (sourceShedId.present) {
+      map['source_shed_id'] = Variable<String>(sourceShedId.value);
+    }
+    if (sourceShedName.present) {
+      map['source_shed_name'] = Variable<String>(sourceShedName.value);
+    }
+    if (sourceAnimalGroupId.present) {
+      map['source_animal_group_id'] = Variable<String>(
+        sourceAnimalGroupId.value,
+      );
+    }
+    if (sourceAnimalGroupName.present) {
+      map['source_animal_group_name'] = Variable<String>(
+        sourceAnimalGroupName.value,
+      );
+    }
+    if (destinationFarmId.present) {
+      map['destination_farm_id'] = Variable<String>(destinationFarmId.value);
+    }
+    if (destinationFarmName.present) {
+      map['destination_farm_name'] = Variable<String>(
+        destinationFarmName.value,
+      );
+    }
+    if (destinationShedId.present) {
+      map['destination_shed_id'] = Variable<String>(destinationShedId.value);
+    }
+    if (destinationShedName.present) {
+      map['destination_shed_name'] = Variable<String>(
+        destinationShedName.value,
+      );
+    }
+    if (destinationAnimalGroupId.present) {
+      map['destination_animal_group_id'] = Variable<String>(
+        destinationAnimalGroupId.value,
+      );
+    }
+    if (destinationAnimalGroupName.present) {
+      map['destination_animal_group_name'] = Variable<String>(
+        destinationAnimalGroupName.value,
+      );
+    }
+    if (requestedEffectiveAt.present) {
+      map['requested_effective_at'] = Variable<DateTime>(
+        requestedEffectiveAt.value,
+      );
+    }
+    if (actualEffectiveAt.present) {
+      map['actual_effective_at'] = Variable<DateTime>(actualEffectiveAt.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (approvalRequired.present) {
+      map['approval_required'] = Variable<bool>(approvalRequired.value);
+    }
+    if (requestedBy.present) {
+      map['requested_by'] = Variable<String>(requestedBy.value);
+    }
+    if (requestedByName.present) {
+      map['requested_by_name'] = Variable<String>(requestedByName.value);
+    }
+    if (decidedBy.present) {
+      map['decided_by'] = Variable<String>(decidedBy.value);
+    }
+    if (decidedByName.present) {
+      map['decided_by_name'] = Variable<String>(decidedByName.value);
+    }
+    if (decisionAt.present) {
+      map['decision_at'] = Variable<DateTime>(decisionAt.value);
+    }
+    if (rejectionReason.present) {
+      map['rejection_reason'] = Variable<String>(rejectionReason.value);
+    }
+    if (cancellationReason.present) {
+      map['cancellation_reason'] = Variable<String>(cancellationReason.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (isAccessible.present) {
+      map['is_accessible'] = Variable<bool>(isAccessible.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalAnimalMovementsCompanion(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('animalId: $animalId, ')
+          ..write('animalNumber: $animalNumber, ')
+          ..write('sourceFarmId: $sourceFarmId, ')
+          ..write('sourceFarmName: $sourceFarmName, ')
+          ..write('sourceShedId: $sourceShedId, ')
+          ..write('sourceShedName: $sourceShedName, ')
+          ..write('sourceAnimalGroupId: $sourceAnimalGroupId, ')
+          ..write('sourceAnimalGroupName: $sourceAnimalGroupName, ')
+          ..write('destinationFarmId: $destinationFarmId, ')
+          ..write('destinationFarmName: $destinationFarmName, ')
+          ..write('destinationShedId: $destinationShedId, ')
+          ..write('destinationShedName: $destinationShedName, ')
+          ..write('destinationAnimalGroupId: $destinationAnimalGroupId, ')
+          ..write('destinationAnimalGroupName: $destinationAnimalGroupName, ')
+          ..write('requestedEffectiveAt: $requestedEffectiveAt, ')
+          ..write('actualEffectiveAt: $actualEffectiveAt, ')
+          ..write('reason: $reason, ')
+          ..write('notes: $notes, ')
+          ..write('status: $status, ')
+          ..write('approvalRequired: $approvalRequired, ')
+          ..write('requestedBy: $requestedBy, ')
+          ..write('requestedByName: $requestedByName, ')
+          ..write('decidedBy: $decidedBy, ')
+          ..write('decidedByName: $decidedByName, ')
+          ..write('decisionAt: $decisionAt, ')
+          ..write('rejectionReason: $rejectionReason, ')
+          ..write('cancellationReason: $cancellationReason, ')
+          ..write('version: $version, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('isAccessible: $isAccessible, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncDevicesTable extends SyncDevices
     with TableInfo<$SyncDevicesTable, SyncDevice> {
   @override
@@ -8384,6 +10298,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $LocalAnimalGroupsTable localAnimalGroups =
       $LocalAnimalGroupsTable(this);
   late final $LocalAnimalsTable localAnimals = $LocalAnimalsTable(this);
+  late final $LocalAnimalMovementsTable localAnimalMovements =
+      $LocalAnimalMovementsTable(this);
   late final $SyncDevicesTable syncDevices = $SyncDevicesTable(this);
   late final $SyncCursorsTable syncCursors = $SyncCursorsTable(this);
   late final $SyncOutboxTable syncOutbox = $SyncOutboxTable(this);
@@ -8403,6 +10319,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     localAnimalBreeds,
     localAnimalGroups,
     localAnimals,
+    localAnimalMovements,
     syncDevices,
     syncCursors,
     syncOutbox,
@@ -11189,6 +13106,806 @@ typedef $$LocalAnimalsTableProcessedTableManager =
       LocalAnimal,
       PrefetchHooks Function()
     >;
+typedef $$LocalAnimalMovementsTableCreateCompanionBuilder =
+    LocalAnimalMovementsCompanion Function({
+      required String id,
+      required String organizationId,
+      required String animalId,
+      required String animalNumber,
+      required String sourceFarmId,
+      required String sourceFarmName,
+      required String sourceShedId,
+      required String sourceShedName,
+      Value<String?> sourceAnimalGroupId,
+      Value<String?> sourceAnimalGroupName,
+      required String destinationFarmId,
+      required String destinationFarmName,
+      required String destinationShedId,
+      required String destinationShedName,
+      Value<String?> destinationAnimalGroupId,
+      Value<String?> destinationAnimalGroupName,
+      required DateTime requestedEffectiveAt,
+      Value<DateTime?> actualEffectiveAt,
+      required String reason,
+      Value<String?> notes,
+      required String status,
+      Value<bool> approvalRequired,
+      required String requestedBy,
+      required String requestedByName,
+      Value<String?> decidedBy,
+      Value<String?> decidedByName,
+      Value<DateTime?> decisionAt,
+      Value<String?> rejectionReason,
+      Value<String?> cancellationReason,
+      Value<int> version,
+      required DateTime serverUpdatedAt,
+      required DateTime cachedAt,
+      Value<bool> isAccessible,
+      Value<int> rowid,
+    });
+typedef $$LocalAnimalMovementsTableUpdateCompanionBuilder =
+    LocalAnimalMovementsCompanion Function({
+      Value<String> id,
+      Value<String> organizationId,
+      Value<String> animalId,
+      Value<String> animalNumber,
+      Value<String> sourceFarmId,
+      Value<String> sourceFarmName,
+      Value<String> sourceShedId,
+      Value<String> sourceShedName,
+      Value<String?> sourceAnimalGroupId,
+      Value<String?> sourceAnimalGroupName,
+      Value<String> destinationFarmId,
+      Value<String> destinationFarmName,
+      Value<String> destinationShedId,
+      Value<String> destinationShedName,
+      Value<String?> destinationAnimalGroupId,
+      Value<String?> destinationAnimalGroupName,
+      Value<DateTime> requestedEffectiveAt,
+      Value<DateTime?> actualEffectiveAt,
+      Value<String> reason,
+      Value<String?> notes,
+      Value<String> status,
+      Value<bool> approvalRequired,
+      Value<String> requestedBy,
+      Value<String> requestedByName,
+      Value<String?> decidedBy,
+      Value<String?> decidedByName,
+      Value<DateTime?> decisionAt,
+      Value<String?> rejectionReason,
+      Value<String?> cancellationReason,
+      Value<int> version,
+      Value<DateTime> serverUpdatedAt,
+      Value<DateTime> cachedAt,
+      Value<bool> isAccessible,
+      Value<int> rowid,
+    });
+
+class $$LocalAnimalMovementsTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalAnimalMovementsTable> {
+  $$LocalAnimalMovementsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalId => $composableBuilder(
+    column: $table.animalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceFarmId => $composableBuilder(
+    column: $table.sourceFarmId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceFarmName => $composableBuilder(
+    column: $table.sourceFarmName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceShedId => $composableBuilder(
+    column: $table.sourceShedId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceShedName => $composableBuilder(
+    column: $table.sourceShedName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceAnimalGroupId => $composableBuilder(
+    column: $table.sourceAnimalGroupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceAnimalGroupName => $composableBuilder(
+    column: $table.sourceAnimalGroupName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationFarmId => $composableBuilder(
+    column: $table.destinationFarmId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationFarmName => $composableBuilder(
+    column: $table.destinationFarmName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationShedId => $composableBuilder(
+    column: $table.destinationShedId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationShedName => $composableBuilder(
+    column: $table.destinationShedName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationAnimalGroupId => $composableBuilder(
+    column: $table.destinationAnimalGroupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationAnimalGroupName => $composableBuilder(
+    column: $table.destinationAnimalGroupName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get requestedEffectiveAt => $composableBuilder(
+    column: $table.requestedEffectiveAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get actualEffectiveAt => $composableBuilder(
+    column: $table.actualEffectiveAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get approvalRequired => $composableBuilder(
+    column: $table.approvalRequired,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get requestedBy => $composableBuilder(
+    column: $table.requestedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get requestedByName => $composableBuilder(
+    column: $table.requestedByName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get decidedBy => $composableBuilder(
+    column: $table.decidedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get decidedByName => $composableBuilder(
+    column: $table.decidedByName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get decisionAt => $composableBuilder(
+    column: $table.decisionAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cancellationReason => $composableBuilder(
+    column: $table.cancellationReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalAnimalMovementsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalAnimalMovementsTable> {
+  $$LocalAnimalMovementsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalId => $composableBuilder(
+    column: $table.animalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceFarmId => $composableBuilder(
+    column: $table.sourceFarmId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceFarmName => $composableBuilder(
+    column: $table.sourceFarmName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceShedId => $composableBuilder(
+    column: $table.sourceShedId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceShedName => $composableBuilder(
+    column: $table.sourceShedName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceAnimalGroupId => $composableBuilder(
+    column: $table.sourceAnimalGroupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceAnimalGroupName => $composableBuilder(
+    column: $table.sourceAnimalGroupName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationFarmId => $composableBuilder(
+    column: $table.destinationFarmId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationFarmName => $composableBuilder(
+    column: $table.destinationFarmName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationShedId => $composableBuilder(
+    column: $table.destinationShedId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationShedName => $composableBuilder(
+    column: $table.destinationShedName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationAnimalGroupId => $composableBuilder(
+    column: $table.destinationAnimalGroupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationAnimalGroupName => $composableBuilder(
+    column: $table.destinationAnimalGroupName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get requestedEffectiveAt => $composableBuilder(
+    column: $table.requestedEffectiveAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get actualEffectiveAt => $composableBuilder(
+    column: $table.actualEffectiveAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get approvalRequired => $composableBuilder(
+    column: $table.approvalRequired,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get requestedBy => $composableBuilder(
+    column: $table.requestedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get requestedByName => $composableBuilder(
+    column: $table.requestedByName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get decidedBy => $composableBuilder(
+    column: $table.decidedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get decidedByName => $composableBuilder(
+    column: $table.decidedByName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get decisionAt => $composableBuilder(
+    column: $table.decisionAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cancellationReason => $composableBuilder(
+    column: $table.cancellationReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalAnimalMovementsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalAnimalMovementsTable> {
+  $$LocalAnimalMovementsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get animalId =>
+      $composableBuilder(column: $table.animalId, builder: (column) => column);
+
+  GeneratedColumn<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceFarmId => $composableBuilder(
+    column: $table.sourceFarmId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceFarmName => $composableBuilder(
+    column: $table.sourceFarmName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceShedId => $composableBuilder(
+    column: $table.sourceShedId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceShedName => $composableBuilder(
+    column: $table.sourceShedName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceAnimalGroupId => $composableBuilder(
+    column: $table.sourceAnimalGroupId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceAnimalGroupName => $composableBuilder(
+    column: $table.sourceAnimalGroupName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationFarmId => $composableBuilder(
+    column: $table.destinationFarmId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationFarmName => $composableBuilder(
+    column: $table.destinationFarmName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationShedId => $composableBuilder(
+    column: $table.destinationShedId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationShedName => $composableBuilder(
+    column: $table.destinationShedName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationAnimalGroupId => $composableBuilder(
+    column: $table.destinationAnimalGroupId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get destinationAnimalGroupName => $composableBuilder(
+    column: $table.destinationAnimalGroupName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get requestedEffectiveAt => $composableBuilder(
+    column: $table.requestedEffectiveAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get actualEffectiveAt => $composableBuilder(
+    column: $table.actualEffectiveAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reason =>
+      $composableBuilder(column: $table.reason, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<bool> get approvalRequired => $composableBuilder(
+    column: $table.approvalRequired,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get requestedBy => $composableBuilder(
+    column: $table.requestedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get requestedByName => $composableBuilder(
+    column: $table.requestedByName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get decidedBy =>
+      $composableBuilder(column: $table.decidedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get decidedByName => $composableBuilder(
+    column: $table.decidedByName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get decisionAt => $composableBuilder(
+    column: $table.decisionAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cancellationReason => $composableBuilder(
+    column: $table.cancellationReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get cachedAt =>
+      $composableBuilder(column: $table.cachedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => column,
+  );
+}
+
+class $$LocalAnimalMovementsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalAnimalMovementsTable,
+          LocalAnimalMovement,
+          $$LocalAnimalMovementsTableFilterComposer,
+          $$LocalAnimalMovementsTableOrderingComposer,
+          $$LocalAnimalMovementsTableAnnotationComposer,
+          $$LocalAnimalMovementsTableCreateCompanionBuilder,
+          $$LocalAnimalMovementsTableUpdateCompanionBuilder,
+          (
+            LocalAnimalMovement,
+            BaseReferences<
+              _$AppDatabase,
+              $LocalAnimalMovementsTable,
+              LocalAnimalMovement
+            >,
+          ),
+          LocalAnimalMovement,
+          PrefetchHooks Function()
+        > {
+  $$LocalAnimalMovementsTableTableManager(
+    _$AppDatabase db,
+    $LocalAnimalMovementsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalAnimalMovementsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalAnimalMovementsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$LocalAnimalMovementsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> organizationId = const Value.absent(),
+                Value<String> animalId = const Value.absent(),
+                Value<String> animalNumber = const Value.absent(),
+                Value<String> sourceFarmId = const Value.absent(),
+                Value<String> sourceFarmName = const Value.absent(),
+                Value<String> sourceShedId = const Value.absent(),
+                Value<String> sourceShedName = const Value.absent(),
+                Value<String?> sourceAnimalGroupId = const Value.absent(),
+                Value<String?> sourceAnimalGroupName = const Value.absent(),
+                Value<String> destinationFarmId = const Value.absent(),
+                Value<String> destinationFarmName = const Value.absent(),
+                Value<String> destinationShedId = const Value.absent(),
+                Value<String> destinationShedName = const Value.absent(),
+                Value<String?> destinationAnimalGroupId = const Value.absent(),
+                Value<String?> destinationAnimalGroupName =
+                    const Value.absent(),
+                Value<DateTime> requestedEffectiveAt = const Value.absent(),
+                Value<DateTime?> actualEffectiveAt = const Value.absent(),
+                Value<String> reason = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<bool> approvalRequired = const Value.absent(),
+                Value<String> requestedBy = const Value.absent(),
+                Value<String> requestedByName = const Value.absent(),
+                Value<String?> decidedBy = const Value.absent(),
+                Value<String?> decidedByName = const Value.absent(),
+                Value<DateTime?> decisionAt = const Value.absent(),
+                Value<String?> rejectionReason = const Value.absent(),
+                Value<String?> cancellationReason = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<DateTime> serverUpdatedAt = const Value.absent(),
+                Value<DateTime> cachedAt = const Value.absent(),
+                Value<bool> isAccessible = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalAnimalMovementsCompanion(
+                id: id,
+                organizationId: organizationId,
+                animalId: animalId,
+                animalNumber: animalNumber,
+                sourceFarmId: sourceFarmId,
+                sourceFarmName: sourceFarmName,
+                sourceShedId: sourceShedId,
+                sourceShedName: sourceShedName,
+                sourceAnimalGroupId: sourceAnimalGroupId,
+                sourceAnimalGroupName: sourceAnimalGroupName,
+                destinationFarmId: destinationFarmId,
+                destinationFarmName: destinationFarmName,
+                destinationShedId: destinationShedId,
+                destinationShedName: destinationShedName,
+                destinationAnimalGroupId: destinationAnimalGroupId,
+                destinationAnimalGroupName: destinationAnimalGroupName,
+                requestedEffectiveAt: requestedEffectiveAt,
+                actualEffectiveAt: actualEffectiveAt,
+                reason: reason,
+                notes: notes,
+                status: status,
+                approvalRequired: approvalRequired,
+                requestedBy: requestedBy,
+                requestedByName: requestedByName,
+                decidedBy: decidedBy,
+                decidedByName: decidedByName,
+                decisionAt: decisionAt,
+                rejectionReason: rejectionReason,
+                cancellationReason: cancellationReason,
+                version: version,
+                serverUpdatedAt: serverUpdatedAt,
+                cachedAt: cachedAt,
+                isAccessible: isAccessible,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String organizationId,
+                required String animalId,
+                required String animalNumber,
+                required String sourceFarmId,
+                required String sourceFarmName,
+                required String sourceShedId,
+                required String sourceShedName,
+                Value<String?> sourceAnimalGroupId = const Value.absent(),
+                Value<String?> sourceAnimalGroupName = const Value.absent(),
+                required String destinationFarmId,
+                required String destinationFarmName,
+                required String destinationShedId,
+                required String destinationShedName,
+                Value<String?> destinationAnimalGroupId = const Value.absent(),
+                Value<String?> destinationAnimalGroupName =
+                    const Value.absent(),
+                required DateTime requestedEffectiveAt,
+                Value<DateTime?> actualEffectiveAt = const Value.absent(),
+                required String reason,
+                Value<String?> notes = const Value.absent(),
+                required String status,
+                Value<bool> approvalRequired = const Value.absent(),
+                required String requestedBy,
+                required String requestedByName,
+                Value<String?> decidedBy = const Value.absent(),
+                Value<String?> decidedByName = const Value.absent(),
+                Value<DateTime?> decisionAt = const Value.absent(),
+                Value<String?> rejectionReason = const Value.absent(),
+                Value<String?> cancellationReason = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                required DateTime serverUpdatedAt,
+                required DateTime cachedAt,
+                Value<bool> isAccessible = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalAnimalMovementsCompanion.insert(
+                id: id,
+                organizationId: organizationId,
+                animalId: animalId,
+                animalNumber: animalNumber,
+                sourceFarmId: sourceFarmId,
+                sourceFarmName: sourceFarmName,
+                sourceShedId: sourceShedId,
+                sourceShedName: sourceShedName,
+                sourceAnimalGroupId: sourceAnimalGroupId,
+                sourceAnimalGroupName: sourceAnimalGroupName,
+                destinationFarmId: destinationFarmId,
+                destinationFarmName: destinationFarmName,
+                destinationShedId: destinationShedId,
+                destinationShedName: destinationShedName,
+                destinationAnimalGroupId: destinationAnimalGroupId,
+                destinationAnimalGroupName: destinationAnimalGroupName,
+                requestedEffectiveAt: requestedEffectiveAt,
+                actualEffectiveAt: actualEffectiveAt,
+                reason: reason,
+                notes: notes,
+                status: status,
+                approvalRequired: approvalRequired,
+                requestedBy: requestedBy,
+                requestedByName: requestedByName,
+                decidedBy: decidedBy,
+                decidedByName: decidedByName,
+                decisionAt: decisionAt,
+                rejectionReason: rejectionReason,
+                cancellationReason: cancellationReason,
+                version: version,
+                serverUpdatedAt: serverUpdatedAt,
+                cachedAt: cachedAt,
+                isAccessible: isAccessible,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalAnimalMovementsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalAnimalMovementsTable,
+      LocalAnimalMovement,
+      $$LocalAnimalMovementsTableFilterComposer,
+      $$LocalAnimalMovementsTableOrderingComposer,
+      $$LocalAnimalMovementsTableAnnotationComposer,
+      $$LocalAnimalMovementsTableCreateCompanionBuilder,
+      $$LocalAnimalMovementsTableUpdateCompanionBuilder,
+      (
+        LocalAnimalMovement,
+        BaseReferences<
+          _$AppDatabase,
+          $LocalAnimalMovementsTable,
+          LocalAnimalMovement
+        >,
+      ),
+      LocalAnimalMovement,
+      PrefetchHooks Function()
+    >;
 typedef $$SyncDevicesTableCreateCompanionBuilder =
     SyncDevicesCompanion Function({
       required String id,
@@ -12515,6 +15232,8 @@ class $AppDatabaseManager {
       $$LocalAnimalGroupsTableTableManager(_db, _db.localAnimalGroups);
   $$LocalAnimalsTableTableManager get localAnimals =>
       $$LocalAnimalsTableTableManager(_db, _db.localAnimals);
+  $$LocalAnimalMovementsTableTableManager get localAnimalMovements =>
+      $$LocalAnimalMovementsTableTableManager(_db, _db.localAnimalMovements);
   $$SyncDevicesTableTableManager get syncDevices =>
       $$SyncDevicesTableTableManager(_db, _db.syncDevices);
   $$SyncCursorsTableTableManager get syncCursors =>

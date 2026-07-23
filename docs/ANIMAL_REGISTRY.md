@@ -104,7 +104,7 @@ Initial location requires:
 - a shed in that same farm and organization;
 - an optional group in that same farm and organization.
 
-The normal edit endpoint prohibits `current_farm_id`, `current_shed_id`, and `current_animal_group_id`. Post-registration location changes are reserved for the Phase 2B movement workflow.
+The normal edit endpoint prohibits `current_farm_id`, `current_shed_id`, and `current_animal_group_id`. The implemented Phase 2B workflow exclusively owns post-registration location changes; see `docs/ANIMAL_MOVEMENTS.md`.
 
 Parentage requires:
 
@@ -169,12 +169,12 @@ The repeatable seeder creates:
 - valid parent/child relationships;
 - organization animal sequence `next_value = 21`.
 
-It does not seed milk, breeding events, pregnancy, health, treatment, sales, death, feed, inventory, or finance data.
+It does not seed movement history, milk, breeding events, pregnancy, health, treatment, sales, death, feed, inventory, or finance data.
 
 ## Known limitations
 
-- Animal/breed/group writes require connectivity; offline mutation handling is reserved for Phase 2C.
-- Location changes, movement history, and movement approval are not implemented.
+- Animal/breed/group and movement writes require connectivity; offline mutation handling is reserved for Phase 2C.
+- Online location changes, immutable movement history, and approval are implemented in Phase 2B; scheduled future or offline movements are not.
 - Weight history, status history, QR, photos, timeline, and later dairy domains are not implemented.
 - The Flutter parent selector loads a bounded authorized reference page; large herds will need server-backed parent typeahead/search in a later approved phase.
 - Physical-device operation and production SQLite-at-rest controls remain release gates.

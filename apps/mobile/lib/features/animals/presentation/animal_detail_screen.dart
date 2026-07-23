@@ -3,6 +3,7 @@ import 'package:dairycare_mobile/core/errors/app_exception.dart';
 import 'package:dairycare_mobile/core/widgets/async_state_view.dart';
 import 'package:dairycare_mobile/features/animals/application/animal_providers.dart';
 import 'package:dairycare_mobile/features/animals/domain/animal_models.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_movement_history_section.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_registry_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -139,6 +140,7 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
                   )
                 else
                   for (final field in fields) _fieldCard(field),
+                AnimalMovementHistorySection(animal: animal),
               ],
             ),
           ),

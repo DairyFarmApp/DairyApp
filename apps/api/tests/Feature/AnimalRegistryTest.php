@@ -279,9 +279,21 @@ class AnimalRegistryTest extends TestCase
         $headers = $this->bearer($this->loginToken());
 
         $this->patchJson('/api/v1/animals/'.$animal->id, [
-            'current_shed_id' => $data['shed']->id,
+            'current_farm_id' => (string) Str::uuid7(),
+            'current_shed_id' => (string) Str::uuid7(),
+            'current_animal_group_id' => (string) Str::uuid7(),
             'version' => 1,
-        ], $headers)->assertUnprocessable()->assertJsonStructure(['error' => ['fields' => ['current_shed_id']]]);
+        ], $headers)->assertUnprocessable()->assertJsonStructure(['error' => ['fields' => [
+            'current_farm_id',
+            'current_shed_id',
+            'current_animal_group_id',
+        ]]]);
+        $this->assertDatabaseHas('animals', [
+            'id' => $animal->id,
+            'current_farm_id' => $data['farm']->id,
+            'current_shed_id' => $data['shed']->id,
+            'current_animal_group_id' => $references['group']->id,
+        ]);
 
         $updated = $this->patchJson('/api/v1/animals/'.$animal->id, [
             'name' => 'Updated Name',

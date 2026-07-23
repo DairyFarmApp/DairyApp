@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domain\AnimalMovements\Models\AnimalMovement;
+use App\Domain\AnimalMovements\Policies\AnimalMovementPolicy;
 use App\Domain\AnimalRegistry\Models\Animal;
 use App\Domain\AnimalRegistry\Models\AnimalBreed;
 use App\Domain\AnimalRegistry\Models\AnimalGroup;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(AnimalMovement::class, AnimalMovementPolicy::class);
         Gate::policy(AnimalBreed::class, AnimalBreedPolicy::class);
         Gate::policy(AnimalGroup::class, AnimalGroupPolicy::class);
         Gate::policy(Animal::class, AnimalPolicy::class);

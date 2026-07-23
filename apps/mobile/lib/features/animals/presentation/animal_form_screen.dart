@@ -327,7 +327,7 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                     _readOnlyValue('Shed', animal.currentShedName),
                     _readOnlyValue('Group', animal.currentAnimalGroupName),
                     const Text(
-                      'Location changes are handled by the movement workflow in Phase 2B.',
+                      'Location changes are recorded through the animal movement workflow.',
                     ),
                   ] else ...[
                     DropdownButtonFormField<String>(

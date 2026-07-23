@@ -2,6 +2,7 @@
 
 namespace App\Domain\AnimalRegistry\Models;
 
+use App\Domain\AnimalMovements\Models\AnimalMovement;
 use App\Models\Concerns\UsesUuidV7;
 use App\Models\Farm;
 use App\Models\Organization;
@@ -109,6 +110,11 @@ class Animal extends Model
     public function offspringAsFather(): HasMany
     {
         return $this->hasMany(self::class, 'father_animal_id');
+    }
+
+    public function movements(): HasMany
+    {
+        return $this->hasMany(AnimalMovement::class);
     }
 
     public function creator(): BelongsTo

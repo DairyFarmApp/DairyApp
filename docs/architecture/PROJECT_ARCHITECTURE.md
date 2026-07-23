@@ -1,12 +1,12 @@
 # Project Architecture
 
-Status: Phase 0 proposal updated through implemented Phase 2A, 2026-07-23. Later-domain sections remain guidance unless explicitly marked implemented.
+Status: Phase 0 proposal updated through implemented Phase 2B, 2026-07-23. Later-domain sections remain guidance unless explicitly marked implemented.
 
 ## Repository baseline
 
-The original Phase 0 inspection found only `AGENTS.md` and the master specification. That statement is historical. The current repository contains the Phase 1 foundation/hardening, verified MySQL 8.4 environment, and Phase 2A animal registry across Flutter, Laravel, Drift, migrations, tests, documentation, and CI.
+The original Phase 0 inspection found only `AGENTS.md` and the master specification. That statement is historical. The current repository contains the Phase 1 foundation/hardening, verified MySQL 8.4 environment, Phase 2A animal registry, and Phase 2B online animal movements across Flutter, Laravel, Drift, migrations, tests, documentation, and CI.
 
-Phase 2A follows the modular-monolith topology: `app/Domain/AnimalRegistry` owns registry rules, while Flutter `features/animals` owns the feature layers. No movement, weight, QR, photo, offline-mutation, timeline, or later dairy domain was initialized.
+The modular monolith keeps `app/Domain/AnimalRegistry` and `app/Domain/AnimalMovements` separate: registry owns identity/current-location projection and movement actions own every later location transition. Flutter keeps both inside the `features/animals` layers without adding a generic timeline. No weight, status-history, QR, photo, offline-mutation, or later dairy domain was initialized.
 
 ## Recommended topology
 

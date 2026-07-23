@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AnimalBreedController;
 use App\Http\Controllers\Api\V1\AnimalController;
 use App\Http\Controllers\Api\V1\AnimalGroupController;
+use App\Http\Controllers\Api\V1\AnimalMovementController;
 use App\Http\Controllers\Api\V1\AnimalSpeciesController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\FarmController;
@@ -50,10 +51,16 @@ Route::prefix('v1')->group(function (): void {
             Route::delete('animal-groups/{group}', [AnimalGroupController::class, 'destroy'])->middleware('permission:animal_groups.manage');
             Route::get('animals', [AnimalController::class, 'index'])->middleware('permission:animals.view');
             Route::post('animals', [AnimalController::class, 'store'])->middleware('permission:animals.create');
+            Route::get('animals/{animal}/movements', [AnimalMovementController::class, 'index'])->middleware('permission:animal_movements.view');
+            Route::post('animals/{animal}/movements', [AnimalMovementController::class, 'store'])->middleware('permission:animals.move');
             Route::get('animals/{animal}', [AnimalController::class, 'show'])->middleware('permission:animals.view');
             Route::patch('animals/{animal}', [AnimalController::class, 'update'])->middleware('permission:animals.update');
             Route::delete('animals/{animal}', [AnimalController::class, 'destroy'])->middleware('permission:animals.archive');
             Route::post('animals/{animal}/restore', [AnimalController::class, 'restore'])->middleware('permission:animals.restore');
+            Route::get('animal-movements/{movement}', [AnimalMovementController::class, 'show'])->middleware('permission:animal_movements.view');
+            Route::post('animal-movements/{movement}/approve', [AnimalMovementController::class, 'approve'])->middleware('permission:animal_movements.approve');
+            Route::post('animal-movements/{movement}/reject', [AnimalMovementController::class, 'reject'])->middleware('permission:animal_movements.reject');
+            Route::post('animal-movements/{movement}/cancel', [AnimalMovementController::class, 'cancel'])->middleware('permission:animal_movements.cancel');
             Route::get('sync/bootstrap', [SyncController::class, 'bootstrap']);
             Route::get('sync/changes', [SyncController::class, 'changes']);
         });

@@ -174,6 +174,8 @@ final class SyncService {
     final authorizedFarmIds =
         (data['authorized_farm_ids'] as List<dynamic>? ?? const [])
             .cast<String>();
+    final animalMovementsAuthorized =
+        data['animal_movements_authorized'] as bool? ?? false;
     final nextCursor = data['next_cursor'] as String?;
     final synchronizedAt = DateTime.now().toUtc();
     await _database.transaction(() async {
@@ -201,6 +203,23 @@ final class SyncService {
                 row.currentFarmId.isNotIn(authorizedFarmIds),
           ))
           .write(const LocalAnimalsCompanion(isAccessible: Value(false)));
+      if (!animalMovementsAuthorized) {
+        await (_database.update(
+          _database.localAnimalMovements,
+        )..where((row) => row.organizationId.equals(organizationId))).write(
+          const LocalAnimalMovementsCompanion(isAccessible: Value(false)),
+        );
+      } else {
+        await (_database.update(_database.localAnimalMovements)..where(
+              (row) =>
+                  row.organizationId.equals(organizationId) &
+                  (row.sourceFarmId.isNotIn(authorizedFarmIds) |
+                      row.destinationFarmId.isNotIn(authorizedFarmIds)),
+            ))
+            .write(
+              const LocalAnimalMovementsCompanion(isAccessible: Value(false)),
+            );
+      }
       for (final raw in _maps(data['organizations'])) {
         await _database
             .into(_database.localOrganizations)
@@ -304,6 +323,13 @@ final class SyncService {
             .into(_database.localAnimals)
             .insertOnConflictUpdate(_animalCompanion(raw, synchronizedAt));
       }
+      for (final raw in _maps(data['animal_movements'])) {
+        await _database
+            .into(_database.localAnimalMovements)
+            .insertOnConflictUpdate(
+              _animalMovementCompanion(raw, synchronizedAt),
+            );
+      }
       await _database
           .into(_database.syncCursors)
           .insertOnConflictUpdate(
@@ -375,6 +401,49 @@ final class SyncService {
     serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
     cachedAt: synchronizedAt,
     isArchived: Value(raw['is_archived'] as bool? ?? false),
+    isAccessible: const Value(true),
+  );
+
+  LocalAnimalMovementsCompanion _animalMovementCompanion(
+    Map<String, dynamic> raw,
+    DateTime synchronizedAt,
+  ) => LocalAnimalMovementsCompanion.insert(
+    id: raw['id'] as String,
+    organizationId: raw['organization_id'] as String,
+    animalId: raw['animal_id'] as String,
+    animalNumber: raw['animal_number'] as String? ?? '',
+    sourceFarmId: raw['source_farm_id'] as String,
+    sourceFarmName: raw['source_farm_name'] as String? ?? '',
+    sourceShedId: raw['source_shed_id'] as String,
+    sourceShedName: raw['source_shed_name'] as String? ?? '',
+    sourceAnimalGroupId: Value(raw['source_animal_group_id'] as String?),
+    sourceAnimalGroupName: Value(raw['source_animal_group_name'] as String?),
+    destinationFarmId: raw['destination_farm_id'] as String,
+    destinationFarmName: raw['destination_farm_name'] as String? ?? '',
+    destinationShedId: raw['destination_shed_id'] as String,
+    destinationShedName: raw['destination_shed_name'] as String? ?? '',
+    destinationAnimalGroupId: Value(
+      raw['destination_animal_group_id'] as String?,
+    ),
+    destinationAnimalGroupName: Value(
+      raw['destination_animal_group_name'] as String?,
+    ),
+    requestedEffectiveAt: _date(raw['requested_effective_at'], synchronizedAt),
+    actualEffectiveAt: Value(_nullableDate(raw['actual_effective_at'])),
+    reason: raw['reason'] as String,
+    notes: Value(raw['notes'] as String?),
+    status: raw['status'] as String,
+    approvalRequired: Value(raw['approval_required'] as bool? ?? true),
+    requestedBy: raw['requested_by'] as String,
+    requestedByName: raw['requested_by_name'] as String? ?? '',
+    decidedBy: Value(raw['decided_by'] as String?),
+    decidedByName: Value(raw['decided_by_name'] as String?),
+    decisionAt: Value(_nullableDate(raw['decision_at'])),
+    rejectionReason: Value(raw['rejection_reason'] as String?),
+    cancellationReason: Value(raw['cancellation_reason'] as String?),
+    version: Value(raw['version'] as int? ?? 1),
+    serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+    cachedAt: synchronizedAt,
     isAccessible: const Value(true),
   );
 }
