@@ -1,0 +1,310 @@
+openapi: 3.1.0
+info:
+  title: DairyCare Foundation API
+  version: 1.0.0-phase1
+  description: Phase 1/1.1 authentication, tenancy, farm, shed, hardened sessions, and reference-sync API.
+servers:
+  - url: http://127.0.0.1:8000/api/v1
+security:
+  - opaqueSession: []
+paths:
+  /auth/login:
+    post:
+      security: []
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200': { $ref: '#/components/responses/SessionResponse' }
+        '401': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+        '429': { $ref: '#/components/responses/ErrorResponse' }
+  /auth/renew:
+    post:
+      security: []
+      operationId: renewSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [renewal_credential]
+              properties:
+                renewal_credential: { type: string }
+      responses:
+        '200': { $ref: '#/components/responses/SessionResponse' }
+        '401': { $ref: '#/components/responses/ErrorResponse' }
+  /auth/logout:
+    post:
+      operationId: logout
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+  /auth/me:
+    get:
+      operationId: currentUser
+      responses:
+        '200': { $ref: '#/components/responses/SessionResponse' }
+  /auth/sessions:
+    get:
+      operationId: listSessions
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+  /auth/sessions/{session}:
+    delete:
+      operationId: revokeSession
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+  /auth/switch-organization:
+    post:
+      operationId: switchOrganization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [organization_id]
+              properties:
+                organization_id: { $ref: '#/components/schemas/Uuid' }
+      responses:
+        '200': { $ref: '#/components/responses/SessionResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+  /auth/switch-farm:
+    post:
+      operationId: switchFarm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [farm_id]
+              properties:
+                farm_id: { $ref: '#/components/schemas/Uuid' }
+      responses:
+        '200': { $ref: '#/components/responses/SessionResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+  /organizations:
+    get:
+      operationId: listOrganizations
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+  /organizations/{organization}:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+    get:
+      operationId: getOrganization
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+    patch:
+      operationId: updateOrganization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrganizationPatch' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+  /farms:
+    get:
+      operationId: listFarms
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+    post:
+      operationId: createFarm
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FarmWrite' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+  /farms/{farm}:
+    parameters:
+      - $ref: '#/components/parameters/FarmId'
+    get:
+      operationId: getFarm
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+    patch:
+      operationId: updateFarm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FarmWrite' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+    delete:
+      operationId: archiveFarm
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+  /farms/{farm}/sheds:
+    parameters:
+      - $ref: '#/components/parameters/FarmId'
+    get:
+      operationId: listSheds
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+    post:
+      operationId: createShed
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ShedWrite' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+  /sheds/{shed}:
+    parameters:
+      - $ref: '#/components/parameters/ShedId'
+    get:
+      operationId: getShed
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+    patch:
+      operationId: updateShed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ShedWrite' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+    delete:
+      operationId: archiveShed
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+  /sync/bootstrap:
+    get:
+      operationId: syncBootstrap
+      responses:
+        '200': { $ref: '#/components/responses/SyncResponse' }
+  /sync/changes:
+    get:
+      operationId: syncChanges
+      parameters:
+        - name: cursor
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { $ref: '#/components/responses/SyncResponse' }
+        '400': { $ref: '#/components/responses/ErrorResponse' }
+components:
+  securitySchemes:
+    opaqueSession:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque
+  parameters:
+    SessionId: { name: session, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    OrganizationId: { name: organization, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    FarmId: { name: farm, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    ShedId: { name: shed, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    IdempotencyKey: { name: Idempotency-Key, in: header, required: false, schema: { type: string, maxLength: 160 } }
+  schemas:
+    Uuid: { type: string, format: uuid }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+        device_id: { $ref: '#/components/schemas/Uuid' }
+        device_name: { type: string, maxLength: 120 }
+    OrganizationPatch:
+      type: object
+      properties:
+        name: { type: string, maxLength: 160 }
+        timezone: { type: string }
+        locale: { type: string, maxLength: 10 }
+    FarmWrite:
+      type: object
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        name: { type: string, maxLength: 160 }
+        code: { type: string, maxLength: 40 }
+        timezone: { type: string }
+    ShedWrite:
+      type: object
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        name: { type: string, maxLength: 160 }
+        code: { type: string, maxLength: 40 }
+    SuccessEnvelope:
+      type: object
+      required: [data, meta]
+      properties:
+        data: {}
+        meta:
+          type: object
+          required: [request_id]
+          properties:
+            request_id: { $ref: '#/components/schemas/Uuid' }
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, fields, details, request_id]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            fields: { type: object, additionalProperties: true }
+            details: { type: object, additionalProperties: true }
+            request_id: { $ref: '#/components/schemas/Uuid' }
+    SyncEnvelope:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [organizations, farms, sheds, authorized_farm_ids, next_cursor]
+          properties:
+            organizations: { type: array, items: { type: object, additionalProperties: true } }
+            farms: { type: array, items: { type: object, additionalProperties: true } }
+            sheds: { type: array, items: { type: object, additionalProperties: true } }
+            authorized_farm_ids: { type: array, items: { $ref: '#/components/schemas/Uuid' } }
+            next_cursor: { type: string, description: Opaque versioned cursor with a replay-safe overlap watermark. }
+        meta:
+          type: object
+          required: [request_id]
+          properties:
+            request_id: { $ref: '#/components/schemas/Uuid' }
+  responses:
+    SuccessResponse:
+      description: Successful response
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/SuccessEnvelope' }
+    SessionResponse:
+      description: Authenticated session context
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/SuccessEnvelope' }
+    SyncResponse:
+      description: Authorized reference changes and next cursor
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/SyncEnvelope' }
+    ErrorResponse:
+      description: Stable API error envelope
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
