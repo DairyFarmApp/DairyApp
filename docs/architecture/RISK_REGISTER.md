@@ -20,5 +20,8 @@
 | R16 | Text encoding/mojibake damages documentation or localization | M / Medium | Standardize UTF-8/editorconfig in Phase 1; verify Urdu/RTL fixtures | Phase 1/9 |
 | R17 | Concurrent or stale movement decisions corrupt current animal location | M / High | Animal/movement row locks, immutable source snapshots, optimistic versions, atomic projection/audit transaction, dedicated MySQL race test | Phase 2B onward |
 | R18 | Approval setting or custom roles weaken movement separation of duties | M / High | Fail-safe approval default, per-request approval snapshot, distinct requester check, dual authority for immediate mode, role/setting review and tests | Phase 2B onward |
+| R19 | Floating-point or inconsistent unit conversion corrupts longitudinal weights | M / High | Decimal-string API, integer millionths, exact lb factor, canonical kg, configurable maximum, boundary tests | Phase 2C onward |
+| R20 | Concurrent corrections or status changes create multiple successors or stale projections | M / High | Row locks, unique supersession/sequence constraints, optimistic version, atomic projection/audit, MySQL race tests | Phase 2C onward |
+| R21 | Revoked farm/permission access leaves sensitive weight/status data visible offline | M / High | Independent authorization flags, authorized farm reconciliation, inaccessible cache state, repository filtering and sync tests | Phase 2C onward |
 
 Risk status is reviewed at each phase gate. Critical residual risks require owner acceptance before production deployment.

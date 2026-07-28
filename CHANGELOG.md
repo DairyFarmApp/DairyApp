@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-07-23 — Phase 2C animal weights and operational-status history
+
+- Added exact decimal kg/lb animal-weight history, configured maximums, latest projection, and immutable single-replacement corrections.
+- Added dedicated, reasoned, versioned operational-status history with atomic animal projection updates.
+- Added five permissions, six API operations, audit/idempotency, tenant/farm constraints, responsive Flutter workflows, and Drift schema version 4 authorized read caches.
+- Passed 67 MySQL tests/677 assertions, SQLite portability with 555 assertions, 62 Flutter tests, 52-operation OpenAPI parity, and Android debug build.
+- Kept all mutations online-only and excluded QR/photos/timeline/offline mutation and later domains.
+
 ## 2026-07-23 — Phase 2B online animal movements
 
 - Added immutable, tenant-constrained movement history with source/destination snapshots, approval-setting snapshot, optimistic versions, and UUIDv7 records.

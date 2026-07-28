@@ -66,6 +66,17 @@ final class AnimalRegistryScope
      */
     public function animalRelations(): array
     {
-        return ['species', 'breed', 'currentFarm', 'currentShed', 'currentGroup', 'mother', 'father'];
+        return [
+            'species',
+            'breed',
+            'currentFarm',
+            'currentShed',
+            'currentGroup',
+            'mother',
+            'father',
+            'latestWeight.farm',
+            'latestWeight.animal',
+            'latestWeight.recorder',
+        ];
     }
 }

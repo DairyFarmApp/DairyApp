@@ -6,6 +6,8 @@ import 'package:dairycare_mobile/features/animals/presentation/animal_form_scree
 import 'package:dairycare_mobile/features/animals/presentation/animal_group_management_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_list_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_movement_form_screen.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_status_change_form_screen.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_weight_form_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/breed_management_screen.dart';
 import 'package:dairycare_mobile/features/farms/presentation/farm_selection_screen.dart';
 import 'package:dairycare_mobile/features/farms/presentation/farm_list_screen.dart';
@@ -64,6 +66,25 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/animals/:animalId/movements/new',
             builder: (_, state) => AnimalMovementFormScreen(
+              animalId: state.pathParameters['animalId']!,
+            ),
+          ),
+          GoRoute(
+            path: '/animals/:animalId/weights/new',
+            builder: (_, state) => AnimalWeightFormScreen(
+              animalId: state.pathParameters['animalId']!,
+            ),
+          ),
+          GoRoute(
+            path: '/animals/:animalId/weights/:weightId/correct',
+            builder: (_, state) => AnimalWeightFormScreen(
+              animalId: state.pathParameters['animalId']!,
+              weightId: state.pathParameters['weightId']!,
+            ),
+          ),
+          GoRoute(
+            path: '/animals/:animalId/status-changes/new',
+            builder: (_, state) => AnimalStatusChangeFormScreen(
               animalId: state.pathParameters['animalId']!,
             ),
           ),

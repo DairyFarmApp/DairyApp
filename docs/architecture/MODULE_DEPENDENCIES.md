@@ -41,4 +41,12 @@ Phase 2A implements the Animal Registry portion of `Animals`: species, breeds, f
 
 ## Implementation ordering
 
+## Phase 2C dependency detail
+
+- `AnimalWeights` depends on the animal registry, tenancy/farm access, settings, idempotency middleware, and audit support. It does not depend on movement UI or later domains.
+- `AnimalStatuses` depends on the animal registry's versioned projection, tenancy/farm access, idempotency middleware, and audit support.
+- The registry may expose an authorized latest-weight projection but does not mutate weight history.
+- Flutter presentation depends on animal measurement repositories/providers; Drift is a read cache, not a second authority.
+- Sync reads weight/status changes after server authorization. No Phase 2C mutation depends on or writes the outbox.
+
 Foundation -> animal registry -> online animal movements -> separately approved offline animal workflows -> remaining approved animal capabilities -> milk -> health/breeding -> inventory/feed -> purchase/sales -> finance/workforce -> equipment/reports/advanced sync -> hardening. A later module may depend on stable public contracts from an earlier module, never on its UI or private persistence details.

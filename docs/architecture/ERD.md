@@ -1,6 +1,6 @@
 # ERD
 
-## Implemented Phase 2A registry and Phase 2B movements
+## Implemented Phase 2A registry, Phase 2B movements, and Phase 2C measurements
 
 ```mermaid
 erDiagram
@@ -29,10 +29,19 @@ erDiagram
   ANIMAL_GROUP o|--o{ ANIMAL_MOVEMENT : destination
   USER ||--o{ ANIMAL_MOVEMENT : requests
   USER o|--o{ ANIMAL_MOVEMENT : decides
+  ANIMAL ||--o{ ANIMAL_WEIGHT : has_history
+  ORGANIZATION ||--o{ ANIMAL_WEIGHT : owns
+  FARM ||--o{ ANIMAL_WEIGHT : observed_at
+  USER ||--o{ ANIMAL_WEIGHT : records
+  ANIMAL_WEIGHT o|--o| ANIMAL_WEIGHT : supersedes
+  ANIMAL ||--o{ ANIMAL_STATUS_CHANGE : has_history
+  ORGANIZATION ||--o{ ANIMAL_STATUS_CHANGE : owns
+  FARM ||--o{ ANIMAL_STATUS_CHANGE : snapshots
+  USER ||--o{ ANIMAL_STATUS_CHANGE : changes
   ORGANIZATION ||--o{ AUDIT_LOG : records
 ```
 
-Every tenant relationship shown above is constrained or scoped by organization; animal, farm, shed, and group movement links additionally use composite keys so a valid UUID from another tenant/farm cannot be linked. Parent links preserve historical archived rows. An approved movement atomically advances the animal's current-location projection; the movement row preserves the transition.
+Every tenant relationship shown above is constrained or scoped by organization; operational farm links additionally use composite keys so a valid UUID from another tenant/farm cannot be linked. Parent links preserve historical archived rows. An approved movement atomically advances current location. A status command appends history and advances operational status/version atomically. Weight corrections retain and link both rows; latest weight excludes superseded observations.
 
 ## Product-wide preliminary ERD
 
@@ -55,6 +64,7 @@ erDiagram
   FARM ||--o{ ANIMAL : locates
   ANIMAL ||--o{ ANIMAL_MOVEMENT : moves
   ANIMAL ||--o{ ANIMAL_WEIGHT : weighs
+  ANIMAL ||--o{ ANIMAL_STATUS_CHANGE : status_history
   ANIMAL ||--o{ MILK_ENTRY : produces
   MILK_SESSION ||--o{ MILK_ENTRY : groups
   MILK_ENTRY }o--o{ MILK_COLLECTION_BATCH : contributes

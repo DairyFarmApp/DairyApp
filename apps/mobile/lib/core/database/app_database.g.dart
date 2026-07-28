@@ -4034,6 +4034,39 @@ class $LocalAnimalsTable extends LocalAnimals
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       );
+  static const VerificationMeta _latestWeightIdMeta = const VerificationMeta(
+    'latestWeightId',
+  );
+  @override
+  late final GeneratedColumn<String> latestWeightId = GeneratedColumn<String>(
+    'latest_weight_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _latestWeightKgMeta = const VerificationMeta(
+    'latestWeightKg',
+  );
+  @override
+  late final GeneratedColumn<String> latestWeightKg = GeneratedColumn<String>(
+    'latest_weight_kg',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _latestWeightObservedAtMeta =
+      const VerificationMeta('latestWeightObservedAt');
+  @override
+  late final GeneratedColumn<DateTime> latestWeightObservedAt =
+      GeneratedColumn<DateTime>(
+        'latest_weight_observed_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
   );
@@ -4134,6 +4167,9 @@ class $LocalAnimalsTable extends LocalAnimals
     sourceDescription,
     notes,
     operationalStatus,
+    latestWeightId,
+    latestWeightKg,
+    latestWeightObservedAt,
     version,
     serverUpdatedAt,
     cachedAt,
@@ -4443,6 +4479,33 @@ class $LocalAnimalsTable extends LocalAnimals
     } else if (isInserting) {
       context.missing(_operationalStatusMeta);
     }
+    if (data.containsKey('latest_weight_id')) {
+      context.handle(
+        _latestWeightIdMeta,
+        latestWeightId.isAcceptableOrUnknown(
+          data['latest_weight_id']!,
+          _latestWeightIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('latest_weight_kg')) {
+      context.handle(
+        _latestWeightKgMeta,
+        latestWeightKg.isAcceptableOrUnknown(
+          data['latest_weight_kg']!,
+          _latestWeightKgMeta,
+        ),
+      );
+    }
+    if (data.containsKey('latest_weight_observed_at')) {
+      context.handle(
+        _latestWeightObservedAtMeta,
+        latestWeightObservedAt.isAcceptableOrUnknown(
+          data['latest_weight_observed_at']!,
+          _latestWeightObservedAtMeta,
+        ),
+      );
+    }
     if (data.containsKey('version')) {
       context.handle(
         _versionMeta,
@@ -4624,6 +4687,18 @@ class $LocalAnimalsTable extends LocalAnimals
         DriftSqlType.string,
         data['${effectivePrefix}operational_status'],
       )!,
+      latestWeightId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}latest_weight_id'],
+      ),
+      latestWeightKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}latest_weight_kg'],
+      ),
+      latestWeightObservedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}latest_weight_observed_at'],
+      ),
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
@@ -4687,6 +4762,9 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
   final String? sourceDescription;
   final String? notes;
   final String operationalStatus;
+  final String? latestWeightId;
+  final String? latestWeightKg;
+  final DateTime? latestWeightObservedAt;
   final int version;
   final DateTime serverUpdatedAt;
   final DateTime cachedAt;
@@ -4726,6 +4804,9 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
     this.sourceDescription,
     this.notes,
     required this.operationalStatus,
+    this.latestWeightId,
+    this.latestWeightKg,
+    this.latestWeightObservedAt,
     required this.version,
     required this.serverUpdatedAt,
     required this.cachedAt,
@@ -4804,6 +4885,17 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
       map['notes'] = Variable<String>(notes);
     }
     map['operational_status'] = Variable<String>(operationalStatus);
+    if (!nullToAbsent || latestWeightId != null) {
+      map['latest_weight_id'] = Variable<String>(latestWeightId);
+    }
+    if (!nullToAbsent || latestWeightKg != null) {
+      map['latest_weight_kg'] = Variable<String>(latestWeightKg);
+    }
+    if (!nullToAbsent || latestWeightObservedAt != null) {
+      map['latest_weight_observed_at'] = Variable<DateTime>(
+        latestWeightObservedAt,
+      );
+    }
     map['version'] = Variable<int>(version);
     map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
     map['cached_at'] = Variable<DateTime>(cachedAt);
@@ -4879,6 +4971,15 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
           ? const Value.absent()
           : Value(notes),
       operationalStatus: Value(operationalStatus),
+      latestWeightId: latestWeightId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latestWeightId),
+      latestWeightKg: latestWeightKg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latestWeightKg),
+      latestWeightObservedAt: latestWeightObservedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latestWeightObservedAt),
       version: Value(version),
       serverUpdatedAt: Value(serverUpdatedAt),
       cachedAt: Value(cachedAt),
@@ -4942,6 +5043,11 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
       ),
       notes: serializer.fromJson<String?>(json['notes']),
       operationalStatus: serializer.fromJson<String>(json['operationalStatus']),
+      latestWeightId: serializer.fromJson<String?>(json['latestWeightId']),
+      latestWeightKg: serializer.fromJson<String?>(json['latestWeightKg']),
+      latestWeightObservedAt: serializer.fromJson<DateTime?>(
+        json['latestWeightObservedAt'],
+      ),
       version: serializer.fromJson<int>(json['version']),
       serverUpdatedAt: serializer.fromJson<DateTime>(json['serverUpdatedAt']),
       cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
@@ -4990,6 +5096,11 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
       'sourceDescription': serializer.toJson<String?>(sourceDescription),
       'notes': serializer.toJson<String?>(notes),
       'operationalStatus': serializer.toJson<String>(operationalStatus),
+      'latestWeightId': serializer.toJson<String?>(latestWeightId),
+      'latestWeightKg': serializer.toJson<String?>(latestWeightKg),
+      'latestWeightObservedAt': serializer.toJson<DateTime?>(
+        latestWeightObservedAt,
+      ),
       'version': serializer.toJson<int>(version),
       'serverUpdatedAt': serializer.toJson<DateTime>(serverUpdatedAt),
       'cachedAt': serializer.toJson<DateTime>(cachedAt),
@@ -5032,6 +5143,9 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
     Value<String?> sourceDescription = const Value.absent(),
     Value<String?> notes = const Value.absent(),
     String? operationalStatus,
+    Value<String?> latestWeightId = const Value.absent(),
+    Value<String?> latestWeightKg = const Value.absent(),
+    Value<DateTime?> latestWeightObservedAt = const Value.absent(),
     int? version,
     DateTime? serverUpdatedAt,
     DateTime? cachedAt,
@@ -5094,6 +5208,15 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
         : this.sourceDescription,
     notes: notes.present ? notes.value : this.notes,
     operationalStatus: operationalStatus ?? this.operationalStatus,
+    latestWeightId: latestWeightId.present
+        ? latestWeightId.value
+        : this.latestWeightId,
+    latestWeightKg: latestWeightKg.present
+        ? latestWeightKg.value
+        : this.latestWeightKg,
+    latestWeightObservedAt: latestWeightObservedAt.present
+        ? latestWeightObservedAt.value
+        : this.latestWeightObservedAt,
     version: version ?? this.version,
     serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
     cachedAt: cachedAt ?? this.cachedAt,
@@ -5181,6 +5304,15 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
       operationalStatus: data.operationalStatus.present
           ? data.operationalStatus.value
           : this.operationalStatus,
+      latestWeightId: data.latestWeightId.present
+          ? data.latestWeightId.value
+          : this.latestWeightId,
+      latestWeightKg: data.latestWeightKg.present
+          ? data.latestWeightKg.value
+          : this.latestWeightKg,
+      latestWeightObservedAt: data.latestWeightObservedAt.present
+          ? data.latestWeightObservedAt.value
+          : this.latestWeightObservedAt,
       version: data.version.present ? data.version.value : this.version,
       serverUpdatedAt: data.serverUpdatedAt.present
           ? data.serverUpdatedAt.value
@@ -5231,6 +5363,9 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
           ..write('sourceDescription: $sourceDescription, ')
           ..write('notes: $notes, ')
           ..write('operationalStatus: $operationalStatus, ')
+          ..write('latestWeightId: $latestWeightId, ')
+          ..write('latestWeightKg: $latestWeightKg, ')
+          ..write('latestWeightObservedAt: $latestWeightObservedAt, ')
           ..write('version: $version, ')
           ..write('serverUpdatedAt: $serverUpdatedAt, ')
           ..write('cachedAt: $cachedAt, ')
@@ -5275,6 +5410,9 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
     sourceDescription,
     notes,
     operationalStatus,
+    latestWeightId,
+    latestWeightKg,
+    latestWeightObservedAt,
     version,
     serverUpdatedAt,
     cachedAt,
@@ -5318,6 +5456,9 @@ class LocalAnimal extends DataClass implements Insertable<LocalAnimal> {
           other.sourceDescription == this.sourceDescription &&
           other.notes == this.notes &&
           other.operationalStatus == this.operationalStatus &&
+          other.latestWeightId == this.latestWeightId &&
+          other.latestWeightKg == this.latestWeightKg &&
+          other.latestWeightObservedAt == this.latestWeightObservedAt &&
           other.version == this.version &&
           other.serverUpdatedAt == this.serverUpdatedAt &&
           other.cachedAt == this.cachedAt &&
@@ -5359,6 +5500,9 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
   final Value<String?> sourceDescription;
   final Value<String?> notes;
   final Value<String> operationalStatus;
+  final Value<String?> latestWeightId;
+  final Value<String?> latestWeightKg;
+  final Value<DateTime?> latestWeightObservedAt;
   final Value<int> version;
   final Value<DateTime> serverUpdatedAt;
   final Value<DateTime> cachedAt;
@@ -5399,6 +5543,9 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
     this.sourceDescription = const Value.absent(),
     this.notes = const Value.absent(),
     this.operationalStatus = const Value.absent(),
+    this.latestWeightId = const Value.absent(),
+    this.latestWeightKg = const Value.absent(),
+    this.latestWeightObservedAt = const Value.absent(),
     this.version = const Value.absent(),
     this.serverUpdatedAt = const Value.absent(),
     this.cachedAt = const Value.absent(),
@@ -5440,6 +5587,9 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
     this.sourceDescription = const Value.absent(),
     this.notes = const Value.absent(),
     required String operationalStatus,
+    this.latestWeightId = const Value.absent(),
+    this.latestWeightKg = const Value.absent(),
+    this.latestWeightObservedAt = const Value.absent(),
     this.version = const Value.absent(),
     required DateTime serverUpdatedAt,
     required DateTime cachedAt,
@@ -5497,6 +5647,9 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
     Expression<String>? sourceDescription,
     Expression<String>? notes,
     Expression<String>? operationalStatus,
+    Expression<String>? latestWeightId,
+    Expression<String>? latestWeightKg,
+    Expression<DateTime>? latestWeightObservedAt,
     Expression<int>? version,
     Expression<DateTime>? serverUpdatedAt,
     Expression<DateTime>? cachedAt,
@@ -5544,6 +5697,10 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
       if (sourceDescription != null) 'source_description': sourceDescription,
       if (notes != null) 'notes': notes,
       if (operationalStatus != null) 'operational_status': operationalStatus,
+      if (latestWeightId != null) 'latest_weight_id': latestWeightId,
+      if (latestWeightKg != null) 'latest_weight_kg': latestWeightKg,
+      if (latestWeightObservedAt != null)
+        'latest_weight_observed_at': latestWeightObservedAt,
       if (version != null) 'version': version,
       if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
       if (cachedAt != null) 'cached_at': cachedAt,
@@ -5587,6 +5744,9 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
     Value<String?>? sourceDescription,
     Value<String?>? notes,
     Value<String>? operationalStatus,
+    Value<String?>? latestWeightId,
+    Value<String?>? latestWeightKg,
+    Value<DateTime?>? latestWeightObservedAt,
     Value<int>? version,
     Value<DateTime>? serverUpdatedAt,
     Value<DateTime>? cachedAt,
@@ -5631,6 +5791,10 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
       sourceDescription: sourceDescription ?? this.sourceDescription,
       notes: notes ?? this.notes,
       operationalStatus: operationalStatus ?? this.operationalStatus,
+      latestWeightId: latestWeightId ?? this.latestWeightId,
+      latestWeightKg: latestWeightKg ?? this.latestWeightKg,
+      latestWeightObservedAt:
+          latestWeightObservedAt ?? this.latestWeightObservedAt,
       version: version ?? this.version,
       serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
       cachedAt: cachedAt ?? this.cachedAt,
@@ -5750,6 +5914,17 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
     if (operationalStatus.present) {
       map['operational_status'] = Variable<String>(operationalStatus.value);
     }
+    if (latestWeightId.present) {
+      map['latest_weight_id'] = Variable<String>(latestWeightId.value);
+    }
+    if (latestWeightKg.present) {
+      map['latest_weight_kg'] = Variable<String>(latestWeightKg.value);
+    }
+    if (latestWeightObservedAt.present) {
+      map['latest_weight_observed_at'] = Variable<DateTime>(
+        latestWeightObservedAt.value,
+      );
+    }
     if (version.present) {
       map['version'] = Variable<int>(version.value);
     }
@@ -5807,6 +5982,9 @@ class LocalAnimalsCompanion extends UpdateCompanion<LocalAnimal> {
           ..write('sourceDescription: $sourceDescription, ')
           ..write('notes: $notes, ')
           ..write('operationalStatus: $operationalStatus, ')
+          ..write('latestWeightId: $latestWeightId, ')
+          ..write('latestWeightKg: $latestWeightKg, ')
+          ..write('latestWeightObservedAt: $latestWeightObservedAt, ')
           ..write('version: $version, ')
           ..write('serverUpdatedAt: $serverUpdatedAt, ')
           ..write('cachedAt: $cachedAt, ')
@@ -7723,6 +7901,2158 @@ class LocalAnimalMovementsCompanion
           ..write('rejectionReason: $rejectionReason, ')
           ..write('cancellationReason: $cancellationReason, ')
           ..write('version: $version, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('isAccessible: $isAccessible, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalAnimalWeightsTable extends LocalAnimalWeights
+    with TableInfo<$LocalAnimalWeightsTable, LocalAnimalWeight> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalAnimalWeightsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _organizationIdMeta = const VerificationMeta(
+    'organizationId',
+  );
+  @override
+  late final GeneratedColumn<String> organizationId = GeneratedColumn<String>(
+    'organization_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _farmIdMeta = const VerificationMeta('farmId');
+  @override
+  late final GeneratedColumn<String> farmId = GeneratedColumn<String>(
+    'farm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _farmNameMeta = const VerificationMeta(
+    'farmName',
+  );
+  @override
+  late final GeneratedColumn<String> farmName = GeneratedColumn<String>(
+    'farm_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _animalIdMeta = const VerificationMeta(
+    'animalId',
+  );
+  @override
+  late final GeneratedColumn<String> animalId = GeneratedColumn<String>(
+    'animal_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _animalNumberMeta = const VerificationMeta(
+    'animalNumber',
+  );
+  @override
+  late final GeneratedColumn<String> animalNumber = GeneratedColumn<String>(
+    'animal_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _enteredValueMeta = const VerificationMeta(
+    'enteredValue',
+  );
+  @override
+  late final GeneratedColumn<String> enteredValue = GeneratedColumn<String>(
+    'entered_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _enteredUnitMeta = const VerificationMeta(
+    'enteredUnit',
+  );
+  @override
+  late final GeneratedColumn<String> enteredUnit = GeneratedColumn<String>(
+    'entered_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _normalizedKgMeta = const VerificationMeta(
+    'normalizedKg',
+  );
+  @override
+  late final GeneratedColumn<String> normalizedKg = GeneratedColumn<String>(
+    'normalized_kg',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _observedAtMeta = const VerificationMeta(
+    'observedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> observedAt = GeneratedColumn<DateTime>(
+    'observed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordedByMeta = const VerificationMeta(
+    'recordedBy',
+  );
+  @override
+  late final GeneratedColumn<String> recordedBy = GeneratedColumn<String>(
+    'recorded_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordedByNameMeta = const VerificationMeta(
+    'recordedByName',
+  );
+  @override
+  late final GeneratedColumn<String> recordedByName = GeneratedColumn<String>(
+    'recorded_by_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _supersedesWeightIdMeta =
+      const VerificationMeta('supersedesWeightId');
+  @override
+  late final GeneratedColumn<String> supersedesWeightId =
+      GeneratedColumn<String>(
+        'supersedes_weight_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _supersededByWeightIdMeta =
+      const VerificationMeta('supersededByWeightId');
+  @override
+  late final GeneratedColumn<String> supersededByWeightId =
+      GeneratedColumn<String>(
+        'superseded_by_weight_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _correctionReasonMeta = const VerificationMeta(
+    'correctionReason',
+  );
+  @override
+  late final GeneratedColumn<String> correctionReason = GeneratedColumn<String>(
+    'correction_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isSupersededMeta = const VerificationMeta(
+    'isSuperseded',
+  );
+  @override
+  late final GeneratedColumn<bool> isSuperseded = GeneratedColumn<bool>(
+    'is_superseded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_superseded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _cachedAtMeta = const VerificationMeta(
+    'cachedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+    'cached_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isAccessibleMeta = const VerificationMeta(
+    'isAccessible',
+  );
+  @override
+  late final GeneratedColumn<bool> isAccessible = GeneratedColumn<bool>(
+    'is_accessible',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_accessible" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    organizationId,
+    farmId,
+    farmName,
+    animalId,
+    animalNumber,
+    enteredValue,
+    enteredUnit,
+    normalizedKg,
+    observedAt,
+    source,
+    notes,
+    recordedBy,
+    recordedByName,
+    supersedesWeightId,
+    supersededByWeightId,
+    correctionReason,
+    isSuperseded,
+    serverUpdatedAt,
+    cachedAt,
+    isAccessible,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_animal_weights';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalAnimalWeight> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('organization_id')) {
+      context.handle(
+        _organizationIdMeta,
+        organizationId.isAcceptableOrUnknown(
+          data['organization_id']!,
+          _organizationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_organizationIdMeta);
+    }
+    if (data.containsKey('farm_id')) {
+      context.handle(
+        _farmIdMeta,
+        farmId.isAcceptableOrUnknown(data['farm_id']!, _farmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmIdMeta);
+    }
+    if (data.containsKey('farm_name')) {
+      context.handle(
+        _farmNameMeta,
+        farmName.isAcceptableOrUnknown(data['farm_name']!, _farmNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmNameMeta);
+    }
+    if (data.containsKey('animal_id')) {
+      context.handle(
+        _animalIdMeta,
+        animalId.isAcceptableOrUnknown(data['animal_id']!, _animalIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_animalIdMeta);
+    }
+    if (data.containsKey('animal_number')) {
+      context.handle(
+        _animalNumberMeta,
+        animalNumber.isAcceptableOrUnknown(
+          data['animal_number']!,
+          _animalNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_animalNumberMeta);
+    }
+    if (data.containsKey('entered_value')) {
+      context.handle(
+        _enteredValueMeta,
+        enteredValue.isAcceptableOrUnknown(
+          data['entered_value']!,
+          _enteredValueMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_enteredValueMeta);
+    }
+    if (data.containsKey('entered_unit')) {
+      context.handle(
+        _enteredUnitMeta,
+        enteredUnit.isAcceptableOrUnknown(
+          data['entered_unit']!,
+          _enteredUnitMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_enteredUnitMeta);
+    }
+    if (data.containsKey('normalized_kg')) {
+      context.handle(
+        _normalizedKgMeta,
+        normalizedKg.isAcceptableOrUnknown(
+          data['normalized_kg']!,
+          _normalizedKgMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_normalizedKgMeta);
+    }
+    if (data.containsKey('observed_at')) {
+      context.handle(
+        _observedAtMeta,
+        observedAt.isAcceptableOrUnknown(data['observed_at']!, _observedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_observedAtMeta);
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('recorded_by')) {
+      context.handle(
+        _recordedByMeta,
+        recordedBy.isAcceptableOrUnknown(data['recorded_by']!, _recordedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedByMeta);
+    }
+    if (data.containsKey('recorded_by_name')) {
+      context.handle(
+        _recordedByNameMeta,
+        recordedByName.isAcceptableOrUnknown(
+          data['recorded_by_name']!,
+          _recordedByNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedByNameMeta);
+    }
+    if (data.containsKey('supersedes_weight_id')) {
+      context.handle(
+        _supersedesWeightIdMeta,
+        supersedesWeightId.isAcceptableOrUnknown(
+          data['supersedes_weight_id']!,
+          _supersedesWeightIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('superseded_by_weight_id')) {
+      context.handle(
+        _supersededByWeightIdMeta,
+        supersededByWeightId.isAcceptableOrUnknown(
+          data['superseded_by_weight_id']!,
+          _supersededByWeightIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('correction_reason')) {
+      context.handle(
+        _correctionReasonMeta,
+        correctionReason.isAcceptableOrUnknown(
+          data['correction_reason']!,
+          _correctionReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_superseded')) {
+      context.handle(
+        _isSupersededMeta,
+        isSuperseded.isAcceptableOrUnknown(
+          data['is_superseded']!,
+          _isSupersededMeta,
+        ),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_serverUpdatedAtMeta);
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(
+        _cachedAtMeta,
+        cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    if (data.containsKey('is_accessible')) {
+      context.handle(
+        _isAccessibleMeta,
+        isAccessible.isAcceptableOrUnknown(
+          data['is_accessible']!,
+          _isAccessibleMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalAnimalWeight map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalAnimalWeight(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      organizationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}organization_id'],
+      )!,
+      farmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farm_id'],
+      )!,
+      farmName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farm_name'],
+      )!,
+      animalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_id'],
+      )!,
+      animalNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_number'],
+      )!,
+      enteredValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entered_value'],
+      )!,
+      enteredUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entered_unit'],
+      )!,
+      normalizedKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}normalized_kg'],
+      )!,
+      observedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}observed_at'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      recordedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_by'],
+      )!,
+      recordedByName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_by_name'],
+      )!,
+      supersedesWeightId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}supersedes_weight_id'],
+      ),
+      supersededByWeightId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}superseded_by_weight_id'],
+      ),
+      correctionReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}correction_reason'],
+      ),
+      isSuperseded: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_superseded'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      )!,
+      cachedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}cached_at'],
+      )!,
+      isAccessible: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_accessible'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalAnimalWeightsTable createAlias(String alias) {
+    return $LocalAnimalWeightsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalAnimalWeight extends DataClass
+    implements Insertable<LocalAnimalWeight> {
+  final String id;
+  final String organizationId;
+  final String farmId;
+  final String farmName;
+  final String animalId;
+  final String animalNumber;
+  final String enteredValue;
+  final String enteredUnit;
+  final String normalizedKg;
+  final DateTime observedAt;
+  final String source;
+  final String? notes;
+  final String recordedBy;
+  final String recordedByName;
+  final String? supersedesWeightId;
+  final String? supersededByWeightId;
+  final String? correctionReason;
+  final bool isSuperseded;
+  final DateTime serverUpdatedAt;
+  final DateTime cachedAt;
+  final bool isAccessible;
+  const LocalAnimalWeight({
+    required this.id,
+    required this.organizationId,
+    required this.farmId,
+    required this.farmName,
+    required this.animalId,
+    required this.animalNumber,
+    required this.enteredValue,
+    required this.enteredUnit,
+    required this.normalizedKg,
+    required this.observedAt,
+    required this.source,
+    this.notes,
+    required this.recordedBy,
+    required this.recordedByName,
+    this.supersedesWeightId,
+    this.supersededByWeightId,
+    this.correctionReason,
+    required this.isSuperseded,
+    required this.serverUpdatedAt,
+    required this.cachedAt,
+    required this.isAccessible,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['organization_id'] = Variable<String>(organizationId);
+    map['farm_id'] = Variable<String>(farmId);
+    map['farm_name'] = Variable<String>(farmName);
+    map['animal_id'] = Variable<String>(animalId);
+    map['animal_number'] = Variable<String>(animalNumber);
+    map['entered_value'] = Variable<String>(enteredValue);
+    map['entered_unit'] = Variable<String>(enteredUnit);
+    map['normalized_kg'] = Variable<String>(normalizedKg);
+    map['observed_at'] = Variable<DateTime>(observedAt);
+    map['source'] = Variable<String>(source);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['recorded_by'] = Variable<String>(recordedBy);
+    map['recorded_by_name'] = Variable<String>(recordedByName);
+    if (!nullToAbsent || supersedesWeightId != null) {
+      map['supersedes_weight_id'] = Variable<String>(supersedesWeightId);
+    }
+    if (!nullToAbsent || supersededByWeightId != null) {
+      map['superseded_by_weight_id'] = Variable<String>(supersededByWeightId);
+    }
+    if (!nullToAbsent || correctionReason != null) {
+      map['correction_reason'] = Variable<String>(correctionReason);
+    }
+    map['is_superseded'] = Variable<bool>(isSuperseded);
+    map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    map['is_accessible'] = Variable<bool>(isAccessible);
+    return map;
+  }
+
+  LocalAnimalWeightsCompanion toCompanion(bool nullToAbsent) {
+    return LocalAnimalWeightsCompanion(
+      id: Value(id),
+      organizationId: Value(organizationId),
+      farmId: Value(farmId),
+      farmName: Value(farmName),
+      animalId: Value(animalId),
+      animalNumber: Value(animalNumber),
+      enteredValue: Value(enteredValue),
+      enteredUnit: Value(enteredUnit),
+      normalizedKg: Value(normalizedKg),
+      observedAt: Value(observedAt),
+      source: Value(source),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      recordedBy: Value(recordedBy),
+      recordedByName: Value(recordedByName),
+      supersedesWeightId: supersedesWeightId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(supersedesWeightId),
+      supersededByWeightId: supersededByWeightId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(supersededByWeightId),
+      correctionReason: correctionReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(correctionReason),
+      isSuperseded: Value(isSuperseded),
+      serverUpdatedAt: Value(serverUpdatedAt),
+      cachedAt: Value(cachedAt),
+      isAccessible: Value(isAccessible),
+    );
+  }
+
+  factory LocalAnimalWeight.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalAnimalWeight(
+      id: serializer.fromJson<String>(json['id']),
+      organizationId: serializer.fromJson<String>(json['organizationId']),
+      farmId: serializer.fromJson<String>(json['farmId']),
+      farmName: serializer.fromJson<String>(json['farmName']),
+      animalId: serializer.fromJson<String>(json['animalId']),
+      animalNumber: serializer.fromJson<String>(json['animalNumber']),
+      enteredValue: serializer.fromJson<String>(json['enteredValue']),
+      enteredUnit: serializer.fromJson<String>(json['enteredUnit']),
+      normalizedKg: serializer.fromJson<String>(json['normalizedKg']),
+      observedAt: serializer.fromJson<DateTime>(json['observedAt']),
+      source: serializer.fromJson<String>(json['source']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      recordedBy: serializer.fromJson<String>(json['recordedBy']),
+      recordedByName: serializer.fromJson<String>(json['recordedByName']),
+      supersedesWeightId: serializer.fromJson<String?>(
+        json['supersedesWeightId'],
+      ),
+      supersededByWeightId: serializer.fromJson<String?>(
+        json['supersededByWeightId'],
+      ),
+      correctionReason: serializer.fromJson<String?>(json['correctionReason']),
+      isSuperseded: serializer.fromJson<bool>(json['isSuperseded']),
+      serverUpdatedAt: serializer.fromJson<DateTime>(json['serverUpdatedAt']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+      isAccessible: serializer.fromJson<bool>(json['isAccessible']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'organizationId': serializer.toJson<String>(organizationId),
+      'farmId': serializer.toJson<String>(farmId),
+      'farmName': serializer.toJson<String>(farmName),
+      'animalId': serializer.toJson<String>(animalId),
+      'animalNumber': serializer.toJson<String>(animalNumber),
+      'enteredValue': serializer.toJson<String>(enteredValue),
+      'enteredUnit': serializer.toJson<String>(enteredUnit),
+      'normalizedKg': serializer.toJson<String>(normalizedKg),
+      'observedAt': serializer.toJson<DateTime>(observedAt),
+      'source': serializer.toJson<String>(source),
+      'notes': serializer.toJson<String?>(notes),
+      'recordedBy': serializer.toJson<String>(recordedBy),
+      'recordedByName': serializer.toJson<String>(recordedByName),
+      'supersedesWeightId': serializer.toJson<String?>(supersedesWeightId),
+      'supersededByWeightId': serializer.toJson<String?>(supersededByWeightId),
+      'correctionReason': serializer.toJson<String?>(correctionReason),
+      'isSuperseded': serializer.toJson<bool>(isSuperseded),
+      'serverUpdatedAt': serializer.toJson<DateTime>(serverUpdatedAt),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+      'isAccessible': serializer.toJson<bool>(isAccessible),
+    };
+  }
+
+  LocalAnimalWeight copyWith({
+    String? id,
+    String? organizationId,
+    String? farmId,
+    String? farmName,
+    String? animalId,
+    String? animalNumber,
+    String? enteredValue,
+    String? enteredUnit,
+    String? normalizedKg,
+    DateTime? observedAt,
+    String? source,
+    Value<String?> notes = const Value.absent(),
+    String? recordedBy,
+    String? recordedByName,
+    Value<String?> supersedesWeightId = const Value.absent(),
+    Value<String?> supersededByWeightId = const Value.absent(),
+    Value<String?> correctionReason = const Value.absent(),
+    bool? isSuperseded,
+    DateTime? serverUpdatedAt,
+    DateTime? cachedAt,
+    bool? isAccessible,
+  }) => LocalAnimalWeight(
+    id: id ?? this.id,
+    organizationId: organizationId ?? this.organizationId,
+    farmId: farmId ?? this.farmId,
+    farmName: farmName ?? this.farmName,
+    animalId: animalId ?? this.animalId,
+    animalNumber: animalNumber ?? this.animalNumber,
+    enteredValue: enteredValue ?? this.enteredValue,
+    enteredUnit: enteredUnit ?? this.enteredUnit,
+    normalizedKg: normalizedKg ?? this.normalizedKg,
+    observedAt: observedAt ?? this.observedAt,
+    source: source ?? this.source,
+    notes: notes.present ? notes.value : this.notes,
+    recordedBy: recordedBy ?? this.recordedBy,
+    recordedByName: recordedByName ?? this.recordedByName,
+    supersedesWeightId: supersedesWeightId.present
+        ? supersedesWeightId.value
+        : this.supersedesWeightId,
+    supersededByWeightId: supersededByWeightId.present
+        ? supersededByWeightId.value
+        : this.supersededByWeightId,
+    correctionReason: correctionReason.present
+        ? correctionReason.value
+        : this.correctionReason,
+    isSuperseded: isSuperseded ?? this.isSuperseded,
+    serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+    cachedAt: cachedAt ?? this.cachedAt,
+    isAccessible: isAccessible ?? this.isAccessible,
+  );
+  LocalAnimalWeight copyWithCompanion(LocalAnimalWeightsCompanion data) {
+    return LocalAnimalWeight(
+      id: data.id.present ? data.id.value : this.id,
+      organizationId: data.organizationId.present
+          ? data.organizationId.value
+          : this.organizationId,
+      farmId: data.farmId.present ? data.farmId.value : this.farmId,
+      farmName: data.farmName.present ? data.farmName.value : this.farmName,
+      animalId: data.animalId.present ? data.animalId.value : this.animalId,
+      animalNumber: data.animalNumber.present
+          ? data.animalNumber.value
+          : this.animalNumber,
+      enteredValue: data.enteredValue.present
+          ? data.enteredValue.value
+          : this.enteredValue,
+      enteredUnit: data.enteredUnit.present
+          ? data.enteredUnit.value
+          : this.enteredUnit,
+      normalizedKg: data.normalizedKg.present
+          ? data.normalizedKg.value
+          : this.normalizedKg,
+      observedAt: data.observedAt.present
+          ? data.observedAt.value
+          : this.observedAt,
+      source: data.source.present ? data.source.value : this.source,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      recordedBy: data.recordedBy.present
+          ? data.recordedBy.value
+          : this.recordedBy,
+      recordedByName: data.recordedByName.present
+          ? data.recordedByName.value
+          : this.recordedByName,
+      supersedesWeightId: data.supersedesWeightId.present
+          ? data.supersedesWeightId.value
+          : this.supersedesWeightId,
+      supersededByWeightId: data.supersededByWeightId.present
+          ? data.supersededByWeightId.value
+          : this.supersededByWeightId,
+      correctionReason: data.correctionReason.present
+          ? data.correctionReason.value
+          : this.correctionReason,
+      isSuperseded: data.isSuperseded.present
+          ? data.isSuperseded.value
+          : this.isSuperseded,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      cachedAt: data.cachedAt.present ? data.cachedAt.value : this.cachedAt,
+      isAccessible: data.isAccessible.present
+          ? data.isAccessible.value
+          : this.isAccessible,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalAnimalWeight(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('farmId: $farmId, ')
+          ..write('farmName: $farmName, ')
+          ..write('animalId: $animalId, ')
+          ..write('animalNumber: $animalNumber, ')
+          ..write('enteredValue: $enteredValue, ')
+          ..write('enteredUnit: $enteredUnit, ')
+          ..write('normalizedKg: $normalizedKg, ')
+          ..write('observedAt: $observedAt, ')
+          ..write('source: $source, ')
+          ..write('notes: $notes, ')
+          ..write('recordedBy: $recordedBy, ')
+          ..write('recordedByName: $recordedByName, ')
+          ..write('supersedesWeightId: $supersedesWeightId, ')
+          ..write('supersededByWeightId: $supersededByWeightId, ')
+          ..write('correctionReason: $correctionReason, ')
+          ..write('isSuperseded: $isSuperseded, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('isAccessible: $isAccessible')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    organizationId,
+    farmId,
+    farmName,
+    animalId,
+    animalNumber,
+    enteredValue,
+    enteredUnit,
+    normalizedKg,
+    observedAt,
+    source,
+    notes,
+    recordedBy,
+    recordedByName,
+    supersedesWeightId,
+    supersededByWeightId,
+    correctionReason,
+    isSuperseded,
+    serverUpdatedAt,
+    cachedAt,
+    isAccessible,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalAnimalWeight &&
+          other.id == this.id &&
+          other.organizationId == this.organizationId &&
+          other.farmId == this.farmId &&
+          other.farmName == this.farmName &&
+          other.animalId == this.animalId &&
+          other.animalNumber == this.animalNumber &&
+          other.enteredValue == this.enteredValue &&
+          other.enteredUnit == this.enteredUnit &&
+          other.normalizedKg == this.normalizedKg &&
+          other.observedAt == this.observedAt &&
+          other.source == this.source &&
+          other.notes == this.notes &&
+          other.recordedBy == this.recordedBy &&
+          other.recordedByName == this.recordedByName &&
+          other.supersedesWeightId == this.supersedesWeightId &&
+          other.supersededByWeightId == this.supersededByWeightId &&
+          other.correctionReason == this.correctionReason &&
+          other.isSuperseded == this.isSuperseded &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.cachedAt == this.cachedAt &&
+          other.isAccessible == this.isAccessible);
+}
+
+class LocalAnimalWeightsCompanion extends UpdateCompanion<LocalAnimalWeight> {
+  final Value<String> id;
+  final Value<String> organizationId;
+  final Value<String> farmId;
+  final Value<String> farmName;
+  final Value<String> animalId;
+  final Value<String> animalNumber;
+  final Value<String> enteredValue;
+  final Value<String> enteredUnit;
+  final Value<String> normalizedKg;
+  final Value<DateTime> observedAt;
+  final Value<String> source;
+  final Value<String?> notes;
+  final Value<String> recordedBy;
+  final Value<String> recordedByName;
+  final Value<String?> supersedesWeightId;
+  final Value<String?> supersededByWeightId;
+  final Value<String?> correctionReason;
+  final Value<bool> isSuperseded;
+  final Value<DateTime> serverUpdatedAt;
+  final Value<DateTime> cachedAt;
+  final Value<bool> isAccessible;
+  final Value<int> rowid;
+  const LocalAnimalWeightsCompanion({
+    this.id = const Value.absent(),
+    this.organizationId = const Value.absent(),
+    this.farmId = const Value.absent(),
+    this.farmName = const Value.absent(),
+    this.animalId = const Value.absent(),
+    this.animalNumber = const Value.absent(),
+    this.enteredValue = const Value.absent(),
+    this.enteredUnit = const Value.absent(),
+    this.normalizedKg = const Value.absent(),
+    this.observedAt = const Value.absent(),
+    this.source = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.recordedBy = const Value.absent(),
+    this.recordedByName = const Value.absent(),
+    this.supersedesWeightId = const Value.absent(),
+    this.supersededByWeightId = const Value.absent(),
+    this.correctionReason = const Value.absent(),
+    this.isSuperseded = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.isAccessible = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalAnimalWeightsCompanion.insert({
+    required String id,
+    required String organizationId,
+    required String farmId,
+    required String farmName,
+    required String animalId,
+    required String animalNumber,
+    required String enteredValue,
+    required String enteredUnit,
+    required String normalizedKg,
+    required DateTime observedAt,
+    required String source,
+    this.notes = const Value.absent(),
+    required String recordedBy,
+    required String recordedByName,
+    this.supersedesWeightId = const Value.absent(),
+    this.supersededByWeightId = const Value.absent(),
+    this.correctionReason = const Value.absent(),
+    this.isSuperseded = const Value.absent(),
+    required DateTime serverUpdatedAt,
+    required DateTime cachedAt,
+    this.isAccessible = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       organizationId = Value(organizationId),
+       farmId = Value(farmId),
+       farmName = Value(farmName),
+       animalId = Value(animalId),
+       animalNumber = Value(animalNumber),
+       enteredValue = Value(enteredValue),
+       enteredUnit = Value(enteredUnit),
+       normalizedKg = Value(normalizedKg),
+       observedAt = Value(observedAt),
+       source = Value(source),
+       recordedBy = Value(recordedBy),
+       recordedByName = Value(recordedByName),
+       serverUpdatedAt = Value(serverUpdatedAt),
+       cachedAt = Value(cachedAt);
+  static Insertable<LocalAnimalWeight> custom({
+    Expression<String>? id,
+    Expression<String>? organizationId,
+    Expression<String>? farmId,
+    Expression<String>? farmName,
+    Expression<String>? animalId,
+    Expression<String>? animalNumber,
+    Expression<String>? enteredValue,
+    Expression<String>? enteredUnit,
+    Expression<String>? normalizedKg,
+    Expression<DateTime>? observedAt,
+    Expression<String>? source,
+    Expression<String>? notes,
+    Expression<String>? recordedBy,
+    Expression<String>? recordedByName,
+    Expression<String>? supersedesWeightId,
+    Expression<String>? supersededByWeightId,
+    Expression<String>? correctionReason,
+    Expression<bool>? isSuperseded,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<DateTime>? cachedAt,
+    Expression<bool>? isAccessible,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (organizationId != null) 'organization_id': organizationId,
+      if (farmId != null) 'farm_id': farmId,
+      if (farmName != null) 'farm_name': farmName,
+      if (animalId != null) 'animal_id': animalId,
+      if (animalNumber != null) 'animal_number': animalNumber,
+      if (enteredValue != null) 'entered_value': enteredValue,
+      if (enteredUnit != null) 'entered_unit': enteredUnit,
+      if (normalizedKg != null) 'normalized_kg': normalizedKg,
+      if (observedAt != null) 'observed_at': observedAt,
+      if (source != null) 'source': source,
+      if (notes != null) 'notes': notes,
+      if (recordedBy != null) 'recorded_by': recordedBy,
+      if (recordedByName != null) 'recorded_by_name': recordedByName,
+      if (supersedesWeightId != null)
+        'supersedes_weight_id': supersedesWeightId,
+      if (supersededByWeightId != null)
+        'superseded_by_weight_id': supersededByWeightId,
+      if (correctionReason != null) 'correction_reason': correctionReason,
+      if (isSuperseded != null) 'is_superseded': isSuperseded,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (isAccessible != null) 'is_accessible': isAccessible,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalAnimalWeightsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? organizationId,
+    Value<String>? farmId,
+    Value<String>? farmName,
+    Value<String>? animalId,
+    Value<String>? animalNumber,
+    Value<String>? enteredValue,
+    Value<String>? enteredUnit,
+    Value<String>? normalizedKg,
+    Value<DateTime>? observedAt,
+    Value<String>? source,
+    Value<String?>? notes,
+    Value<String>? recordedBy,
+    Value<String>? recordedByName,
+    Value<String?>? supersedesWeightId,
+    Value<String?>? supersededByWeightId,
+    Value<String?>? correctionReason,
+    Value<bool>? isSuperseded,
+    Value<DateTime>? serverUpdatedAt,
+    Value<DateTime>? cachedAt,
+    Value<bool>? isAccessible,
+    Value<int>? rowid,
+  }) {
+    return LocalAnimalWeightsCompanion(
+      id: id ?? this.id,
+      organizationId: organizationId ?? this.organizationId,
+      farmId: farmId ?? this.farmId,
+      farmName: farmName ?? this.farmName,
+      animalId: animalId ?? this.animalId,
+      animalNumber: animalNumber ?? this.animalNumber,
+      enteredValue: enteredValue ?? this.enteredValue,
+      enteredUnit: enteredUnit ?? this.enteredUnit,
+      normalizedKg: normalizedKg ?? this.normalizedKg,
+      observedAt: observedAt ?? this.observedAt,
+      source: source ?? this.source,
+      notes: notes ?? this.notes,
+      recordedBy: recordedBy ?? this.recordedBy,
+      recordedByName: recordedByName ?? this.recordedByName,
+      supersedesWeightId: supersedesWeightId ?? this.supersedesWeightId,
+      supersededByWeightId: supersededByWeightId ?? this.supersededByWeightId,
+      correctionReason: correctionReason ?? this.correctionReason,
+      isSuperseded: isSuperseded ?? this.isSuperseded,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      cachedAt: cachedAt ?? this.cachedAt,
+      isAccessible: isAccessible ?? this.isAccessible,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (organizationId.present) {
+      map['organization_id'] = Variable<String>(organizationId.value);
+    }
+    if (farmId.present) {
+      map['farm_id'] = Variable<String>(farmId.value);
+    }
+    if (farmName.present) {
+      map['farm_name'] = Variable<String>(farmName.value);
+    }
+    if (animalId.present) {
+      map['animal_id'] = Variable<String>(animalId.value);
+    }
+    if (animalNumber.present) {
+      map['animal_number'] = Variable<String>(animalNumber.value);
+    }
+    if (enteredValue.present) {
+      map['entered_value'] = Variable<String>(enteredValue.value);
+    }
+    if (enteredUnit.present) {
+      map['entered_unit'] = Variable<String>(enteredUnit.value);
+    }
+    if (normalizedKg.present) {
+      map['normalized_kg'] = Variable<String>(normalizedKg.value);
+    }
+    if (observedAt.present) {
+      map['observed_at'] = Variable<DateTime>(observedAt.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (recordedBy.present) {
+      map['recorded_by'] = Variable<String>(recordedBy.value);
+    }
+    if (recordedByName.present) {
+      map['recorded_by_name'] = Variable<String>(recordedByName.value);
+    }
+    if (supersedesWeightId.present) {
+      map['supersedes_weight_id'] = Variable<String>(supersedesWeightId.value);
+    }
+    if (supersededByWeightId.present) {
+      map['superseded_by_weight_id'] = Variable<String>(
+        supersededByWeightId.value,
+      );
+    }
+    if (correctionReason.present) {
+      map['correction_reason'] = Variable<String>(correctionReason.value);
+    }
+    if (isSuperseded.present) {
+      map['is_superseded'] = Variable<bool>(isSuperseded.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (isAccessible.present) {
+      map['is_accessible'] = Variable<bool>(isAccessible.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalAnimalWeightsCompanion(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('farmId: $farmId, ')
+          ..write('farmName: $farmName, ')
+          ..write('animalId: $animalId, ')
+          ..write('animalNumber: $animalNumber, ')
+          ..write('enteredValue: $enteredValue, ')
+          ..write('enteredUnit: $enteredUnit, ')
+          ..write('normalizedKg: $normalizedKg, ')
+          ..write('observedAt: $observedAt, ')
+          ..write('source: $source, ')
+          ..write('notes: $notes, ')
+          ..write('recordedBy: $recordedBy, ')
+          ..write('recordedByName: $recordedByName, ')
+          ..write('supersedesWeightId: $supersedesWeightId, ')
+          ..write('supersededByWeightId: $supersededByWeightId, ')
+          ..write('correctionReason: $correctionReason, ')
+          ..write('isSuperseded: $isSuperseded, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('isAccessible: $isAccessible, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalAnimalStatusChangesTable extends LocalAnimalStatusChanges
+    with TableInfo<$LocalAnimalStatusChangesTable, LocalAnimalStatusChange> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalAnimalStatusChangesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _organizationIdMeta = const VerificationMeta(
+    'organizationId',
+  );
+  @override
+  late final GeneratedColumn<String> organizationId = GeneratedColumn<String>(
+    'organization_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _farmIdMeta = const VerificationMeta('farmId');
+  @override
+  late final GeneratedColumn<String> farmId = GeneratedColumn<String>(
+    'farm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _farmNameMeta = const VerificationMeta(
+    'farmName',
+  );
+  @override
+  late final GeneratedColumn<String> farmName = GeneratedColumn<String>(
+    'farm_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _animalIdMeta = const VerificationMeta(
+    'animalId',
+  );
+  @override
+  late final GeneratedColumn<String> animalId = GeneratedColumn<String>(
+    'animal_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _animalNumberMeta = const VerificationMeta(
+    'animalNumber',
+  );
+  @override
+  late final GeneratedColumn<String> animalNumber = GeneratedColumn<String>(
+    'animal_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _previousStatusMeta = const VerificationMeta(
+    'previousStatus',
+  );
+  @override
+  late final GeneratedColumn<String> previousStatus = GeneratedColumn<String>(
+    'previous_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _newStatusMeta = const VerificationMeta(
+    'newStatus',
+  );
+  @override
+  late final GeneratedColumn<String> newStatus = GeneratedColumn<String>(
+    'new_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _effectiveAtMeta = const VerificationMeta(
+    'effectiveAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> effectiveAt = GeneratedColumn<DateTime>(
+    'effective_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changedByMeta = const VerificationMeta(
+    'changedBy',
+  );
+  @override
+  late final GeneratedColumn<String> changedBy = GeneratedColumn<String>(
+    'changed_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changedByNameMeta = const VerificationMeta(
+    'changedByName',
+  );
+  @override
+  late final GeneratedColumn<String> changedByName = GeneratedColumn<String>(
+    'changed_by_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sequenceMeta = const VerificationMeta(
+    'sequence',
+  );
+  @override
+  late final GeneratedColumn<int> sequence = GeneratedColumn<int>(
+    'sequence',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _cachedAtMeta = const VerificationMeta(
+    'cachedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+    'cached_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isAccessibleMeta = const VerificationMeta(
+    'isAccessible',
+  );
+  @override
+  late final GeneratedColumn<bool> isAccessible = GeneratedColumn<bool>(
+    'is_accessible',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_accessible" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    organizationId,
+    farmId,
+    farmName,
+    animalId,
+    animalNumber,
+    previousStatus,
+    newStatus,
+    effectiveAt,
+    reason,
+    changedBy,
+    changedByName,
+    sequence,
+    serverUpdatedAt,
+    cachedAt,
+    isAccessible,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_animal_status_changes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalAnimalStatusChange> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('organization_id')) {
+      context.handle(
+        _organizationIdMeta,
+        organizationId.isAcceptableOrUnknown(
+          data['organization_id']!,
+          _organizationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_organizationIdMeta);
+    }
+    if (data.containsKey('farm_id')) {
+      context.handle(
+        _farmIdMeta,
+        farmId.isAcceptableOrUnknown(data['farm_id']!, _farmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmIdMeta);
+    }
+    if (data.containsKey('farm_name')) {
+      context.handle(
+        _farmNameMeta,
+        farmName.isAcceptableOrUnknown(data['farm_name']!, _farmNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmNameMeta);
+    }
+    if (data.containsKey('animal_id')) {
+      context.handle(
+        _animalIdMeta,
+        animalId.isAcceptableOrUnknown(data['animal_id']!, _animalIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_animalIdMeta);
+    }
+    if (data.containsKey('animal_number')) {
+      context.handle(
+        _animalNumberMeta,
+        animalNumber.isAcceptableOrUnknown(
+          data['animal_number']!,
+          _animalNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_animalNumberMeta);
+    }
+    if (data.containsKey('previous_status')) {
+      context.handle(
+        _previousStatusMeta,
+        previousStatus.isAcceptableOrUnknown(
+          data['previous_status']!,
+          _previousStatusMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_previousStatusMeta);
+    }
+    if (data.containsKey('new_status')) {
+      context.handle(
+        _newStatusMeta,
+        newStatus.isAcceptableOrUnknown(data['new_status']!, _newStatusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_newStatusMeta);
+    }
+    if (data.containsKey('effective_at')) {
+      context.handle(
+        _effectiveAtMeta,
+        effectiveAt.isAcceptableOrUnknown(
+          data['effective_at']!,
+          _effectiveAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_effectiveAtMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_reasonMeta);
+    }
+    if (data.containsKey('changed_by')) {
+      context.handle(
+        _changedByMeta,
+        changedBy.isAcceptableOrUnknown(data['changed_by']!, _changedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_changedByMeta);
+    }
+    if (data.containsKey('changed_by_name')) {
+      context.handle(
+        _changedByNameMeta,
+        changedByName.isAcceptableOrUnknown(
+          data['changed_by_name']!,
+          _changedByNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_changedByNameMeta);
+    }
+    if (data.containsKey('sequence')) {
+      context.handle(
+        _sequenceMeta,
+        sequence.isAcceptableOrUnknown(data['sequence']!, _sequenceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sequenceMeta);
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_serverUpdatedAtMeta);
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(
+        _cachedAtMeta,
+        cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    if (data.containsKey('is_accessible')) {
+      context.handle(
+        _isAccessibleMeta,
+        isAccessible.isAcceptableOrUnknown(
+          data['is_accessible']!,
+          _isAccessibleMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalAnimalStatusChange map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalAnimalStatusChange(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      organizationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}organization_id'],
+      )!,
+      farmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farm_id'],
+      )!,
+      farmName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farm_name'],
+      )!,
+      animalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_id'],
+      )!,
+      animalNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_number'],
+      )!,
+      previousStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}previous_status'],
+      )!,
+      newStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}new_status'],
+      )!,
+      effectiveAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}effective_at'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      )!,
+      changedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changed_by'],
+      )!,
+      changedByName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changed_by_name'],
+      )!,
+      sequence: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sequence'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      )!,
+      cachedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}cached_at'],
+      )!,
+      isAccessible: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_accessible'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalAnimalStatusChangesTable createAlias(String alias) {
+    return $LocalAnimalStatusChangesTable(attachedDatabase, alias);
+  }
+}
+
+class LocalAnimalStatusChange extends DataClass
+    implements Insertable<LocalAnimalStatusChange> {
+  final String id;
+  final String organizationId;
+  final String farmId;
+  final String farmName;
+  final String animalId;
+  final String animalNumber;
+  final String previousStatus;
+  final String newStatus;
+  final DateTime effectiveAt;
+  final String reason;
+  final String changedBy;
+  final String changedByName;
+  final int sequence;
+  final DateTime serverUpdatedAt;
+  final DateTime cachedAt;
+  final bool isAccessible;
+  const LocalAnimalStatusChange({
+    required this.id,
+    required this.organizationId,
+    required this.farmId,
+    required this.farmName,
+    required this.animalId,
+    required this.animalNumber,
+    required this.previousStatus,
+    required this.newStatus,
+    required this.effectiveAt,
+    required this.reason,
+    required this.changedBy,
+    required this.changedByName,
+    required this.sequence,
+    required this.serverUpdatedAt,
+    required this.cachedAt,
+    required this.isAccessible,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['organization_id'] = Variable<String>(organizationId);
+    map['farm_id'] = Variable<String>(farmId);
+    map['farm_name'] = Variable<String>(farmName);
+    map['animal_id'] = Variable<String>(animalId);
+    map['animal_number'] = Variable<String>(animalNumber);
+    map['previous_status'] = Variable<String>(previousStatus);
+    map['new_status'] = Variable<String>(newStatus);
+    map['effective_at'] = Variable<DateTime>(effectiveAt);
+    map['reason'] = Variable<String>(reason);
+    map['changed_by'] = Variable<String>(changedBy);
+    map['changed_by_name'] = Variable<String>(changedByName);
+    map['sequence'] = Variable<int>(sequence);
+    map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    map['is_accessible'] = Variable<bool>(isAccessible);
+    return map;
+  }
+
+  LocalAnimalStatusChangesCompanion toCompanion(bool nullToAbsent) {
+    return LocalAnimalStatusChangesCompanion(
+      id: Value(id),
+      organizationId: Value(organizationId),
+      farmId: Value(farmId),
+      farmName: Value(farmName),
+      animalId: Value(animalId),
+      animalNumber: Value(animalNumber),
+      previousStatus: Value(previousStatus),
+      newStatus: Value(newStatus),
+      effectiveAt: Value(effectiveAt),
+      reason: Value(reason),
+      changedBy: Value(changedBy),
+      changedByName: Value(changedByName),
+      sequence: Value(sequence),
+      serverUpdatedAt: Value(serverUpdatedAt),
+      cachedAt: Value(cachedAt),
+      isAccessible: Value(isAccessible),
+    );
+  }
+
+  factory LocalAnimalStatusChange.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalAnimalStatusChange(
+      id: serializer.fromJson<String>(json['id']),
+      organizationId: serializer.fromJson<String>(json['organizationId']),
+      farmId: serializer.fromJson<String>(json['farmId']),
+      farmName: serializer.fromJson<String>(json['farmName']),
+      animalId: serializer.fromJson<String>(json['animalId']),
+      animalNumber: serializer.fromJson<String>(json['animalNumber']),
+      previousStatus: serializer.fromJson<String>(json['previousStatus']),
+      newStatus: serializer.fromJson<String>(json['newStatus']),
+      effectiveAt: serializer.fromJson<DateTime>(json['effectiveAt']),
+      reason: serializer.fromJson<String>(json['reason']),
+      changedBy: serializer.fromJson<String>(json['changedBy']),
+      changedByName: serializer.fromJson<String>(json['changedByName']),
+      sequence: serializer.fromJson<int>(json['sequence']),
+      serverUpdatedAt: serializer.fromJson<DateTime>(json['serverUpdatedAt']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+      isAccessible: serializer.fromJson<bool>(json['isAccessible']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'organizationId': serializer.toJson<String>(organizationId),
+      'farmId': serializer.toJson<String>(farmId),
+      'farmName': serializer.toJson<String>(farmName),
+      'animalId': serializer.toJson<String>(animalId),
+      'animalNumber': serializer.toJson<String>(animalNumber),
+      'previousStatus': serializer.toJson<String>(previousStatus),
+      'newStatus': serializer.toJson<String>(newStatus),
+      'effectiveAt': serializer.toJson<DateTime>(effectiveAt),
+      'reason': serializer.toJson<String>(reason),
+      'changedBy': serializer.toJson<String>(changedBy),
+      'changedByName': serializer.toJson<String>(changedByName),
+      'sequence': serializer.toJson<int>(sequence),
+      'serverUpdatedAt': serializer.toJson<DateTime>(serverUpdatedAt),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+      'isAccessible': serializer.toJson<bool>(isAccessible),
+    };
+  }
+
+  LocalAnimalStatusChange copyWith({
+    String? id,
+    String? organizationId,
+    String? farmId,
+    String? farmName,
+    String? animalId,
+    String? animalNumber,
+    String? previousStatus,
+    String? newStatus,
+    DateTime? effectiveAt,
+    String? reason,
+    String? changedBy,
+    String? changedByName,
+    int? sequence,
+    DateTime? serverUpdatedAt,
+    DateTime? cachedAt,
+    bool? isAccessible,
+  }) => LocalAnimalStatusChange(
+    id: id ?? this.id,
+    organizationId: organizationId ?? this.organizationId,
+    farmId: farmId ?? this.farmId,
+    farmName: farmName ?? this.farmName,
+    animalId: animalId ?? this.animalId,
+    animalNumber: animalNumber ?? this.animalNumber,
+    previousStatus: previousStatus ?? this.previousStatus,
+    newStatus: newStatus ?? this.newStatus,
+    effectiveAt: effectiveAt ?? this.effectiveAt,
+    reason: reason ?? this.reason,
+    changedBy: changedBy ?? this.changedBy,
+    changedByName: changedByName ?? this.changedByName,
+    sequence: sequence ?? this.sequence,
+    serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+    cachedAt: cachedAt ?? this.cachedAt,
+    isAccessible: isAccessible ?? this.isAccessible,
+  );
+  LocalAnimalStatusChange copyWithCompanion(
+    LocalAnimalStatusChangesCompanion data,
+  ) {
+    return LocalAnimalStatusChange(
+      id: data.id.present ? data.id.value : this.id,
+      organizationId: data.organizationId.present
+          ? data.organizationId.value
+          : this.organizationId,
+      farmId: data.farmId.present ? data.farmId.value : this.farmId,
+      farmName: data.farmName.present ? data.farmName.value : this.farmName,
+      animalId: data.animalId.present ? data.animalId.value : this.animalId,
+      animalNumber: data.animalNumber.present
+          ? data.animalNumber.value
+          : this.animalNumber,
+      previousStatus: data.previousStatus.present
+          ? data.previousStatus.value
+          : this.previousStatus,
+      newStatus: data.newStatus.present ? data.newStatus.value : this.newStatus,
+      effectiveAt: data.effectiveAt.present
+          ? data.effectiveAt.value
+          : this.effectiveAt,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      changedBy: data.changedBy.present ? data.changedBy.value : this.changedBy,
+      changedByName: data.changedByName.present
+          ? data.changedByName.value
+          : this.changedByName,
+      sequence: data.sequence.present ? data.sequence.value : this.sequence,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      cachedAt: data.cachedAt.present ? data.cachedAt.value : this.cachedAt,
+      isAccessible: data.isAccessible.present
+          ? data.isAccessible.value
+          : this.isAccessible,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalAnimalStatusChange(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('farmId: $farmId, ')
+          ..write('farmName: $farmName, ')
+          ..write('animalId: $animalId, ')
+          ..write('animalNumber: $animalNumber, ')
+          ..write('previousStatus: $previousStatus, ')
+          ..write('newStatus: $newStatus, ')
+          ..write('effectiveAt: $effectiveAt, ')
+          ..write('reason: $reason, ')
+          ..write('changedBy: $changedBy, ')
+          ..write('changedByName: $changedByName, ')
+          ..write('sequence: $sequence, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('isAccessible: $isAccessible')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    organizationId,
+    farmId,
+    farmName,
+    animalId,
+    animalNumber,
+    previousStatus,
+    newStatus,
+    effectiveAt,
+    reason,
+    changedBy,
+    changedByName,
+    sequence,
+    serverUpdatedAt,
+    cachedAt,
+    isAccessible,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalAnimalStatusChange &&
+          other.id == this.id &&
+          other.organizationId == this.organizationId &&
+          other.farmId == this.farmId &&
+          other.farmName == this.farmName &&
+          other.animalId == this.animalId &&
+          other.animalNumber == this.animalNumber &&
+          other.previousStatus == this.previousStatus &&
+          other.newStatus == this.newStatus &&
+          other.effectiveAt == this.effectiveAt &&
+          other.reason == this.reason &&
+          other.changedBy == this.changedBy &&
+          other.changedByName == this.changedByName &&
+          other.sequence == this.sequence &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.cachedAt == this.cachedAt &&
+          other.isAccessible == this.isAccessible);
+}
+
+class LocalAnimalStatusChangesCompanion
+    extends UpdateCompanion<LocalAnimalStatusChange> {
+  final Value<String> id;
+  final Value<String> organizationId;
+  final Value<String> farmId;
+  final Value<String> farmName;
+  final Value<String> animalId;
+  final Value<String> animalNumber;
+  final Value<String> previousStatus;
+  final Value<String> newStatus;
+  final Value<DateTime> effectiveAt;
+  final Value<String> reason;
+  final Value<String> changedBy;
+  final Value<String> changedByName;
+  final Value<int> sequence;
+  final Value<DateTime> serverUpdatedAt;
+  final Value<DateTime> cachedAt;
+  final Value<bool> isAccessible;
+  final Value<int> rowid;
+  const LocalAnimalStatusChangesCompanion({
+    this.id = const Value.absent(),
+    this.organizationId = const Value.absent(),
+    this.farmId = const Value.absent(),
+    this.farmName = const Value.absent(),
+    this.animalId = const Value.absent(),
+    this.animalNumber = const Value.absent(),
+    this.previousStatus = const Value.absent(),
+    this.newStatus = const Value.absent(),
+    this.effectiveAt = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.changedBy = const Value.absent(),
+    this.changedByName = const Value.absent(),
+    this.sequence = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.isAccessible = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalAnimalStatusChangesCompanion.insert({
+    required String id,
+    required String organizationId,
+    required String farmId,
+    required String farmName,
+    required String animalId,
+    required String animalNumber,
+    required String previousStatus,
+    required String newStatus,
+    required DateTime effectiveAt,
+    required String reason,
+    required String changedBy,
+    required String changedByName,
+    required int sequence,
+    required DateTime serverUpdatedAt,
+    required DateTime cachedAt,
+    this.isAccessible = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       organizationId = Value(organizationId),
+       farmId = Value(farmId),
+       farmName = Value(farmName),
+       animalId = Value(animalId),
+       animalNumber = Value(animalNumber),
+       previousStatus = Value(previousStatus),
+       newStatus = Value(newStatus),
+       effectiveAt = Value(effectiveAt),
+       reason = Value(reason),
+       changedBy = Value(changedBy),
+       changedByName = Value(changedByName),
+       sequence = Value(sequence),
+       serverUpdatedAt = Value(serverUpdatedAt),
+       cachedAt = Value(cachedAt);
+  static Insertable<LocalAnimalStatusChange> custom({
+    Expression<String>? id,
+    Expression<String>? organizationId,
+    Expression<String>? farmId,
+    Expression<String>? farmName,
+    Expression<String>? animalId,
+    Expression<String>? animalNumber,
+    Expression<String>? previousStatus,
+    Expression<String>? newStatus,
+    Expression<DateTime>? effectiveAt,
+    Expression<String>? reason,
+    Expression<String>? changedBy,
+    Expression<String>? changedByName,
+    Expression<int>? sequence,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<DateTime>? cachedAt,
+    Expression<bool>? isAccessible,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (organizationId != null) 'organization_id': organizationId,
+      if (farmId != null) 'farm_id': farmId,
+      if (farmName != null) 'farm_name': farmName,
+      if (animalId != null) 'animal_id': animalId,
+      if (animalNumber != null) 'animal_number': animalNumber,
+      if (previousStatus != null) 'previous_status': previousStatus,
+      if (newStatus != null) 'new_status': newStatus,
+      if (effectiveAt != null) 'effective_at': effectiveAt,
+      if (reason != null) 'reason': reason,
+      if (changedBy != null) 'changed_by': changedBy,
+      if (changedByName != null) 'changed_by_name': changedByName,
+      if (sequence != null) 'sequence': sequence,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (isAccessible != null) 'is_accessible': isAccessible,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalAnimalStatusChangesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? organizationId,
+    Value<String>? farmId,
+    Value<String>? farmName,
+    Value<String>? animalId,
+    Value<String>? animalNumber,
+    Value<String>? previousStatus,
+    Value<String>? newStatus,
+    Value<DateTime>? effectiveAt,
+    Value<String>? reason,
+    Value<String>? changedBy,
+    Value<String>? changedByName,
+    Value<int>? sequence,
+    Value<DateTime>? serverUpdatedAt,
+    Value<DateTime>? cachedAt,
+    Value<bool>? isAccessible,
+    Value<int>? rowid,
+  }) {
+    return LocalAnimalStatusChangesCompanion(
+      id: id ?? this.id,
+      organizationId: organizationId ?? this.organizationId,
+      farmId: farmId ?? this.farmId,
+      farmName: farmName ?? this.farmName,
+      animalId: animalId ?? this.animalId,
+      animalNumber: animalNumber ?? this.animalNumber,
+      previousStatus: previousStatus ?? this.previousStatus,
+      newStatus: newStatus ?? this.newStatus,
+      effectiveAt: effectiveAt ?? this.effectiveAt,
+      reason: reason ?? this.reason,
+      changedBy: changedBy ?? this.changedBy,
+      changedByName: changedByName ?? this.changedByName,
+      sequence: sequence ?? this.sequence,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      cachedAt: cachedAt ?? this.cachedAt,
+      isAccessible: isAccessible ?? this.isAccessible,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (organizationId.present) {
+      map['organization_id'] = Variable<String>(organizationId.value);
+    }
+    if (farmId.present) {
+      map['farm_id'] = Variable<String>(farmId.value);
+    }
+    if (farmName.present) {
+      map['farm_name'] = Variable<String>(farmName.value);
+    }
+    if (animalId.present) {
+      map['animal_id'] = Variable<String>(animalId.value);
+    }
+    if (animalNumber.present) {
+      map['animal_number'] = Variable<String>(animalNumber.value);
+    }
+    if (previousStatus.present) {
+      map['previous_status'] = Variable<String>(previousStatus.value);
+    }
+    if (newStatus.present) {
+      map['new_status'] = Variable<String>(newStatus.value);
+    }
+    if (effectiveAt.present) {
+      map['effective_at'] = Variable<DateTime>(effectiveAt.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (changedBy.present) {
+      map['changed_by'] = Variable<String>(changedBy.value);
+    }
+    if (changedByName.present) {
+      map['changed_by_name'] = Variable<String>(changedByName.value);
+    }
+    if (sequence.present) {
+      map['sequence'] = Variable<int>(sequence.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (isAccessible.present) {
+      map['is_accessible'] = Variable<bool>(isAccessible.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalAnimalStatusChangesCompanion(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('farmId: $farmId, ')
+          ..write('farmName: $farmName, ')
+          ..write('animalId: $animalId, ')
+          ..write('animalNumber: $animalNumber, ')
+          ..write('previousStatus: $previousStatus, ')
+          ..write('newStatus: $newStatus, ')
+          ..write('effectiveAt: $effectiveAt, ')
+          ..write('reason: $reason, ')
+          ..write('changedBy: $changedBy, ')
+          ..write('changedByName: $changedByName, ')
+          ..write('sequence: $sequence, ')
           ..write('serverUpdatedAt: $serverUpdatedAt, ')
           ..write('cachedAt: $cachedAt, ')
           ..write('isAccessible: $isAccessible, ')
@@ -10300,6 +12630,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $LocalAnimalsTable localAnimals = $LocalAnimalsTable(this);
   late final $LocalAnimalMovementsTable localAnimalMovements =
       $LocalAnimalMovementsTable(this);
+  late final $LocalAnimalWeightsTable localAnimalWeights =
+      $LocalAnimalWeightsTable(this);
+  late final $LocalAnimalStatusChangesTable localAnimalStatusChanges =
+      $LocalAnimalStatusChangesTable(this);
   late final $SyncDevicesTable syncDevices = $SyncDevicesTable(this);
   late final $SyncCursorsTable syncCursors = $SyncCursorsTable(this);
   late final $SyncOutboxTable syncOutbox = $SyncOutboxTable(this);
@@ -10320,6 +12654,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     localAnimalGroups,
     localAnimals,
     localAnimalMovements,
+    localAnimalWeights,
+    localAnimalStatusChanges,
     syncDevices,
     syncCursors,
     syncOutbox,
@@ -12262,6 +14598,9 @@ typedef $$LocalAnimalsTableCreateCompanionBuilder =
       Value<String?> sourceDescription,
       Value<String?> notes,
       required String operationalStatus,
+      Value<String?> latestWeightId,
+      Value<String?> latestWeightKg,
+      Value<DateTime?> latestWeightObservedAt,
       Value<int> version,
       required DateTime serverUpdatedAt,
       required DateTime cachedAt,
@@ -12304,6 +14643,9 @@ typedef $$LocalAnimalsTableUpdateCompanionBuilder =
       Value<String?> sourceDescription,
       Value<String?> notes,
       Value<String> operationalStatus,
+      Value<String?> latestWeightId,
+      Value<String?> latestWeightKg,
+      Value<DateTime?> latestWeightObservedAt,
       Value<int> version,
       Value<DateTime> serverUpdatedAt,
       Value<DateTime> cachedAt,
@@ -12483,6 +14825,21 @@ class $$LocalAnimalsTableFilterComposer
 
   ColumnFilters<String> get operationalStatus => $composableBuilder(
     column: $table.operationalStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get latestWeightId => $composableBuilder(
+    column: $table.latestWeightId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get latestWeightKg => $composableBuilder(
+    column: $table.latestWeightKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get latestWeightObservedAt => $composableBuilder(
+    column: $table.latestWeightObservedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12686,6 +15043,21 @@ class $$LocalAnimalsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get latestWeightId => $composableBuilder(
+    column: $table.latestWeightId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get latestWeightKg => $composableBuilder(
+    column: $table.latestWeightKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get latestWeightObservedAt => $composableBuilder(
+    column: $table.latestWeightObservedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get version => $composableBuilder(
     column: $table.version,
     builder: (column) => ColumnOrderings(column),
@@ -12866,6 +15238,21 @@ class $$LocalAnimalsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get latestWeightId => $composableBuilder(
+    column: $table.latestWeightId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get latestWeightKg => $composableBuilder(
+    column: $table.latestWeightKg,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get latestWeightObservedAt => $composableBuilder(
+    column: $table.latestWeightObservedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get version =>
       $composableBuilder(column: $table.version, builder: (column) => column);
 
@@ -12952,6 +15339,9 @@ class $$LocalAnimalsTableTableManager
                 Value<String?> sourceDescription = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String> operationalStatus = const Value.absent(),
+                Value<String?> latestWeightId = const Value.absent(),
+                Value<String?> latestWeightKg = const Value.absent(),
+                Value<DateTime?> latestWeightObservedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<DateTime> serverUpdatedAt = const Value.absent(),
                 Value<DateTime> cachedAt = const Value.absent(),
@@ -12992,6 +15382,9 @@ class $$LocalAnimalsTableTableManager
                 sourceDescription: sourceDescription,
                 notes: notes,
                 operationalStatus: operationalStatus,
+                latestWeightId: latestWeightId,
+                latestWeightKg: latestWeightKg,
+                latestWeightObservedAt: latestWeightObservedAt,
                 version: version,
                 serverUpdatedAt: serverUpdatedAt,
                 cachedAt: cachedAt,
@@ -13034,6 +15427,9 @@ class $$LocalAnimalsTableTableManager
                 Value<String?> sourceDescription = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 required String operationalStatus,
+                Value<String?> latestWeightId = const Value.absent(),
+                Value<String?> latestWeightKg = const Value.absent(),
+                Value<DateTime?> latestWeightObservedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 required DateTime serverUpdatedAt,
                 required DateTime cachedAt,
@@ -13074,6 +15470,9 @@ class $$LocalAnimalsTableTableManager
                 sourceDescription: sourceDescription,
                 notes: notes,
                 operationalStatus: operationalStatus,
+                latestWeightId: latestWeightId,
+                latestWeightKg: latestWeightKg,
+                latestWeightObservedAt: latestWeightObservedAt,
                 version: version,
                 serverUpdatedAt: serverUpdatedAt,
                 cachedAt: cachedAt,
@@ -13904,6 +16303,993 @@ typedef $$LocalAnimalMovementsTableProcessedTableManager =
         >,
       ),
       LocalAnimalMovement,
+      PrefetchHooks Function()
+    >;
+typedef $$LocalAnimalWeightsTableCreateCompanionBuilder =
+    LocalAnimalWeightsCompanion Function({
+      required String id,
+      required String organizationId,
+      required String farmId,
+      required String farmName,
+      required String animalId,
+      required String animalNumber,
+      required String enteredValue,
+      required String enteredUnit,
+      required String normalizedKg,
+      required DateTime observedAt,
+      required String source,
+      Value<String?> notes,
+      required String recordedBy,
+      required String recordedByName,
+      Value<String?> supersedesWeightId,
+      Value<String?> supersededByWeightId,
+      Value<String?> correctionReason,
+      Value<bool> isSuperseded,
+      required DateTime serverUpdatedAt,
+      required DateTime cachedAt,
+      Value<bool> isAccessible,
+      Value<int> rowid,
+    });
+typedef $$LocalAnimalWeightsTableUpdateCompanionBuilder =
+    LocalAnimalWeightsCompanion Function({
+      Value<String> id,
+      Value<String> organizationId,
+      Value<String> farmId,
+      Value<String> farmName,
+      Value<String> animalId,
+      Value<String> animalNumber,
+      Value<String> enteredValue,
+      Value<String> enteredUnit,
+      Value<String> normalizedKg,
+      Value<DateTime> observedAt,
+      Value<String> source,
+      Value<String?> notes,
+      Value<String> recordedBy,
+      Value<String> recordedByName,
+      Value<String?> supersedesWeightId,
+      Value<String?> supersededByWeightId,
+      Value<String?> correctionReason,
+      Value<bool> isSuperseded,
+      Value<DateTime> serverUpdatedAt,
+      Value<DateTime> cachedAt,
+      Value<bool> isAccessible,
+      Value<int> rowid,
+    });
+
+class $$LocalAnimalWeightsTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalAnimalWeightsTable> {
+  $$LocalAnimalWeightsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmId => $composableBuilder(
+    column: $table.farmId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmName => $composableBuilder(
+    column: $table.farmName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalId => $composableBuilder(
+    column: $table.animalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get enteredValue => $composableBuilder(
+    column: $table.enteredValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get enteredUnit => $composableBuilder(
+    column: $table.enteredUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get normalizedKg => $composableBuilder(
+    column: $table.normalizedKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedByName => $composableBuilder(
+    column: $table.recordedByName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get supersedesWeightId => $composableBuilder(
+    column: $table.supersedesWeightId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get supersededByWeightId => $composableBuilder(
+    column: $table.supersededByWeightId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get correctionReason => $composableBuilder(
+    column: $table.correctionReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSuperseded => $composableBuilder(
+    column: $table.isSuperseded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalAnimalWeightsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalAnimalWeightsTable> {
+  $$LocalAnimalWeightsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmId => $composableBuilder(
+    column: $table.farmId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmName => $composableBuilder(
+    column: $table.farmName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalId => $composableBuilder(
+    column: $table.animalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get enteredValue => $composableBuilder(
+    column: $table.enteredValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get enteredUnit => $composableBuilder(
+    column: $table.enteredUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get normalizedKg => $composableBuilder(
+    column: $table.normalizedKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedByName => $composableBuilder(
+    column: $table.recordedByName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get supersedesWeightId => $composableBuilder(
+    column: $table.supersedesWeightId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get supersededByWeightId => $composableBuilder(
+    column: $table.supersededByWeightId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get correctionReason => $composableBuilder(
+    column: $table.correctionReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSuperseded => $composableBuilder(
+    column: $table.isSuperseded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalAnimalWeightsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalAnimalWeightsTable> {
+  $$LocalAnimalWeightsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get farmId =>
+      $composableBuilder(column: $table.farmId, builder: (column) => column);
+
+  GeneratedColumn<String> get farmName =>
+      $composableBuilder(column: $table.farmName, builder: (column) => column);
+
+  GeneratedColumn<String> get animalId =>
+      $composableBuilder(column: $table.animalId, builder: (column) => column);
+
+  GeneratedColumn<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get enteredValue => $composableBuilder(
+    column: $table.enteredValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get enteredUnit => $composableBuilder(
+    column: $table.enteredUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get normalizedKg => $composableBuilder(
+    column: $table.normalizedKg,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordedByName => $composableBuilder(
+    column: $table.recordedByName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get supersedesWeightId => $composableBuilder(
+    column: $table.supersedesWeightId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get supersededByWeightId => $composableBuilder(
+    column: $table.supersededByWeightId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get correctionReason => $composableBuilder(
+    column: $table.correctionReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isSuperseded => $composableBuilder(
+    column: $table.isSuperseded,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get cachedAt =>
+      $composableBuilder(column: $table.cachedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => column,
+  );
+}
+
+class $$LocalAnimalWeightsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalAnimalWeightsTable,
+          LocalAnimalWeight,
+          $$LocalAnimalWeightsTableFilterComposer,
+          $$LocalAnimalWeightsTableOrderingComposer,
+          $$LocalAnimalWeightsTableAnnotationComposer,
+          $$LocalAnimalWeightsTableCreateCompanionBuilder,
+          $$LocalAnimalWeightsTableUpdateCompanionBuilder,
+          (
+            LocalAnimalWeight,
+            BaseReferences<
+              _$AppDatabase,
+              $LocalAnimalWeightsTable,
+              LocalAnimalWeight
+            >,
+          ),
+          LocalAnimalWeight,
+          PrefetchHooks Function()
+        > {
+  $$LocalAnimalWeightsTableTableManager(
+    _$AppDatabase db,
+    $LocalAnimalWeightsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalAnimalWeightsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalAnimalWeightsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalAnimalWeightsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> organizationId = const Value.absent(),
+                Value<String> farmId = const Value.absent(),
+                Value<String> farmName = const Value.absent(),
+                Value<String> animalId = const Value.absent(),
+                Value<String> animalNumber = const Value.absent(),
+                Value<String> enteredValue = const Value.absent(),
+                Value<String> enteredUnit = const Value.absent(),
+                Value<String> normalizedKg = const Value.absent(),
+                Value<DateTime> observedAt = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String> recordedBy = const Value.absent(),
+                Value<String> recordedByName = const Value.absent(),
+                Value<String?> supersedesWeightId = const Value.absent(),
+                Value<String?> supersededByWeightId = const Value.absent(),
+                Value<String?> correctionReason = const Value.absent(),
+                Value<bool> isSuperseded = const Value.absent(),
+                Value<DateTime> serverUpdatedAt = const Value.absent(),
+                Value<DateTime> cachedAt = const Value.absent(),
+                Value<bool> isAccessible = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalAnimalWeightsCompanion(
+                id: id,
+                organizationId: organizationId,
+                farmId: farmId,
+                farmName: farmName,
+                animalId: animalId,
+                animalNumber: animalNumber,
+                enteredValue: enteredValue,
+                enteredUnit: enteredUnit,
+                normalizedKg: normalizedKg,
+                observedAt: observedAt,
+                source: source,
+                notes: notes,
+                recordedBy: recordedBy,
+                recordedByName: recordedByName,
+                supersedesWeightId: supersedesWeightId,
+                supersededByWeightId: supersededByWeightId,
+                correctionReason: correctionReason,
+                isSuperseded: isSuperseded,
+                serverUpdatedAt: serverUpdatedAt,
+                cachedAt: cachedAt,
+                isAccessible: isAccessible,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String organizationId,
+                required String farmId,
+                required String farmName,
+                required String animalId,
+                required String animalNumber,
+                required String enteredValue,
+                required String enteredUnit,
+                required String normalizedKg,
+                required DateTime observedAt,
+                required String source,
+                Value<String?> notes = const Value.absent(),
+                required String recordedBy,
+                required String recordedByName,
+                Value<String?> supersedesWeightId = const Value.absent(),
+                Value<String?> supersededByWeightId = const Value.absent(),
+                Value<String?> correctionReason = const Value.absent(),
+                Value<bool> isSuperseded = const Value.absent(),
+                required DateTime serverUpdatedAt,
+                required DateTime cachedAt,
+                Value<bool> isAccessible = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalAnimalWeightsCompanion.insert(
+                id: id,
+                organizationId: organizationId,
+                farmId: farmId,
+                farmName: farmName,
+                animalId: animalId,
+                animalNumber: animalNumber,
+                enteredValue: enteredValue,
+                enteredUnit: enteredUnit,
+                normalizedKg: normalizedKg,
+                observedAt: observedAt,
+                source: source,
+                notes: notes,
+                recordedBy: recordedBy,
+                recordedByName: recordedByName,
+                supersedesWeightId: supersedesWeightId,
+                supersededByWeightId: supersededByWeightId,
+                correctionReason: correctionReason,
+                isSuperseded: isSuperseded,
+                serverUpdatedAt: serverUpdatedAt,
+                cachedAt: cachedAt,
+                isAccessible: isAccessible,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalAnimalWeightsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalAnimalWeightsTable,
+      LocalAnimalWeight,
+      $$LocalAnimalWeightsTableFilterComposer,
+      $$LocalAnimalWeightsTableOrderingComposer,
+      $$LocalAnimalWeightsTableAnnotationComposer,
+      $$LocalAnimalWeightsTableCreateCompanionBuilder,
+      $$LocalAnimalWeightsTableUpdateCompanionBuilder,
+      (
+        LocalAnimalWeight,
+        BaseReferences<
+          _$AppDatabase,
+          $LocalAnimalWeightsTable,
+          LocalAnimalWeight
+        >,
+      ),
+      LocalAnimalWeight,
+      PrefetchHooks Function()
+    >;
+typedef $$LocalAnimalStatusChangesTableCreateCompanionBuilder =
+    LocalAnimalStatusChangesCompanion Function({
+      required String id,
+      required String organizationId,
+      required String farmId,
+      required String farmName,
+      required String animalId,
+      required String animalNumber,
+      required String previousStatus,
+      required String newStatus,
+      required DateTime effectiveAt,
+      required String reason,
+      required String changedBy,
+      required String changedByName,
+      required int sequence,
+      required DateTime serverUpdatedAt,
+      required DateTime cachedAt,
+      Value<bool> isAccessible,
+      Value<int> rowid,
+    });
+typedef $$LocalAnimalStatusChangesTableUpdateCompanionBuilder =
+    LocalAnimalStatusChangesCompanion Function({
+      Value<String> id,
+      Value<String> organizationId,
+      Value<String> farmId,
+      Value<String> farmName,
+      Value<String> animalId,
+      Value<String> animalNumber,
+      Value<String> previousStatus,
+      Value<String> newStatus,
+      Value<DateTime> effectiveAt,
+      Value<String> reason,
+      Value<String> changedBy,
+      Value<String> changedByName,
+      Value<int> sequence,
+      Value<DateTime> serverUpdatedAt,
+      Value<DateTime> cachedAt,
+      Value<bool> isAccessible,
+      Value<int> rowid,
+    });
+
+class $$LocalAnimalStatusChangesTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalAnimalStatusChangesTable> {
+  $$LocalAnimalStatusChangesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmId => $composableBuilder(
+    column: $table.farmId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmName => $composableBuilder(
+    column: $table.farmName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalId => $composableBuilder(
+    column: $table.animalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get previousStatus => $composableBuilder(
+    column: $table.previousStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get newStatus => $composableBuilder(
+    column: $table.newStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get effectiveAt => $composableBuilder(
+    column: $table.effectiveAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changedBy => $composableBuilder(
+    column: $table.changedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changedByName => $composableBuilder(
+    column: $table.changedByName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sequence => $composableBuilder(
+    column: $table.sequence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalAnimalStatusChangesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalAnimalStatusChangesTable> {
+  $$LocalAnimalStatusChangesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmId => $composableBuilder(
+    column: $table.farmId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmName => $composableBuilder(
+    column: $table.farmName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalId => $composableBuilder(
+    column: $table.animalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get previousStatus => $composableBuilder(
+    column: $table.previousStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get newStatus => $composableBuilder(
+    column: $table.newStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get effectiveAt => $composableBuilder(
+    column: $table.effectiveAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changedBy => $composableBuilder(
+    column: $table.changedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changedByName => $composableBuilder(
+    column: $table.changedByName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sequence => $composableBuilder(
+    column: $table.sequence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalAnimalStatusChangesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalAnimalStatusChangesTable> {
+  $$LocalAnimalStatusChangesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get farmId =>
+      $composableBuilder(column: $table.farmId, builder: (column) => column);
+
+  GeneratedColumn<String> get farmName =>
+      $composableBuilder(column: $table.farmName, builder: (column) => column);
+
+  GeneratedColumn<String> get animalId =>
+      $composableBuilder(column: $table.animalId, builder: (column) => column);
+
+  GeneratedColumn<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get previousStatus => $composableBuilder(
+    column: $table.previousStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get newStatus =>
+      $composableBuilder(column: $table.newStatus, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get effectiveAt => $composableBuilder(
+    column: $table.effectiveAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reason =>
+      $composableBuilder(column: $table.reason, builder: (column) => column);
+
+  GeneratedColumn<String> get changedBy =>
+      $composableBuilder(column: $table.changedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get changedByName => $composableBuilder(
+    column: $table.changedByName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get sequence =>
+      $composableBuilder(column: $table.sequence, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get cachedAt =>
+      $composableBuilder(column: $table.cachedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => column,
+  );
+}
+
+class $$LocalAnimalStatusChangesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalAnimalStatusChangesTable,
+          LocalAnimalStatusChange,
+          $$LocalAnimalStatusChangesTableFilterComposer,
+          $$LocalAnimalStatusChangesTableOrderingComposer,
+          $$LocalAnimalStatusChangesTableAnnotationComposer,
+          $$LocalAnimalStatusChangesTableCreateCompanionBuilder,
+          $$LocalAnimalStatusChangesTableUpdateCompanionBuilder,
+          (
+            LocalAnimalStatusChange,
+            BaseReferences<
+              _$AppDatabase,
+              $LocalAnimalStatusChangesTable,
+              LocalAnimalStatusChange
+            >,
+          ),
+          LocalAnimalStatusChange,
+          PrefetchHooks Function()
+        > {
+  $$LocalAnimalStatusChangesTableTableManager(
+    _$AppDatabase db,
+    $LocalAnimalStatusChangesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalAnimalStatusChangesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$LocalAnimalStatusChangesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$LocalAnimalStatusChangesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> organizationId = const Value.absent(),
+                Value<String> farmId = const Value.absent(),
+                Value<String> farmName = const Value.absent(),
+                Value<String> animalId = const Value.absent(),
+                Value<String> animalNumber = const Value.absent(),
+                Value<String> previousStatus = const Value.absent(),
+                Value<String> newStatus = const Value.absent(),
+                Value<DateTime> effectiveAt = const Value.absent(),
+                Value<String> reason = const Value.absent(),
+                Value<String> changedBy = const Value.absent(),
+                Value<String> changedByName = const Value.absent(),
+                Value<int> sequence = const Value.absent(),
+                Value<DateTime> serverUpdatedAt = const Value.absent(),
+                Value<DateTime> cachedAt = const Value.absent(),
+                Value<bool> isAccessible = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalAnimalStatusChangesCompanion(
+                id: id,
+                organizationId: organizationId,
+                farmId: farmId,
+                farmName: farmName,
+                animalId: animalId,
+                animalNumber: animalNumber,
+                previousStatus: previousStatus,
+                newStatus: newStatus,
+                effectiveAt: effectiveAt,
+                reason: reason,
+                changedBy: changedBy,
+                changedByName: changedByName,
+                sequence: sequence,
+                serverUpdatedAt: serverUpdatedAt,
+                cachedAt: cachedAt,
+                isAccessible: isAccessible,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String organizationId,
+                required String farmId,
+                required String farmName,
+                required String animalId,
+                required String animalNumber,
+                required String previousStatus,
+                required String newStatus,
+                required DateTime effectiveAt,
+                required String reason,
+                required String changedBy,
+                required String changedByName,
+                required int sequence,
+                required DateTime serverUpdatedAt,
+                required DateTime cachedAt,
+                Value<bool> isAccessible = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalAnimalStatusChangesCompanion.insert(
+                id: id,
+                organizationId: organizationId,
+                farmId: farmId,
+                farmName: farmName,
+                animalId: animalId,
+                animalNumber: animalNumber,
+                previousStatus: previousStatus,
+                newStatus: newStatus,
+                effectiveAt: effectiveAt,
+                reason: reason,
+                changedBy: changedBy,
+                changedByName: changedByName,
+                sequence: sequence,
+                serverUpdatedAt: serverUpdatedAt,
+                cachedAt: cachedAt,
+                isAccessible: isAccessible,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalAnimalStatusChangesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalAnimalStatusChangesTable,
+      LocalAnimalStatusChange,
+      $$LocalAnimalStatusChangesTableFilterComposer,
+      $$LocalAnimalStatusChangesTableOrderingComposer,
+      $$LocalAnimalStatusChangesTableAnnotationComposer,
+      $$LocalAnimalStatusChangesTableCreateCompanionBuilder,
+      $$LocalAnimalStatusChangesTableUpdateCompanionBuilder,
+      (
+        LocalAnimalStatusChange,
+        BaseReferences<
+          _$AppDatabase,
+          $LocalAnimalStatusChangesTable,
+          LocalAnimalStatusChange
+        >,
+      ),
+      LocalAnimalStatusChange,
       PrefetchHooks Function()
     >;
 typedef $$SyncDevicesTableCreateCompanionBuilder =
@@ -15234,6 +18620,13 @@ class $AppDatabaseManager {
       $$LocalAnimalsTableTableManager(_db, _db.localAnimals);
   $$LocalAnimalMovementsTableTableManager get localAnimalMovements =>
       $$LocalAnimalMovementsTableTableManager(_db, _db.localAnimalMovements);
+  $$LocalAnimalWeightsTableTableManager get localAnimalWeights =>
+      $$LocalAnimalWeightsTableTableManager(_db, _db.localAnimalWeights);
+  $$LocalAnimalStatusChangesTableTableManager get localAnimalStatusChanges =>
+      $$LocalAnimalStatusChangesTableTableManager(
+        _db,
+        _db.localAnimalStatusChanges,
+      );
   $$SyncDevicesTableTableManager get syncDevices =>
       $$SyncDevicesTableTableManager(_db, _db.syncDevices);
   $$SyncCursorsTableTableManager get syncCursors =>

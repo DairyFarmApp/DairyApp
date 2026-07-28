@@ -1,6 +1,6 @@
-# Sync Foundation, Registry, and Movement Cache
+# Sync Foundation, Registry, Movement, Weight, and Status Cache
 
-The client caches organizations, farms, sheds, animal species, breeds, farm groups, animals, and authorized animal movements. Drift also stores non-secret session metadata, device identity, opaque cursors, an outbox, conflicts, and application settings.
+The client caches organizations, farms, sheds, animal species, breeds, farm groups, animals, authorized animal movements, animal weights, and animal status changes. Drift also stores non-secret session metadata, device identity, opaque cursors, an outbox, conflicts, and application settings.
 
 Offline farm/shed creation writes the local row and outbox entry in one transaction with UUIDv7 aggregate/operation identifiers and a durable idempotency key. States are `pending`, `uploading`, `synced`, `failed`, and `conflict`. Processing is restricted to the authenticated active organization and waits for unsynchronized aggregate dependencies. Network failures plus HTTP 408/425/429/5xx use exponential backoff with full jitter. Validation/auth/authorization failures stop without looping; 409/412 creates a conflict record. Only stable error codes are persisted locally.
 
@@ -8,4 +8,6 @@ Uploads call ordinary domain endpoints so backend validation, permissions, audit
 
 Phase 2B adds `local_animal_movements` in Drift schema version 3. Bootstrap and incremental pulls upsert movement status/version changes. Reads require `animal_movements.view` and access to both source and destination farms; permission or either farm-access removal marks cached movements inaccessible.
 
-Registry and movement mutations are online-only and never enter the outbox. Offline animal create/edit/movement is reserved for separately approved Phase 2C. Attachments, background scheduling, and full conflict resolution also remain excluded; the diagnostic conflict list is read-only.
+Phase 2C advances Drift to schema version 4 with `local_animal_weights`, `local_animal_status_changes`, and latest-weight projection columns on `local_animals`. Bootstrap and incremental responses include independent authorization flags for both histories. Authorized rows upsert idempotently; permission/farm removal marks stale rows inaccessible, and superseded weight updates replace the latest projection deterministically.
+
+Registry, movement, weight, and status mutations are online-only and never enter the outbox. The app generates UUID/idempotency identifiers for safe online retry, but does not claim offline mutation or background upload. Attachments, background scheduling, and full conflict resolution remain excluded; the diagnostic conflict list is read-only.

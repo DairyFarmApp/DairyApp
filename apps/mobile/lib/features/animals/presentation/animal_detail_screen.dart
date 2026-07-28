@@ -5,6 +5,8 @@ import 'package:dairycare_mobile/features/animals/application/animal_providers.d
 import 'package:dairycare_mobile/features/animals/domain/animal_models.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_movement_history_section.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_registry_strings.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_status_history_section.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_weight_history_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -91,6 +93,13 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
       ),
       _ProfileField('Source', animal.sourceDescription),
       _ProfileField('Operational status', _label(animal.operationalStatus)),
+      _ProfileField(
+        'Latest weight',
+        animal.latestWeight == null
+            ? null
+            : '${animal.latestWeight!.normalizedKg} kg · '
+                  '${DateFormat.yMMMd().add_jm().format(animal.latestWeight!.observedAt.toLocal())}',
+      ),
       _ProfileField('Notes', animal.notes),
     ];
 
@@ -117,6 +126,7 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
                         animal.isArchived ? 'Archived' : 'Active record',
                       ),
                     ),
+                    _operationalStatusChip(animal.operationalStatus),
                     Chip(
                       avatar: const Icon(Icons.cloud_done_outlined),
                       label: Text(
@@ -140,6 +150,8 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
                   )
                 else
                   for (final field in fields) _fieldCard(field),
+                AnimalWeightHistorySection(animal: animal),
+                AnimalStatusHistorySection(animal: animal),
                 AnimalMovementHistorySection(animal: animal),
               ],
             ),
@@ -157,6 +169,20 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
       ),
     ),
   );
+
+  Widget _operationalStatusChip(String status) {
+    final (color, icon) = switch (status) {
+      'active' => (Colors.green, Icons.check_circle_outline),
+      'missing' => (Colors.red, Icons.warning_amber_outlined),
+      _ => (Colors.orange, Icons.pause_circle_outline),
+    };
+    return Chip(
+      key: Key('profile_operational_status_$status'),
+      avatar: Icon(icon, color: color, size: 18),
+      label: Text(_label(status)),
+      side: BorderSide(color: color),
+    );
+  }
 
   Widget? _actions(BuildContext context, Animal animal) {
     final session = ref.watch(authControllerProvider).asData?.value;

@@ -20,6 +20,8 @@ Baseline roles are documented in `PERMISSION_MATRIX.md`; custom roles may combin
 
 Phase 2B movement policies require active organization membership, the explicit operation permission, and access to both source and destination farms. Approval-required requests enforce requester/approver separation inside the locked transaction, not only in Flutter. When approval is disabled, immediate application still requires separate request and approval capabilities. Cross-organization and unauthorized-farm identifiers are concealed, and composite database keys prevent cross-tenant/farm location links even if application validation regresses.
 
+Phase 2C weight/status policies require an explicit record/correct/change/view-history capability plus access to the applicable farm. A weight correction additionally requires access to its observation farm and the animal's current farm. Cross-organization and unauthorized-farm identifiers are concealed as not found. Ordinary animal profile updates cannot change operational status, and immutable histories have no ordinary update/delete routes. Row locks, unique correction links, optimistic animal versions, composite foreign keys, and same-transaction audit protect concurrent and database-level invariants.
+
 ## Tenant and data protection
 
 - Resolve active organization from authenticated membership. Ignore/reject mismatched payload tenant IDs.

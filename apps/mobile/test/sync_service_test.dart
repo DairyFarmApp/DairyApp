@@ -409,6 +409,156 @@ void main() {
     },
   );
 
+  test(
+    'weight corrections and status changes upsert then conceal permission removal',
+    () async {
+      const farm = '018f0000-0000-7000-8000-000000000020';
+      const animal = '018f0000-0000-7000-8000-000000000070';
+      const weight = '018f0000-0000-7000-8000-000000000090';
+      const correction = '018f0000-0000-7000-8000-000000000091';
+      const status = '018f0000-0000-7000-8000-000000000092';
+      final now = DateTime.now().toUtc().toIso8601String();
+      Map<String, Object?> weightData({
+        required String id,
+        bool superseded = false,
+        String? supersedes,
+        String? supersededBy,
+      }) => {
+        'id': id,
+        'organization_id': organizationA,
+        'farm_id': farm,
+        'farm_name': 'North Farm',
+        'animal_id': animal,
+        'animal_number': 'AN-000001',
+        'entered_value': id == correction ? '501.000000' : '500.000000',
+        'entered_unit': 'kg',
+        'normalized_kg': id == correction ? '501.000000' : '500.000000',
+        'observed_at': now,
+        'source': 'scale',
+        'recorded_by': 'owner',
+        'recorded_by_name': 'Ayesha Khan',
+        'supersedes_weight_id': supersedes,
+        'superseded_by_weight_id': supersededBy,
+        'correction_reason': supersedes == null ? null : 'Paper log checked.',
+        'is_superseded': superseded,
+        'updated_at': now,
+      };
+      Map<String, Object?> statusData(int sequence, String newStatus) => {
+        'id': sequence == 1 ? status : '${status}1',
+        'organization_id': organizationA,
+        'farm_id': farm,
+        'farm_name': 'North Farm',
+        'animal_id': animal,
+        'animal_number': 'AN-000001',
+        'previous_status': sequence == 1 ? 'active' : 'inactive',
+        'new_status': newStatus,
+        'effective_at': now,
+        'reason': 'Status sync test.',
+        'changed_by': 'owner',
+        'changed_by_name': 'Ayesha Khan',
+        'sequence': sequence,
+        'updated_at': now,
+      };
+
+      await SyncService(
+        database: database,
+        api: _api(
+          writeStatus: 201,
+          syncData: {
+            'organizations': <Object>[],
+            'farms': <Object>[],
+            'sheds': <Object>[],
+            'animal_weights': [weightData(id: weight)],
+            'animal_weights_authorized': true,
+            'animal_status_changes': [statusData(1, 'inactive')],
+            'animal_status_changes_authorized': true,
+            'authorized_farm_ids': [farm],
+            'next_cursor': 'measurement-one',
+          },
+        ),
+      ).synchronize(organizationId: organizationA);
+
+      expect(
+        (await database.select(database.localAnimalWeights).getSingle())
+            .isAccessible,
+        isTrue,
+      );
+      expect(
+        (await database.select(database.localAnimalStatusChanges).getSingle())
+            .newStatus,
+        'inactive',
+      );
+
+      await SyncService(
+        database: database,
+        api: _api(
+          writeStatus: 201,
+          syncData: {
+            'organizations': <Object>[],
+            'farms': <Object>[],
+            'sheds': <Object>[],
+            'animal_weights': [
+              weightData(
+                id: weight,
+                superseded: true,
+                supersededBy: correction,
+              ),
+              weightData(id: correction, supersedes: weight),
+            ],
+            'animal_weights_authorized': true,
+            'animal_status_changes': [statusData(2, 'active')],
+            'animal_status_changes_authorized': true,
+            'authorized_farm_ids': [farm],
+            'next_cursor': 'measurement-two',
+          },
+        ),
+      ).synchronize(organizationId: organizationA);
+
+      final weights = await database.select(database.localAnimalWeights).get();
+      expect(weights, hasLength(2));
+      expect(
+        weights.firstWhere((row) => row.id == weight).isSuperseded,
+        isTrue,
+      );
+      expect(
+        (await database.select(database.localAnimalStatusChanges).get()).map(
+          (row) => row.sequence,
+        ),
+        containsAll([1, 2]),
+      );
+
+      await SyncService(
+        database: database,
+        api: _api(
+          writeStatus: 201,
+          syncData: {
+            'organizations': <Object>[],
+            'farms': <Object>[],
+            'sheds': <Object>[],
+            'animal_weights': <Object>[],
+            'animal_weights_authorized': false,
+            'animal_status_changes': <Object>[],
+            'animal_status_changes_authorized': false,
+            'authorized_farm_ids': [farm],
+            'next_cursor': 'measurement-revoked',
+          },
+        ),
+      ).synchronize(organizationId: organizationA);
+      expect(
+        (await database.select(database.localAnimalWeights).get()).every(
+          (row) => !row.isAccessible,
+        ),
+        isTrue,
+      );
+      expect(
+        (await database.select(database.localAnimalStatusChanges).get()).every(
+          (row) => !row.isAccessible,
+        ),
+        isTrue,
+      );
+    },
+  );
+
   test('stored cursor selects incremental endpoint on the next pull', () async {
     final requests = <RequestOptions>[];
     final service = SyncService(

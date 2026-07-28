@@ -136,6 +136,9 @@ class LocalAnimals extends Table {
   TextColumn get sourceDescription => text().nullable()();
   TextColumn get notes => text().nullable()();
   TextColumn get operationalStatus => text()();
+  TextColumn get latestWeightId => text().nullable()();
+  TextColumn get latestWeightKg => text().nullable()();
+  DateTimeColumn get latestWeightObservedAt => dateTime().nullable()();
   IntColumn get version => integer().withDefault(const Constant(1))();
   DateTimeColumn get serverUpdatedAt => dateTime()();
   DateTimeColumn get cachedAt => dateTime()();
@@ -178,6 +181,55 @@ class LocalAnimalMovements extends Table {
   TextColumn get rejectionReason => text().nullable()();
   TextColumn get cancellationReason => text().nullable()();
   IntColumn get version => integer().withDefault(const Constant(1))();
+  DateTimeColumn get serverUpdatedAt => dateTime()();
+  DateTimeColumn get cachedAt => dateTime()();
+  BoolColumn get isAccessible => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class LocalAnimalWeights extends Table {
+  TextColumn get id => text()();
+  TextColumn get organizationId => text()();
+  TextColumn get farmId => text()();
+  TextColumn get farmName => text()();
+  TextColumn get animalId => text()();
+  TextColumn get animalNumber => text()();
+  TextColumn get enteredValue => text()();
+  TextColumn get enteredUnit => text()();
+  TextColumn get normalizedKg => text()();
+  DateTimeColumn get observedAt => dateTime()();
+  TextColumn get source => text()();
+  TextColumn get notes => text().nullable()();
+  TextColumn get recordedBy => text()();
+  TextColumn get recordedByName => text()();
+  TextColumn get supersedesWeightId => text().nullable()();
+  TextColumn get supersededByWeightId => text().nullable()();
+  TextColumn get correctionReason => text().nullable()();
+  BoolColumn get isSuperseded => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get serverUpdatedAt => dateTime()();
+  DateTimeColumn get cachedAt => dateTime()();
+  BoolColumn get isAccessible => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class LocalAnimalStatusChanges extends Table {
+  TextColumn get id => text()();
+  TextColumn get organizationId => text()();
+  TextColumn get farmId => text()();
+  TextColumn get farmName => text()();
+  TextColumn get animalId => text()();
+  TextColumn get animalNumber => text()();
+  TextColumn get previousStatus => text()();
+  TextColumn get newStatus => text()();
+  DateTimeColumn get effectiveAt => dateTime()();
+  TextColumn get reason => text()();
+  TextColumn get changedBy => text()();
+  TextColumn get changedByName => text()();
+  IntColumn get sequence => integer()();
   DateTimeColumn get serverUpdatedAt => dateTime()();
   DateTimeColumn get cachedAt => dateTime()();
   BoolColumn get isAccessible => boolean().withDefault(const Constant(true))();
@@ -272,6 +324,8 @@ class LocalApplicationSettings extends Table {
     LocalAnimalGroups,
     LocalAnimals,
     LocalAnimalMovements,
+    LocalAnimalWeights,
+    LocalAnimalStatusChanges,
     SyncDevices,
     SyncCursors,
     SyncOutbox,
@@ -284,7 +338,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'dairycare'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -298,6 +352,16 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 3) {
         await migrator.createTable(localAnimalMovements);
+      }
+      if (from < 4) {
+        await migrator.addColumn(localAnimals, localAnimals.latestWeightId);
+        await migrator.addColumn(localAnimals, localAnimals.latestWeightKg);
+        await migrator.addColumn(
+          localAnimals,
+          localAnimals.latestWeightObservedAt,
+        );
+        await migrator.createTable(localAnimalWeights);
+        await migrator.createTable(localAnimalStatusChanges);
       }
     },
   );
@@ -429,6 +493,47 @@ class AppDatabase extends _$AppDatabase {
         (row) => OrderingTerm.desc(row.requestedEffectiveAt),
         (row) => OrderingTerm.desc(row.id),
       ]);
+
+    return query.watch();
+  }
+
+  Stream<List<LocalAnimalWeight>> watchAnimalWeights({
+    required String organizationId,
+    required String animalId,
+  }) {
+    final query = select(localAnimalWeights)
+      ..where(
+        (row) =>
+            row.organizationId.equals(organizationId) &
+            row.animalId.equals(animalId) &
+            row.isAccessible.equals(true),
+      )
+      ..orderBy([
+        (row) => OrderingTerm.desc(row.observedAt),
+        (row) => OrderingTerm.desc(row.serverUpdatedAt),
+        (row) => OrderingTerm.desc(row.id),
+      ])
+      ..limit(250);
+
+    return query.watch();
+  }
+
+  Stream<List<LocalAnimalStatusChange>> watchAnimalStatusChanges({
+    required String organizationId,
+    required String animalId,
+  }) {
+    final query = select(localAnimalStatusChanges)
+      ..where(
+        (row) =>
+            row.organizationId.equals(organizationId) &
+            row.animalId.equals(animalId) &
+            row.isAccessible.equals(true),
+      )
+      ..orderBy([
+        (row) => OrderingTerm.desc(row.sequence),
+        (row) => OrderingTerm.desc(row.id),
+      ])
+      ..limit(250);
 
     return query.watch();
   }

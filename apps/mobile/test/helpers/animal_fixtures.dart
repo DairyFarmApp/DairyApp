@@ -2,6 +2,8 @@ import 'package:dairycare_mobile/core/database/app_database.dart';
 import 'package:dairycare_mobile/features/animals/data/animal_repository.dart';
 import 'package:dairycare_mobile/features/animals/domain/animal_models.dart';
 import 'package:dairycare_mobile/features/animals/domain/animal_movement_models.dart';
+import 'package:dairycare_mobile/features/animals/domain/animal_status_models.dart';
+import 'package:dairycare_mobile/features/animals/domain/animal_weight_models.dart';
 
 const organizationId = '018f0000-0000-7000-8000-000000000010';
 const farmId = '018f0000-0000-7000-8000-000000000020';
@@ -11,6 +13,9 @@ const breedId = '018f0000-0000-7000-8000-000000000050';
 const groupId = '018f0000-0000-7000-8000-000000000060';
 const animalId = '018f0000-0000-7000-8000-000000000070';
 const movementId = '018f0000-0000-7000-8000-000000000080';
+const weightId = '018f0000-0000-7000-8000-000000000090';
+const correctedWeightId = '018f0000-0000-7000-8000-000000000091';
+const statusChangeId = '018f0000-0000-7000-8000-000000000092';
 const destinationFarmId = '018f0000-0000-7000-8000-000000000021';
 const destinationShedId = '018f0000-0000-7000-8000-000000000031';
 const destinationGroupId = '018f0000-0000-7000-8000-000000000061';
@@ -22,6 +27,7 @@ Map<String, dynamic> animalJson({
   String status = 'active',
   bool archived = false,
   int version = 1,
+  Map<String, dynamic>? latestWeight,
 }) => {
   'id': id,
   'organization_id': organizationId,
@@ -56,10 +62,98 @@ Map<String, dynamic> animalJson({
   'source_description': null,
   'notes': 'Calm temperament',
   'operational_status': status,
+  'latest_weight': latestWeight,
   'version': version,
   'is_archived': archived,
   'updated_at': '2026-07-23T10:00:00Z',
 };
+
+Map<String, dynamic> weightJson({
+  String id = weightId,
+  String enteredValue = '500.000000',
+  String enteredUnit = 'kg',
+  String normalizedKg = '500.000000',
+  bool superseded = false,
+  String? supersedesWeightId,
+  String? supersededByWeightId,
+  String? correctionReason,
+}) => {
+  'id': id,
+  'organization_id': organizationId,
+  'farm_id': farmId,
+  'farm_name': 'North Farm',
+  'animal_id': animalId,
+  'animal_number': 'AN-000001',
+  'entered_value': enteredValue,
+  'entered_unit': enteredUnit,
+  'normalized_kg': normalizedKg,
+  'observed_at': '2026-07-23T08:00:00Z',
+  'source': 'scale',
+  'notes': 'Routine measurement',
+  'recorded_by': '018f0000-0000-7000-8000-000000000001',
+  'recorded_by_name': 'Ayesha Khan',
+  'supersedes_weight_id': supersedesWeightId,
+  'superseded_by_weight_id': supersededByWeightId,
+  'correction_reason': correctionReason,
+  'is_superseded': superseded,
+  'created_at': '2026-07-23T08:01:00Z',
+  'updated_at': '2026-07-23T08:01:00Z',
+};
+
+AnimalWeight weightFixture({
+  String id = weightId,
+  bool superseded = false,
+  String? supersedesWeightId,
+  String? supersededByWeightId,
+  String? correctionReason,
+}) => AnimalWeight.fromJson(
+  weightJson(
+    id: id,
+    superseded: superseded,
+    supersedesWeightId: supersedesWeightId,
+    supersededByWeightId: supersededByWeightId,
+    correctionReason: correctionReason,
+  ),
+);
+
+Map<String, dynamic> statusChangeJson({
+  String id = statusChangeId,
+  String previousStatus = 'active',
+  String newStatus = 'inactive',
+  int sequence = 1,
+  int? animalVersion = 2,
+}) => {
+  'id': id,
+  'organization_id': organizationId,
+  'farm_id': farmId,
+  'farm_name': 'North Farm',
+  'animal_id': animalId,
+  'animal_number': 'AN-000001',
+  'previous_status': previousStatus,
+  'new_status': newStatus,
+  'effective_at': '2026-07-23T08:00:00Z',
+  'reason': 'Operational status test.',
+  'changed_by': '018f0000-0000-7000-8000-000000000001',
+  'changed_by_name': 'Ayesha Khan',
+  'sequence': sequence,
+  'animal_version': animalVersion,
+  'created_at': '2026-07-23T08:01:00Z',
+  'updated_at': '2026-07-23T08:01:00Z',
+};
+
+AnimalStatusChange statusChangeFixture({
+  String id = statusChangeId,
+  String previousStatus = 'active',
+  String newStatus = 'inactive',
+  int sequence = 1,
+}) => AnimalStatusChange.fromJson(
+  statusChangeJson(
+    id: id,
+    previousStatus: previousStatus,
+    newStatus: newStatus,
+    sequence: sequence,
+  ),
+);
 
 Animal animalFixture({
   String id = animalId,

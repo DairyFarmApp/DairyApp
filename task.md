@@ -1,33 +1,31 @@
-# Phase 2B Task Record
+# Phase 2C Task Record
 
-Status: Online Animal Movement Workflow complete. Date: 2026-07-23. Phase 2C has not started.
+Status: Animal Weights and Operational-Status History implemented locally. Date: 2026-07-23. Validation and owner approval are required before any commit.
 
 ## Completed scope
 
-- [x] Confirmed branch, upstream, clean preflight, committed/pushed Phase 2A baseline, and starting commit.
+- [x] Confirmed branch, upstream, clean preflight, committed/pushed Phase 2B baseline, and starting commit.
 - [x] Read all required source-of-truth and existing implementation files.
-- [x] Added the tenant/farm-constrained `animal_movements` migration without changing unrelated schema.
-- [x] Added row-locked request/approve/reject/cancel actions and atomic current-location projection updates.
-- [x] Added approval-setting behavior, source/destination validation, separation of duties, optimistic versions, idempotency, and audit.
-- [x] Added five movement permissions and conservative seeded role defaults.
-- [x] Added six tenant-aware movement API routes with pagination, resources, policies, Form Requests, and safe errors.
-- [x] Added responsive Flutter movement history, request form, and permission-aware decision controls using real APIs.
-- [x] Added Drift schema version 3 movement read cache and authorized bootstrap/incremental synchronization.
-- [x] Added backend and Flutter movement, cache, permission, responsive, concurrency, sync, and schema tests.
-- [x] Passed MySQL fresh migration/seed and foreign-key/schema checks.
-- [x] Passed 56 MySQL tests/501 assertions and SQLite portability with 409 assertions.
-- [x] Passed Dart format, Flutter analysis, 46 Flutter tests, and Android debug APK build.
-- [x] Passed PHP syntax, Pint, Composer validation/audit, route inventory, and OpenAPI validation.
-- [x] Updated the required Phase 2B documentation.
-- [x] Confirmed no Phase 2C or later-domain implementation was introduced.
+- [x] Added tenant/farm-constrained `animal_weights` and `animal_status_changes` migrations without changing unrelated schema.
+- [x] Added exact decimal kg/lb normalization, configured maximum, observation-time validation, and deterministic latest-weight projection.
+- [x] Added immutable single-correction workflow with row locks, preserved source facts, supersession links, idempotency, and audit.
+- [x] Moved post-registration status changes to a row-locked, versioned, reasoned append command with atomic animal projection.
+- [x] Added five granular permissions with conservative seeded role defaults.
+- [x] Added six tenant-aware API operations with pagination, resources, policies, Form Requests, and safe errors.
+- [x] Added responsive Flutter weight/status forms, history, latest projection, and permission-aware controls using real APIs.
+- [x] Added Drift schema version 4 read caches and authorized bootstrap/incremental synchronization.
+- [x] Added backend and Flutter domain, cache, migration, permission, responsive, concurrency, sync, and schema tests.
+- [x] Completed the final MySQL, SQLite, PHP, OpenAPI, Flutter, and Android validation matrix.
+- [x] Completed the final repository hygiene matrix after documentation settled.
+- [x] Updated the required Phase 2C design and API documentation.
+- [x] Confirmed no Phase 2D or later-domain implementation was introduced.
 
 ## Excluded by design
 
-- Weights and status history
 - QR, photos, and combined timeline
-- Offline animal/movement/reference mutations
+- Offline animal/movement/weight/status/reference mutations and background upload
 - Milk, breeding, pregnancy, calving, health, medicines, feed, inventory, sales, mortality, finance, payroll, equipment, AI, IoT, and reporting
 
 ## Next action
 
-Stop after Phase 2B and wait for owner approval. The recommended Phase 2C scope is separately approved offline animal registry/movement operations and conflict resolution only. Do not commit or push unless explicitly instructed.
+Stop after the completed Phase 2C validation and wait for owner approval. Do not commit or push.

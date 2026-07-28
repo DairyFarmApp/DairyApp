@@ -7,12 +7,16 @@ use App\Domain\AnimalRegistry\Models\Animal;
 use App\Domain\AnimalRegistry\Models\AnimalBreed;
 use App\Domain\AnimalRegistry\Models\AnimalGroup;
 use App\Domain\AnimalRegistry\Models\AnimalSpecies;
+use App\Domain\AnimalStatuses\Models\AnimalStatusChange;
+use App\Domain\AnimalWeights\Models\AnimalWeight;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AnimalBreedResource;
 use App\Http\Resources\Api\V1\AnimalGroupResource;
 use App\Http\Resources\Api\V1\AnimalMovementResource;
 use App\Http\Resources\Api\V1\AnimalResource;
 use App\Http\Resources\Api\V1\AnimalSpeciesResource;
+use App\Http\Resources\Api\V1\AnimalStatusChangeResource;
+use App\Http\Resources\Api\V1\AnimalWeightResource;
 use App\Http\Resources\Api\V1\FarmResource;
 use App\Http\Resources\Api\V1\OrganizationResource;
 use App\Http\Resources\Api\V1\ShedResource;
@@ -74,9 +78,38 @@ class SyncController extends Controller
             : collect();
         $animals = $membership->can('animals.view')
             ? Animal::withTrashed()
-                ->with(['species', 'breed', 'currentFarm', 'currentShed', 'currentGroup', 'mother', 'father'])
+                ->with([
+                    'species',
+                    'breed',
+                    'currentFarm',
+                    'currentShed',
+                    'currentGroup',
+                    'mother',
+                    'father',
+                    'latestWeight.farm',
+                    'latestWeight.animal',
+                    'latestWeight.recorder',
+                ])
                 ->where('organization_id', $organizationId)
                 ->whereIn('current_farm_id', $accessibleFarmIds)
+                ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
+                ->get()
+            : collect();
+        $weights = $membership->can('animals.view_weight_history')
+            ? AnimalWeight::query()
+                ->with(['animal', 'farm', 'recorder', 'supersedes', 'supersededBy'])
+                ->where('organization_id', $organizationId)
+                ->whereIn('farm_id', $accessibleFarmIds)
+                ->whereHas('animal', fn ($query) => $query->withTrashed()->whereIn('current_farm_id', $accessibleFarmIds))
+                ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
+                ->get()
+            : collect();
+        $statusChanges = $membership->can('animals.view_status_history')
+            ? AnimalStatusChange::query()
+                ->with(['animal', 'farm', 'changer'])
+                ->where('organization_id', $organizationId)
+                ->whereIn('farm_id', $accessibleFarmIds)
+                ->whereHas('animal', fn ($query) => $query->withTrashed()->whereIn('current_farm_id', $accessibleFarmIds))
                 ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
                 ->get()
             : collect();
@@ -110,6 +143,10 @@ class SyncController extends Controller
             'animals' => AnimalResource::collection($animals)->resolve($request),
             'animal_movements' => AnimalMovementResource::collection($movements)->resolve($request),
             'animal_movements_authorized' => $membership->can('animal_movements.view'),
+            'animal_weights' => AnimalWeightResource::collection($weights)->resolve($request),
+            'animal_weights_authorized' => $membership->can('animals.view_weight_history'),
+            'animal_status_changes' => AnimalStatusChangeResource::collection($statusChanges)->resolve($request),
+            'animal_status_changes_authorized' => $membership->can('animals.view_status_history'),
             'authorized_farm_ids' => $accessibleFarmIds->values(),
             'next_cursor' => $this->encodeCursor($now->copy()->subSeconds(2)),
         ]);

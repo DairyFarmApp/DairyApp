@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: DairyCare Foundation API
-  version: 2.1.0-phase2b
-  description: Phase 1 foundation plus the Phase 2A animal registry and Phase 2B online animal movement workflow.
+  version: 2.2.0-phase2c
+  description: Phase 1 foundation, Phase 2A animal registry, Phase 2B movements, and Phase 2C online animal weights and operational-status history.
 servers:
   - url: http://127.0.0.1:8000/api/v1
 security:
@@ -469,6 +469,71 @@ paths:
         '404': { $ref: '#/components/responses/ErrorResponse' }
         '409': { $ref: '#/components/responses/ErrorResponse' }
         '422': { $ref: '#/components/responses/ErrorResponse' }
+  /animals/{animal}/weights:
+    parameters:
+      - $ref: '#/components/parameters/AnimalId'
+    get:
+      summary: List authorized weight history for an animal
+      operationId: listAnimalWeights
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/PageNumber'
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [observed_at, -observed_at, created_at, -created_at]
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+    post:
+      summary: Record an online animal weight
+      operationId: recordAnimalWeight
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AnimalWeightCreate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /animals/{animal}/status-history:
+    parameters:
+      - $ref: '#/components/parameters/AnimalId'
+    get:
+      summary: List authorized operational-status history for an animal
+      operationId: listAnimalStatusHistory
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/PageNumber'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+  /animals/{animal}/status-changes:
+    parameters:
+      - $ref: '#/components/parameters/AnimalId'
+    post:
+      summary: Change and atomically project an animal operational status
+      operationId: changeAnimalStatus
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AnimalStatusChangeCreate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '412': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
   /animal-movements/{movement}:
     parameters:
       - $ref: '#/components/parameters/AnimalMovementId'
@@ -538,6 +603,34 @@ paths:
         '409': { $ref: '#/components/responses/ErrorResponse' }
         '412': { $ref: '#/components/responses/ErrorResponse' }
         '422': { $ref: '#/components/responses/ErrorResponse' }
+  /animal-weights/{weight}:
+    parameters:
+      - $ref: '#/components/parameters/AnimalWeightId'
+    get:
+      summary: Read one authorized animal weight record
+      operationId: getAnimalWeight
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+  /animal-weights/{weight}/correct:
+    parameters:
+      - $ref: '#/components/parameters/AnimalWeightId'
+    post:
+      summary: Supersede an immutable weight record with a linked correction
+      operationId: correctAnimalWeight
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AnimalWeightCorrection' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
   /sync/bootstrap:
     get:
       summary: Bootstrap authorized reference data
@@ -571,8 +664,10 @@ components:
     GroupId: { name: group, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     AnimalId: { name: animal, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     AnimalMovementId: { name: movement, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    AnimalWeightId: { name: weight, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     IdempotencyKey: { name: Idempotency-Key, in: header, required: false, schema: { type: string, maxLength: 160 } }
     PageSize: { name: 'page[size]', in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 25 } }
+    PageNumber: { name: 'page[page]', in: query, required: false, schema: { type: integer, minimum: 1, default: 1 } }
     ArchiveState: { name: 'filter[archive_state]', in: query, required: false, schema: { type: string, enum: [active, archived, all], default: active } }
   schemas:
     Uuid: { type: string, format: uuid }
@@ -581,6 +676,8 @@ components:
     AnimalOperationalStatus: { type: string, enum: [active, inactive, missing] }
     AnimalOrigin: { type: string, enum: [born_on_farm, purchased, transferred_in, other] }
     AnimalMovementStatus: { type: string, enum: [pending, approved, rejected, cancelled] }
+    AnimalWeightUnit: { type: string, enum: [kg, lb] }
+    AnimalWeightSource: { type: string, enum: [manual, scale, estimated, imported] }
     LoginRequest:
       type: object
       required: [email, password]
@@ -688,7 +785,6 @@ components:
         acquisition_date: { type: [string, 'null'], format: date }
         source_description: { type: [string, 'null'], maxLength: 255 }
         notes: { type: [string, 'null'], maxLength: 5000 }
-        operational_status: { $ref: '#/components/schemas/AnimalOperationalStatus' }
     AnimalCreate:
       allOf:
         - $ref: '#/components/schemas/AnimalWriteFields'
@@ -702,10 +798,123 @@ components:
               oneOf:
                 - $ref: '#/components/schemas/Uuid'
                 - type: 'null'
+            operational_status: { $ref: '#/components/schemas/AnimalOperationalStatus' }
     AnimalUpdate:
       allOf:
         - $ref: '#/components/schemas/AnimalWriteFields'
         - $ref: '#/components/schemas/VersionedMutation'
+    AnimalWeightCreate:
+      type: object
+      required: [farm_id, value, unit, observed_at, source]
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        farm_id:
+          allOf:
+            - $ref: '#/components/schemas/Uuid'
+          description: Current-farm snapshot; the server rejects a mismatch against the locked animal.
+        value:
+          type: string
+          pattern: '^\d{1,12}(?:\.\d{1,6})?$'
+          description: Positive entered decimal value; the configured normalized maximum is enforced by the server.
+        unit: { $ref: '#/components/schemas/AnimalWeightUnit' }
+        observed_at:
+          type: string
+          format: date-time
+          description: Observation instant; at most five minutes ahead of server time for clock skew.
+        source: { $ref: '#/components/schemas/AnimalWeightSource' }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+    AnimalWeightCorrection:
+      type: object
+      required: [value, unit, correction_reason]
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        value:
+          type: string
+          pattern: '^\d{1,12}(?:\.\d{1,6})?$'
+        unit: { $ref: '#/components/schemas/AnimalWeightUnit' }
+        correction_reason: { type: string, maxLength: 2000 }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+    AnimalStatusChangeCreate:
+      type: object
+      required: [new_status, effective_at, reason, version]
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        new_status: { $ref: '#/components/schemas/AnimalOperationalStatus' }
+        effective_at:
+          type: string
+          format: date-time
+          description: Effective instant at or before server time.
+        reason: { type: string, maxLength: 2000 }
+        version: { type: integer, minimum: 1 }
+    AnimalWeight:
+      type: object
+      required:
+        - id
+        - organization_id
+        - farm_id
+        - animal_id
+        - entered_value
+        - entered_unit
+        - normalized_kg
+        - observed_at
+        - source
+        - recorded_by
+        - is_superseded
+        - created_at
+        - updated_at
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        organization_id: { $ref: '#/components/schemas/Uuid' }
+        farm_id: { $ref: '#/components/schemas/Uuid' }
+        animal_id: { $ref: '#/components/schemas/Uuid' }
+        entered_value: { type: string, pattern: '^\d+\.\d{6}$' }
+        entered_unit: { $ref: '#/components/schemas/AnimalWeightUnit' }
+        normalized_kg: { type: string, pattern: '^\d+\.\d{6}$' }
+        observed_at: { type: string, format: date-time }
+        source: { $ref: '#/components/schemas/AnimalWeightSource' }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+        recorded_by: { $ref: '#/components/schemas/Uuid' }
+        supersedes_weight_id:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        superseded_by_weight_id:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        correction_reason: { type: [string, 'null'], maxLength: 2000 }
+        is_superseded: { type: boolean }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    AnimalStatusChange:
+      type: object
+      required:
+        - id
+        - organization_id
+        - farm_id
+        - animal_id
+        - previous_status
+        - new_status
+        - effective_at
+        - reason
+        - changed_by
+        - sequence
+        - created_at
+        - updated_at
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        organization_id: { $ref: '#/components/schemas/Uuid' }
+        farm_id: { $ref: '#/components/schemas/Uuid' }
+        animal_id: { $ref: '#/components/schemas/Uuid' }
+        previous_status: { $ref: '#/components/schemas/AnimalOperationalStatus' }
+        new_status: { $ref: '#/components/schemas/AnimalOperationalStatus' }
+        effective_at: { type: string, format: date-time }
+        reason: { type: string, maxLength: 2000 }
+        changed_by: { $ref: '#/components/schemas/Uuid' }
+        sequence: { type: integer, minimum: 1 }
+        animal_version: { type: [integer, 'null'], minimum: 1 }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
     AnimalMovementCreate:
       type: object
       required:
@@ -826,7 +1035,7 @@ components:
       properties:
         data:
           type: object
-          required: [organizations, farms, sheds, animal_species, animal_breeds, animal_groups, animals, animal_movements, animal_movements_authorized, authorized_farm_ids, next_cursor]
+          required: [organizations, farms, sheds, animal_species, animal_breeds, animal_groups, animals, animal_movements, animal_movements_authorized, animal_weights, animal_weights_authorized, animal_status_changes, animal_status_changes_authorized, authorized_farm_ids, next_cursor]
           properties:
             organizations: { type: array, items: { type: object, additionalProperties: true } }
             farms: { type: array, items: { type: object, additionalProperties: true } }
@@ -837,6 +1046,10 @@ components:
             animals: { type: array, items: { type: object, additionalProperties: true } }
             animal_movements: { type: array, items: { $ref: '#/components/schemas/AnimalMovement' } }
             animal_movements_authorized: { type: boolean }
+            animal_weights: { type: array, items: { $ref: '#/components/schemas/AnimalWeight' } }
+            animal_weights_authorized: { type: boolean }
+            animal_status_changes: { type: array, items: { $ref: '#/components/schemas/AnimalStatusChange' } }
+            animal_status_changes_authorized: { type: boolean }
             authorized_farm_ids: { type: array, items: { $ref: '#/components/schemas/Uuid' } }
             next_cursor: { type: string, description: Opaque versioned cursor with a replay-safe overlap watermark. }
         meta:

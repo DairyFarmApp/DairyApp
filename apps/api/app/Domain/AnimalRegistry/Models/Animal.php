@@ -3,6 +3,8 @@
 namespace App\Domain\AnimalRegistry\Models;
 
 use App\Domain\AnimalMovements\Models\AnimalMovement;
+use App\Domain\AnimalStatuses\Models\AnimalStatusChange;
+use App\Domain\AnimalWeights\Models\AnimalWeight;
 use App\Models\Concerns\UsesUuidV7;
 use App\Models\Farm;
 use App\Models\Organization;
@@ -11,6 +13,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Animal extends Model
@@ -115,6 +118,28 @@ class Animal extends Model
     public function movements(): HasMany
     {
         return $this->hasMany(AnimalMovement::class);
+    }
+
+    public function weights(): HasMany
+    {
+        return $this->hasMany(AnimalWeight::class);
+    }
+
+    public function latestWeight(): HasOne
+    {
+        return $this->hasOne(AnimalWeight::class)->ofMany(
+            [
+                'observed_at' => 'max',
+                'created_at' => 'max',
+                'id' => 'max',
+            ],
+            fn ($query) => $query->where('is_superseded', false),
+        );
+    }
+
+    public function statusChanges(): HasMany
+    {
+        return $this->hasMany(AnimalStatusChange::class);
     }
 
     public function creator(): BelongsTo

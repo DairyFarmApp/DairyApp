@@ -42,7 +42,9 @@ Allowlisted `filter[field]`, `sort=field,-field`, `include=...`, `fields[type]=.
 
 Request classes validate shape; actions validate domain state; policies authorize; resources control output. OpenAPI is updated with every endpoint and used for contract tests. Additive compatible fields stay in v1; breaking semantic/schema changes require a new API version and published deprecation window. Never serialize Eloquent models directly.
 
-Phase 2A adds species, breed, group, and animal endpoints; Phase 2B adds six movement operations, all documented in `apps/api/openapi.yaml`. Animal and movement-list search/filter/sort input is allowlisted and bounded. Cross-tenant or unauthorized-farm entity UUIDs use the established concealed 404 behavior. Movement state/source conflicts use stable `409` codes; stale decision versions use `412`.
+Phase 2A adds species, breed, group, and animal endpoints; Phase 2B adds six movement operations; Phase 2C adds six weight/status operations, all documented in `apps/api/openapi.yaml`. Animal and history-list search/filter/sort input is allowlisted and bounded. Cross-tenant or unauthorized-farm entity UUIDs use concealed `404`. Movement/weight/status state conflicts use stable `409` codes; stale versioned commands use `412`.
+
+Weight decimals are JSON strings at up to six entered decimal places and six normalized kilogram places. Weight corrections and status changes are explicit POST commands rather than general PATCH routes because their histories are immutable. Initial animal creation accepts operational status; ordinary profile update does not.
 
 ## Sync conventions
 

@@ -37,13 +37,22 @@ The table uses composite foreign keys for animal/organization, source farm/organ
 
 The request action locks the animal before validating the source snapshot and checking for an existing pending movement. Approval locks the movement and animal, verifies status/version/current source, then updates the movement and `animals` current-location projection atomically. Pending/rejected/cancelled rows never update the projection. Approved rows have no ordinary update route; corrections append a new movement.
 
+## Implemented Phase 2C weights and status history
+
+| Table | Scope and key constraints |
+|---|---|
+| `animal_weights` | Organization/farm/animal observation, exact entered decimal/unit, canonical kilograms, observed time/source, recorder, immutable single-correction links, superseded flag, timestamps |
+| `animal_status_histories` | Organization/farm/animal previous/new status, effective time/reason/actor, unique per-animal sequence, timestamps |
+
+Both tables use UUIDv7 identifiers and composite tenant/farm foreign keys. Weight corrections preserve the original observation farm/time/source, retain both rows, and enforce unique forward/back links. Status changes append history while atomically updating the versioned `animals.operational_status` projection. Indexes support authorized animal history, latest non-superseded weight selection, farm-scoped sync, and organization update cursors.
+
 ## Modules and principal tables
 
 | Module | Principal data | Key relationships/invariants |
 |---|---|---|
 | Tenancy/settings | organizations, farms, branches, sheds, pens, warehouses, milk_tanks, cost_centres, settings | All descendants belong to one organization; locations cannot cross-link tenants |
 | Identity/access | users, organization_memberships, roles, permissions, role_permissions, membership_roles, user_farm_access, api_sessions, sync_devices | Roles are organization scoped; sessions bind active membership and device |
-| Animals | Implemented: animal_species, animal_breeds, animal_groups, organization_sequences, animals, animal_movements. Future: memberships, weights, purchases, sales, mortalities | Animal identity unique within organization; profile edits cannot change location; approved movements own atomic location transitions and immutable history |
+| Animals | Implemented: animal_species, animal_breeds, animal_groups, organization_sequences, animals, animal_movements, animal_weights, animal_status_histories. Future: memberships, purchases, sales, mortalities | Animal identity unique within organization; profile edits cannot change location/status; approved movements own location transitions; dedicated append commands own weight/status history |
 | Milk | milk_sessions, milk_entries, milk_collection_batches, milk_batch_sources, milk_tank_movements, milk_quality_tests, milk_restrictions | Unique normal entry per animal/date/session; tank balance derives from movements; restricted quantity excluded from sellable stock |
 | Breeding/calving | heat_records, breeding_services, pregnancy_checks, pregnancies, calving_events, calving_offspring | Female/age rules; calving closes pregnancy and links newly created animal records |
 | Health | health_cases, treatments, medicines, treatment_medicines, vaccinations, vaccination_schedules, deworming_records | Medicine treatment can create withdrawal restriction; histories are retained |

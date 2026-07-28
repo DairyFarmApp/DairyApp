@@ -3,6 +3,8 @@
 use App\Domain\AnimalMovements\Exceptions\AnimalMovementConflict;
 use App\Domain\AnimalMovements\Exceptions\StaleAnimalMovementVersion;
 use App\Domain\AnimalRegistry\Exceptions\StaleAnimalRegistryVersion;
+use App\Domain\AnimalStatuses\Exceptions\AnimalStatusConflict;
+use App\Domain\AnimalWeights\Exceptions\AnimalWeightConflict;
 use App\Http\Middleware\AssignRequestId;
 use App\Http\Middleware\AuthenticateOpaqueSession;
 use App\Http\Middleware\RequireActiveOrganization;
@@ -48,6 +50,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ? ApiResponse::error($request, 'STALE_VERSION', 'The animal movement was changed by another request.', 412, details: ['current_version' => $e->currentVersion])
             : null);
         $exceptions->render(fn (AnimalMovementConflict $e, Request $request) => $request->is('api/*')
+            ? ApiResponse::error($request, $e->errorCode, $e->getMessage(), 409, details: $e->details)
+            : null);
+        $exceptions->render(fn (AnimalWeightConflict $e, Request $request) => $request->is('api/*')
+            ? ApiResponse::error($request, $e->errorCode, $e->getMessage(), 409, details: $e->details)
+            : null);
+        $exceptions->render(fn (AnimalStatusConflict $e, Request $request) => $request->is('api/*')
             ? ApiResponse::error($request, $e->errorCode, $e->getMessage(), 409, details: $e->details)
             : null);
         $exceptions->render(function (HttpExceptionInterface $e, Request $request) {

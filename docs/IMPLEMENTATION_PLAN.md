@@ -46,13 +46,15 @@ Implemented request/approve/reject/cancel movement commands, tenant/farm/shed/gr
 
 Completion evidence is recorded in `docs/PHASE_2B_COMPLETION.md`.
 
-## Recommended Phase 2C — Approved offline animal workflows (not started)
+## Phase 2C — Animal weights and operational-status history (implemented 2026-07-23)
 
-After separate approval, extend the existing outbox/conflict model only to specifically approved animal creates/edits/movements. Define dependency ordering, source-snapshot and field-level conflict behavior, resolution UX, restart/replay guarantees, and scale/performance limits before implementation.
+Implement online weight recording, exact unit normalization, immutable correction links, latest-weight projection, dedicated operational-status changes, row-locked versioned projection updates, granular permissions, audit events, responsive Flutter forms/history, and authorized Drift read caching.
+
+Phase 2C deliberately keeps all animal mutations online-only. It does not extend the outbox or implement QR, photos, a combined timeline, milk, breeding, health, inventory, or any later domain. Completion evidence is recorded in `docs/PHASE_2C_COMPLETION.md`.
 
 ## Later phases
 
-1. **Remaining Phase 2 Animals:** movements first, then separately approved weights/lifecycle/QR/search-scale/timeline work.
+1. **Remaining Phase 2 Animals:** only separately approved QR, photos, search-scale, lifecycle/death, or combined-timeline work; offline animal mutation remains a separate explicit decision.
 2. **Phase 3 Milk:** sessions/entry, batches, tanks/movement ledger, quality/balance, basic reports and alerts.
 3. **Phase 4 Health and breeding:** cases/treatments/withdrawals, vaccination/deworming, heat/service/pregnancy/calving/offspring.
 4. **Phase 5 Feed and inventory:** item/batch/movement ledger, ration/feed issue, transfer/adjustment, thresholds/expiry.

@@ -38,6 +38,7 @@ void main() {
       final json = draft.toJson(
         includeLocation: false,
         includeIdentifiers: false,
+        includeOperationalStatus: false,
       );
 
       expect(json, isNot(contains('animal_number')));
@@ -45,6 +46,7 @@ void main() {
       expect(json, isNot(contains('rfid_number')));
       expect(json, isNot(contains('current_farm_id')));
       expect(json, isNot(contains('current_shed_id')));
+      expect(json, isNot(contains('operational_status')));
     },
   );
 

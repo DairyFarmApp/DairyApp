@@ -44,6 +44,7 @@ class AnimalUpdateRequest extends FormRequest
             'current_farm_id' => ['prohibited'],
             'current_shed_id' => ['prohibited'],
             'current_animal_group_id' => ['prohibited'],
+            'operational_status' => ['prohibited'],
             'animal_number' => ['sometimes', 'required', 'string', 'max:40', 'regex:/^[A-Z0-9][A-Z0-9._\/-]*$/', Rule::unique('animals', 'animal_number')->ignore($animal)->where('organization_id', $organizationId)],
             'ear_tag_number' => ['sometimes', 'nullable', 'string', 'max:80', 'regex:/^[A-Z0-9][A-Z0-9._\/-]*$/', Rule::unique('animals', 'ear_tag_number')->ignore($animal)->where('organization_id', $organizationId)],
             'rfid_number' => ['sometimes', 'nullable', 'string', 'max:120', 'regex:/^[A-Z0-9]+$/', Rule::unique('animals', 'rfid_number')->ignore($animal)->where('organization_id', $organizationId)],
@@ -64,7 +65,6 @@ class AnimalUpdateRequest extends FormRequest
             'acquisition_date' => ['sometimes', 'nullable', 'date', 'before_or_equal:today'],
             'source_description' => ['sometimes', 'nullable', 'string', 'max:255'],
             'notes' => ['sometimes', 'nullable', 'string', 'max:5000'],
-            'operational_status' => ['sometimes', Rule::in(['active', 'inactive', 'missing'])],
             'version' => ['required', 'integer', 'min:1'],
         ];
     }

@@ -44,6 +44,14 @@ class DatabaseSeeder extends Seeder
                 ],
                 ['type' => 'boolean', 'value' => ['enabled' => true]],
             );
+            Setting::query()->updateOrCreate(
+                [
+                    'organization_id' => $organization->id,
+                    'farm_id' => null,
+                    'key' => 'animal_weight_max_kg',
+                ],
+                ['type' => 'decimal', 'value' => ['kilograms' => '3000.000000']],
+            );
             foreach ([[$north, 'Lactation Shed', 'N-LACT'], [$north, 'Calf Shed', 'N-CALF'], [$riverside, 'Main Shed', 'R-MAIN'], [$riverside, 'Quarantine Shed', 'R-QUAR']] as [$farm, $name, $code]) {
                 Shed::query()->updateOrCreate(
                     ['farm_id' => $farm->id, 'code' => $code],
@@ -63,6 +71,9 @@ class DatabaseSeeder extends Seeder
                 'animal_groups.view', 'animal_groups.manage',
                 'animals.move', 'animal_movements.view', 'animal_movements.approve',
                 'animal_movements.reject', 'animal_movements.cancel',
+                'animals.record_weight', 'animals.correct_weight',
+                'animals.view_weight_history', 'animals.change_status',
+                'animals.view_status_history',
             ];
             $permissions = collect($permissionNames)->mapWithKeys(
                 fn ($name) => [$name => Permission::query()->firstOrCreate(['name' => $name])],
@@ -77,18 +88,24 @@ class DatabaseSeeder extends Seeder
                     'animal_groups.view', 'animal_groups.manage',
                     'animals.move', 'animal_movements.view', 'animal_movements.approve',
                     'animal_movements.reject', 'animal_movements.cancel',
+                    'animals.record_weight', 'animals.correct_weight',
+                    'animals.view_weight_history', 'animals.change_status',
+                    'animals.view_status_history',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'farm-worker' => ['Farm Worker', [
                     'organizations.view', 'farms.view', 'sheds.view', 'animals.view',
                     'animal_breeds.view', 'animal_groups.view',
                     'animals.move', 'animal_movements.view',
+                    'animals.record_weight', 'animals.view_weight_history',
+                    'animals.view_status_history',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'viewer' => ['Viewer', [
                     'organizations.view', 'farms.view', 'sheds.view', 'animals.view',
                     'animal_breeds.view', 'animal_groups.view',
                     'animal_movements.view',
+                    'animals.view_weight_history', 'animals.view_status_history',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
             ];

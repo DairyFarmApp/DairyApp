@@ -429,13 +429,23 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                     ),
                     maxLength: 255,
                   ),
-                  _enumDropdown(
-                    label: 'Operational status *',
-                    value: _operationalStatus,
-                    values: const ['active', 'inactive', 'missing'],
-                    onChanged: (value) =>
-                        setState(() => _operationalStatus = value!),
-                  ),
+                  if (!widget.isEditing)
+                    _enumDropdown(
+                      label: 'Initial operational status *',
+                      value: _operationalStatus,
+                      values: const ['active', 'inactive', 'missing'],
+                      onChanged: (value) =>
+                          setState(() => _operationalStatus = value!),
+                    )
+                  else ...[
+                    _readOnlyValue(
+                      'Operational status',
+                      _label(_operationalStatus),
+                    ),
+                    const Text(
+                      'Post-registration status changes are recorded through the operational-status workflow.',
+                    ),
+                  ],
                   TextFormField(
                     controller: _notes,
                     decoration: const InputDecoration(labelText: 'Notes'),

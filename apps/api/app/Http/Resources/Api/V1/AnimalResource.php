@@ -9,6 +9,14 @@ class AnimalResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $membership = $request->attributes->get('membership');
+        $latestWeight = $this->relationLoaded('latestWeight')
+            && $this->latestWeight !== null
+            && $membership?->can('animals.view_weight_history')
+            && $membership?->canAccessFarm($this->latestWeight->farm_id)
+                ? (new AnimalWeightResource($this->latestWeight))->resolve($request)
+                : null;
+
         return [
             'id' => $this->id,
             'organization_id' => $this->organization_id,
@@ -43,6 +51,7 @@ class AnimalResource extends JsonResource
             'source_description' => $this->source_description,
             'notes' => $this->notes,
             'operational_status' => $this->operational_status,
+            'latest_weight' => $latestWeight,
             'version' => $this->version,
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,

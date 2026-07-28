@@ -45,3 +45,12 @@ The full evidence and known environmental gaps are in `docs/PHASE_2A_COMPLETION.
 - PHP syntax, Pint, Composer validation/audit, Redocly lint/bundle, Dart format, Flutter analysis, and Android debug build passed.
 
 The full evidence and known limitations are in `docs/PHASE_2B_COMPLETION.md`.
+
+## Phase 2C executed evidence
+
+- MySQL 8.4.9: 67 tests, 677 assertions, including exact decimal/unit rules, immutable correction/status workflows, composite constraints, authorization/concealment, idempotency/audit/sync, and separate-process correction/status races.
+- SQLite portability: 67 discovered, 59 passed, 555 assertions, 8 MySQL-only concurrency tests skipped.
+- Flutter: 62 unit/repository/Drift/sync/widget tests covering decimal models, online commands, offline cached histories, projections, responsive forms/history, incremental loading, permissions, migration, sync upserts, and revoked access.
+- PHP syntax, Pint, Composer validation/audit, Redocly lint/bundle and 52-operation parity, Dart generation/format, Flutter analysis, and Android debug build passed.
+
+The full evidence and known limitations are in `docs/PHASE_2C_COMPLETION.md`.

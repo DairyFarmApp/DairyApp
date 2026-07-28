@@ -10,6 +10,8 @@ use App\Domain\AnimalRegistry\Models\AnimalGroup;
 use App\Domain\AnimalRegistry\Policies\AnimalBreedPolicy;
 use App\Domain\AnimalRegistry\Policies\AnimalGroupPolicy;
 use App\Domain\AnimalRegistry\Policies\AnimalPolicy;
+use App\Domain\AnimalWeights\Models\AnimalWeight;
+use App\Domain\AnimalWeights\Policies\AnimalWeightPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -32,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(AnimalMovement::class, AnimalMovementPolicy::class);
+        Gate::policy(AnimalWeight::class, AnimalWeightPolicy::class);
         Gate::policy(AnimalBreed::class, AnimalBreedPolicy::class);
         Gate::policy(AnimalGroup::class, AnimalGroupPolicy::class);
         Gate::policy(Animal::class, AnimalPolicy::class);

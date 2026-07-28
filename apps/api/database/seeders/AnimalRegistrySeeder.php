@@ -7,6 +7,9 @@ use App\Domain\AnimalRegistry\Models\AnimalBreed;
 use App\Domain\AnimalRegistry\Models\AnimalGroup;
 use App\Domain\AnimalRegistry\Models\AnimalSpecies;
 use App\Domain\AnimalRegistry\Support\AnimalRegistryNormalizer;
+use App\Domain\AnimalStatuses\Models\AnimalStatusChange;
+use App\Domain\AnimalWeights\Models\AnimalWeight;
+use App\Domain\AnimalWeights\Support\AnimalWeightConverter;
 use App\Models\Farm;
 use App\Models\Organization;
 use App\Models\Shed;
@@ -148,6 +151,94 @@ class AnimalRegistrySeeder extends Seeder
                 ['organization_id' => $organization->id, 'sequence_key' => 'animal_number'],
                 ['next_value' => 21, 'created_at' => now(), 'updated_at' => now()],
             );
+
+            $weightConverter = app(AnimalWeightConverter::class);
+            foreach ([
+                ['AN-000001', '2026-05-15 06:30:00', '498.250000', 'kg', 'scale', 'Morning platform scale.'],
+                ['AN-000001', '2026-06-15 06:35:00', '507.800000', 'kg', 'scale', null],
+                ['AN-000003', '2026-06-10 07:00:00', '915.000000', 'lb', 'manual', 'Handheld scale entry.'],
+                ['AN-000005', '2026-06-20 08:15:00', '612.400000', 'kg', 'scale', null],
+            ] as [$animalNumber, $observedAt, $value, $unit, $source, $notes]) {
+                $animal = $animals[$animalNumber];
+                AnimalWeight::query()->updateOrCreate(
+                    [
+                        'organization_id' => $organization->id,
+                        'animal_id' => $animal->id,
+                        'observed_at' => $observedAt,
+                    ],
+                    [
+                        'farm_id' => $animal->current_farm_id,
+                        'entered_value' => $value,
+                        'entered_unit' => $unit,
+                        'normalized_kg' => $weightConverter->normalize($value, $unit),
+                        'source' => $source,
+                        'notes' => $notes,
+                        'recorded_by' => $actor->id,
+                    ],
+                );
+            }
+            $incorrectWeight = AnimalWeight::query()->updateOrCreate(
+                [
+                    'organization_id' => $organization->id,
+                    'animal_id' => $animals['AN-000001']->id,
+                    'observed_at' => '2026-07-10 06:40:00',
+                ],
+                [
+                    'farm_id' => $animals['AN-000001']->current_farm_id,
+                    'entered_value' => '1100.000000',
+                    'entered_unit' => 'lb',
+                    'normalized_kg' => $weightConverter->normalize('1100.000000', 'lb'),
+                    'source' => 'manual',
+                    'notes' => 'Original entry later found to contain a transposition.',
+                    'recorded_by' => $actor->id,
+                ],
+            );
+            $correctedWeight = AnimalWeight::query()->updateOrCreate(
+                ['supersedes_weight_id' => $incorrectWeight->id],
+                [
+                    'organization_id' => $organization->id,
+                    'farm_id' => $incorrectWeight->farm_id,
+                    'animal_id' => $incorrectWeight->animal_id,
+                    'entered_value' => '1120.000000',
+                    'entered_unit' => 'lb',
+                    'normalized_kg' => $weightConverter->normalize('1120.000000', 'lb'),
+                    'observed_at' => $incorrectWeight->observed_at,
+                    'source' => $incorrectWeight->source,
+                    'notes' => 'Verified against the paper scale log.',
+                    'recorded_by' => $actor->id,
+                    'correction_reason' => 'Original pounds value was transposed during entry.',
+                ],
+            );
+            $incorrectWeight->forceFill([
+                'is_superseded' => true,
+                'superseded_by_weight_id' => $correctedWeight->id,
+            ])->save();
+
+            foreach ([
+                ['AN-000004', 1, 'active', 'inactive', '2026-05-01 09:00:00', 'Temporarily removed from operational herd work.'],
+                ['AN-000009', 1, 'active', 'missing', '2026-06-12 18:30:00', 'Animal was not located during evening headcount.'],
+                ['AN-000010', 1, 'active', 'inactive', '2026-05-20 08:00:00', 'Held inactive for administrative review.'],
+                ['AN-000010', 2, 'inactive', 'active', '2026-05-22 08:00:00', 'Administrative review completed and animal restored to active status.'],
+                ['AN-000014', 1, 'active', 'inactive', '2026-06-01 10:00:00', 'Temporarily inactive during observation.'],
+                ['AN-000019', 1, 'active', 'missing', '2026-07-01 19:00:00', 'Missing from the assigned observation group.'],
+            ] as [$animalNumber, $sequence, $previous, $new, $effectiveAt, $reason]) {
+                $animal = $animals[$animalNumber];
+                AnimalStatusChange::query()->updateOrCreate(
+                    [
+                        'organization_id' => $organization->id,
+                        'animal_id' => $animal->id,
+                        'sequence' => $sequence,
+                    ],
+                    [
+                        'farm_id' => $animal->current_farm_id,
+                        'previous_status' => $previous,
+                        'new_status' => $new,
+                        'effective_at' => $effectiveAt,
+                        'reason' => $reason,
+                        'changed_by' => $actor->id,
+                    ],
+                );
+            }
         });
     }
 }

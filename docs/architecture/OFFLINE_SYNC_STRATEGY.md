@@ -37,7 +37,9 @@ Idempotency scope is organization + actor/device + key. Reusing a key with a dif
 
 Retry only network failures, `408`, `425`, `429`, and transient `5xx`, using exponential backoff with full jitter, server `Retry-After`, an upper delay, and manual retry. Authentication pauses for renewal; validation/authorization failures become user-visible failed items and do not loop. Local data is never deleted because upload failed.
 
-Animal, breed, and group create/update/archive/restore plus every movement request/decision bypass the outbox through Phase 2B and require an online API result. Offline registry/movement mutation is reserved for a separately approved Phase 2C after online workflows and conflicts are proven.
+Animal, breed, and group create/update/archive/restore plus every movement request/decision bypass the outbox and require an online API result. Phase 2C weight record/correction and status-change commands follow the same online-only rule. Clients still send UUIDv7 and a durable idempotency key so an uncertain online response can be retried without duplicating a committed command.
+
+Drift schema version 4 caches authorized `animal_weights` and `animal_status_changes` and the current animal latest-weight projection. Bootstrap/incremental payloads carry separate history authorization flags. Upserts are UUID-based; correction rows update supersession links, and latest selection excludes superseded rows with `observed_at`, `created_at`, then UUID ordering. Farm or permission revocation makes stale cached rows inaccessible. None of these reads creates an outbox item.
 
 ## Conflict policy
 

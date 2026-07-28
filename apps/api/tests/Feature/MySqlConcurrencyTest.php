@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Domain\AnimalMovements\Models\AnimalMovement;
 use App\Domain\AnimalRegistry\Models\Animal;
 use App\Domain\AnimalRegistry\Models\AnimalGroup;
+use App\Domain\AnimalStatuses\Models\AnimalStatusChange;
+use App\Domain\AnimalWeights\Models\AnimalWeight;
 use App\Models\ApiSession;
 use App\Models\ApiSessionRenewalToken;
 use App\Models\AuditLog;
@@ -352,6 +354,120 @@ class MySqlConcurrencyTest extends TestCase
         $this->assertSame(2, $animal->version);
         $this->assertSame(1, AuditLog::query()->where('action', 'animal.movement_approved')->count());
         $this->assertSame(1, AuditLog::query()->where('action', 'animal.location_changed')->count());
+    }
+
+    public function test_concurrent_weight_corrections_create_one_replacement_without_loops(): void
+    {
+        $data = $this->foundation([
+            'animals.view',
+            'animals.correct_weight',
+            'animals.view_weight_history',
+        ]);
+        $references = $this->animalRegistryReferences($data);
+        $animal = $this->measurementAnimal($data, $references, 'AN-CONCURRENT-WEIGHT');
+        $weight = AnimalWeight::create([
+            'organization_id' => $data['organization']->id,
+            'farm_id' => $data['farm']->id,
+            'animal_id' => $animal->id,
+            'entered_value' => '500.000000',
+            'entered_unit' => 'kg',
+            'normalized_kg' => '500.000000',
+            'observed_at' => now()->subHour(),
+            'source' => 'scale',
+            'recorded_by' => $data['user']->id,
+        ]);
+        $token = $this->loginToken();
+        $payload = [
+            'value' => '505.000000',
+            'unit' => 'kg',
+            'correction_reason' => 'Concurrent correction validation.',
+        ];
+
+        $results = $this->runConcurrently([
+            $this->requestPayload(
+                "/api/v1/animal-weights/{$weight->id}/correct",
+                $payload,
+                $this->bearer($token) + ['Idempotency-Key' => 'concurrent-weight-a'],
+            ),
+            $this->requestPayload(
+                "/api/v1/animal-weights/{$weight->id}/correct",
+                $payload,
+                $this->bearer($token) + ['Idempotency-Key' => 'concurrent-weight-b'],
+            ),
+        ]);
+
+        $this->assertSame([201, 409], collect($results)->pluck('status')->sort()->values()->all());
+        $this->assertSame(
+            'WEIGHT_ALREADY_CORRECTED',
+            collect($results)->firstWhere('status', 409)['error_code'],
+        );
+        $this->assertDatabaseCount('animal_weights', 2);
+        $weight->refresh();
+        $this->assertTrue($weight->is_superseded);
+        $this->assertNotNull($weight->superseded_by_weight_id);
+        $this->assertSame(
+            1,
+            AnimalWeight::query()->where('supersedes_weight_id', $weight->id)->count(),
+        );
+        $this->assertSame(1, AuditLog::query()->where('action', 'animal.weight_corrected')->count());
+    }
+
+    public function test_concurrent_status_changes_apply_one_projection_and_one_history_row(): void
+    {
+        $data = $this->foundation([
+            'animals.view',
+            'animals.change_status',
+            'animals.view_status_history',
+        ]);
+        $references = $this->animalRegistryReferences($data);
+        $animal = $this->measurementAnimal($data, $references, 'AN-CONCURRENT-STATUS');
+        $token = $this->loginToken();
+
+        $results = $this->runConcurrently([
+            $this->requestPayload(
+                "/api/v1/animals/{$animal->id}/status-changes",
+                [
+                    'new_status' => 'inactive',
+                    'effective_at' => now()->subMinute()->toISOString(),
+                    'reason' => 'Concurrent inactive transition.',
+                    'version' => 1,
+                ],
+                $this->bearer($token) + ['Idempotency-Key' => 'concurrent-status-a'],
+            ),
+            $this->requestPayload(
+                "/api/v1/animals/{$animal->id}/status-changes",
+                [
+                    'new_status' => 'missing',
+                    'effective_at' => now()->subMinute()->toISOString(),
+                    'reason' => 'Concurrent missing transition.',
+                    'version' => 1,
+                ],
+                $this->bearer($token) + ['Idempotency-Key' => 'concurrent-status-b'],
+            ),
+        ]);
+
+        $this->assertSame([201, 412], collect($results)->pluck('status')->sort()->values()->all());
+        $animal->refresh();
+        $this->assertContains($animal->operational_status, ['inactive', 'missing']);
+        $this->assertSame(2, $animal->version);
+        $this->assertSame(1, AnimalStatusChange::query()->where('animal_id', $animal->id)->count());
+        $this->assertSame(1, AuditLog::query()->where('action', 'animal.status_changed')->count());
+    }
+
+    private function measurementAnimal(array $data, array $references, string $number): Animal
+    {
+        return Animal::create([
+            'organization_id' => $data['organization']->id,
+            'animal_number' => $number,
+            'species_id' => $references['species']->id,
+            'breed_id' => $references['breed']->id,
+            'sex' => 'female',
+            'life_stage' => 'adult',
+            'current_farm_id' => $data['farm']->id,
+            'current_shed_id' => $data['shed']->id,
+            'current_animal_group_id' => $references['group']->id,
+            'origin' => 'born_on_farm',
+        ]);
     }
 
     /**

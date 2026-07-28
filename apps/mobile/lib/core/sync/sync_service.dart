@@ -176,6 +176,10 @@ final class SyncService {
             .cast<String>();
     final animalMovementsAuthorized =
         data['animal_movements_authorized'] as bool? ?? false;
+    final animalWeightsAuthorized =
+        data['animal_weights_authorized'] as bool? ?? false;
+    final animalStatusChangesAuthorized =
+        data['animal_status_changes_authorized'] as bool? ?? false;
     final nextCursor = data['next_cursor'] as String?;
     final synchronizedAt = DateTime.now().toUtc();
     await _database.transaction(() async {
@@ -218,6 +222,40 @@ final class SyncService {
             ))
             .write(
               const LocalAnimalMovementsCompanion(isAccessible: Value(false)),
+            );
+      }
+      if (!animalWeightsAuthorized) {
+        await (_database.update(
+          _database.localAnimalWeights,
+        )..where((row) => row.organizationId.equals(organizationId))).write(
+          const LocalAnimalWeightsCompanion(isAccessible: Value(false)),
+        );
+      } else {
+        await (_database.update(_database.localAnimalWeights)..where(
+              (row) =>
+                  row.organizationId.equals(organizationId) &
+                  row.farmId.isNotIn(authorizedFarmIds),
+            ))
+            .write(
+              const LocalAnimalWeightsCompanion(isAccessible: Value(false)),
+            );
+      }
+      if (!animalStatusChangesAuthorized) {
+        await (_database.update(
+          _database.localAnimalStatusChanges,
+        )..where((row) => row.organizationId.equals(organizationId))).write(
+          const LocalAnimalStatusChangesCompanion(isAccessible: Value(false)),
+        );
+      } else {
+        await (_database.update(_database.localAnimalStatusChanges)..where(
+              (row) =>
+                  row.organizationId.equals(organizationId) &
+                  row.farmId.isNotIn(authorizedFarmIds),
+            ))
+            .write(
+              const LocalAnimalStatusChangesCompanion(
+                isAccessible: Value(false),
+              ),
             );
       }
       for (final raw in _maps(data['organizations'])) {
@@ -330,6 +368,20 @@ final class SyncService {
               _animalMovementCompanion(raw, synchronizedAt),
             );
       }
+      for (final raw in _maps(data['animal_weights'])) {
+        await _database
+            .into(_database.localAnimalWeights)
+            .insertOnConflictUpdate(
+              _animalWeightCompanion(raw, synchronizedAt),
+            );
+      }
+      for (final raw in _maps(data['animal_status_changes'])) {
+        await _database
+            .into(_database.localAnimalStatusChanges)
+            .insertOnConflictUpdate(
+              _animalStatusChangeCompanion(raw, synchronizedAt),
+            );
+      }
       await _database
           .into(_database.syncCursors)
           .insertOnConflictUpdate(
@@ -361,48 +413,58 @@ final class SyncService {
   LocalAnimalsCompanion _animalCompanion(
     Map<String, dynamic> raw,
     DateTime synchronizedAt,
-  ) => LocalAnimalsCompanion.insert(
-    id: raw['id'] as String,
-    organizationId: raw['organization_id'] as String,
-    animalNumber: raw['animal_number'] as String,
-    earTagNumber: Value(raw['ear_tag_number'] as String?),
-    rfidNumber: Value(raw['rfid_number'] as String?),
-    name: Value(raw['name'] as String?),
-    registrationNumber: Value(raw['registration_number'] as String?),
-    speciesId: raw['species_id'] as String,
-    speciesName: raw['species_name'] as String? ?? '',
-    breedId: raw['breed_id'] as String,
-    breedName: raw['breed_name'] as String? ?? '',
-    sex: raw['sex'] as String,
-    lifeStage: raw['life_stage'] as String,
-    dateOfBirth: Value(_nullableDate(raw['date_of_birth'])),
-    isDateOfBirthEstimated: Value(
-      raw['is_date_of_birth_estimated'] as bool? ?? false,
-    ),
-    colour: Value(raw['colour'] as String?),
-    identifyingMarks: Value(raw['identifying_marks'] as String?),
-    currentFarmId: raw['current_farm_id'] as String,
-    currentFarmName: raw['current_farm_name'] as String? ?? '',
-    currentShedId: raw['current_shed_id'] as String,
-    currentShedName: raw['current_shed_name'] as String? ?? '',
-    currentAnimalGroupId: Value(raw['current_animal_group_id'] as String?),
-    currentAnimalGroupName: Value(raw['current_animal_group_name'] as String?),
-    motherAnimalId: Value(raw['mother_animal_id'] as String?),
-    motherAnimalNumber: Value(raw['mother_animal_number'] as String?),
-    fatherAnimalId: Value(raw['father_animal_id'] as String?),
-    fatherAnimalNumber: Value(raw['father_animal_number'] as String?),
-    externalSireReference: Value(raw['external_sire_reference'] as String?),
-    origin: raw['origin'] as String,
-    acquisitionDate: Value(_nullableDate(raw['acquisition_date'])),
-    sourceDescription: Value(raw['source_description'] as String?),
-    notes: Value(raw['notes'] as String?),
-    operationalStatus: raw['operational_status'] as String,
-    version: Value(raw['version'] as int? ?? 1),
-    serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
-    cachedAt: synchronizedAt,
-    isArchived: Value(raw['is_archived'] as bool? ?? false),
-    isAccessible: const Value(true),
-  );
+  ) {
+    final latestWeight = raw['latest_weight'] as Map<String, dynamic>?;
+    return LocalAnimalsCompanion.insert(
+      id: raw['id'] as String,
+      organizationId: raw['organization_id'] as String,
+      animalNumber: raw['animal_number'] as String,
+      earTagNumber: Value(raw['ear_tag_number'] as String?),
+      rfidNumber: Value(raw['rfid_number'] as String?),
+      name: Value(raw['name'] as String?),
+      registrationNumber: Value(raw['registration_number'] as String?),
+      speciesId: raw['species_id'] as String,
+      speciesName: raw['species_name'] as String? ?? '',
+      breedId: raw['breed_id'] as String,
+      breedName: raw['breed_name'] as String? ?? '',
+      sex: raw['sex'] as String,
+      lifeStage: raw['life_stage'] as String,
+      dateOfBirth: Value(_nullableDate(raw['date_of_birth'])),
+      isDateOfBirthEstimated: Value(
+        raw['is_date_of_birth_estimated'] as bool? ?? false,
+      ),
+      colour: Value(raw['colour'] as String?),
+      identifyingMarks: Value(raw['identifying_marks'] as String?),
+      currentFarmId: raw['current_farm_id'] as String,
+      currentFarmName: raw['current_farm_name'] as String? ?? '',
+      currentShedId: raw['current_shed_id'] as String,
+      currentShedName: raw['current_shed_name'] as String? ?? '',
+      currentAnimalGroupId: Value(raw['current_animal_group_id'] as String?),
+      currentAnimalGroupName: Value(
+        raw['current_animal_group_name'] as String?,
+      ),
+      motherAnimalId: Value(raw['mother_animal_id'] as String?),
+      motherAnimalNumber: Value(raw['mother_animal_number'] as String?),
+      fatherAnimalId: Value(raw['father_animal_id'] as String?),
+      fatherAnimalNumber: Value(raw['father_animal_number'] as String?),
+      externalSireReference: Value(raw['external_sire_reference'] as String?),
+      origin: raw['origin'] as String,
+      acquisitionDate: Value(_nullableDate(raw['acquisition_date'])),
+      sourceDescription: Value(raw['source_description'] as String?),
+      notes: Value(raw['notes'] as String?),
+      operationalStatus: raw['operational_status'] as String,
+      latestWeightId: Value(latestWeight?['id'] as String?),
+      latestWeightKg: Value(latestWeight?['normalized_kg'] as String?),
+      latestWeightObservedAt: Value(
+        _nullableDate(latestWeight?['observed_at']),
+      ),
+      version: Value(raw['version'] as int? ?? 1),
+      serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+      cachedAt: synchronizedAt,
+      isArchived: Value(raw['is_archived'] as bool? ?? false),
+      isAccessible: const Value(true),
+    );
+  }
 
   LocalAnimalMovementsCompanion _animalMovementCompanion(
     Map<String, dynamic> raw,
@@ -442,6 +504,55 @@ final class SyncService {
     rejectionReason: Value(raw['rejection_reason'] as String?),
     cancellationReason: Value(raw['cancellation_reason'] as String?),
     version: Value(raw['version'] as int? ?? 1),
+    serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+    cachedAt: synchronizedAt,
+    isAccessible: const Value(true),
+  );
+
+  LocalAnimalWeightsCompanion _animalWeightCompanion(
+    Map<String, dynamic> raw,
+    DateTime synchronizedAt,
+  ) => LocalAnimalWeightsCompanion.insert(
+    id: raw['id'] as String,
+    organizationId: raw['organization_id'] as String,
+    farmId: raw['farm_id'] as String,
+    farmName: raw['farm_name'] as String? ?? '',
+    animalId: raw['animal_id'] as String,
+    animalNumber: raw['animal_number'] as String? ?? '',
+    enteredValue: raw['entered_value'] as String,
+    enteredUnit: raw['entered_unit'] as String,
+    normalizedKg: raw['normalized_kg'] as String,
+    observedAt: _date(raw['observed_at'], synchronizedAt),
+    source: raw['source'] as String,
+    notes: Value(raw['notes'] as String?),
+    recordedBy: raw['recorded_by'] as String,
+    recordedByName: raw['recorded_by_name'] as String? ?? '',
+    supersedesWeightId: Value(raw['supersedes_weight_id'] as String?),
+    supersededByWeightId: Value(raw['superseded_by_weight_id'] as String?),
+    correctionReason: Value(raw['correction_reason'] as String?),
+    isSuperseded: Value(raw['is_superseded'] as bool? ?? false),
+    serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+    cachedAt: synchronizedAt,
+    isAccessible: const Value(true),
+  );
+
+  LocalAnimalStatusChangesCompanion _animalStatusChangeCompanion(
+    Map<String, dynamic> raw,
+    DateTime synchronizedAt,
+  ) => LocalAnimalStatusChangesCompanion.insert(
+    id: raw['id'] as String,
+    organizationId: raw['organization_id'] as String,
+    farmId: raw['farm_id'] as String,
+    farmName: raw['farm_name'] as String? ?? '',
+    animalId: raw['animal_id'] as String,
+    animalNumber: raw['animal_number'] as String? ?? '',
+    previousStatus: raw['previous_status'] as String,
+    newStatus: raw['new_status'] as String,
+    effectiveAt: _date(raw['effective_at'], synchronizedAt),
+    reason: raw['reason'] as String,
+    changedBy: raw['changed_by'] as String,
+    changedByName: raw['changed_by_name'] as String? ?? '',
+    sequence: raw['sequence'] as int,
     serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
     cachedAt: synchronizedAt,
     isAccessible: const Value(true),

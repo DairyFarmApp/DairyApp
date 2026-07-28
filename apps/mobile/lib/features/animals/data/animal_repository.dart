@@ -2,6 +2,7 @@ import 'package:dairycare_mobile/core/api/api_client.dart';
 import 'package:dairycare_mobile/core/database/app_database.dart';
 import 'package:dairycare_mobile/core/errors/app_exception.dart';
 import 'package:dairycare_mobile/features/animals/domain/animal_models.dart';
+import 'package:dairycare_mobile/features/animals/domain/animal_weight_models.dart';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
@@ -101,6 +102,7 @@ final class AnimalRepository {
     final payload = draft.toJson(
       includeLocation: false,
       includeIdentifiers: canManageIdentifiers,
+      includeOperationalStatus: false,
     )..['version'] = animal.version;
     final body = await _api.patchJson('/animals/${animal.id}', data: payload);
     final updated = Animal.fromJson(body['data'] as Map<String, dynamic>);
@@ -384,6 +386,9 @@ final class AnimalRepository {
           sourceDescription: Value(animal.sourceDescription),
           notes: Value(animal.notes),
           operationalStatus: animal.operationalStatus,
+          latestWeightId: Value(animal.latestWeight?.id),
+          latestWeightKg: Value(animal.latestWeight?.normalizedKg),
+          latestWeightObservedAt: Value(animal.latestWeight?.observedAt),
           version: Value(animal.version),
           serverUpdatedAt: animal.serverUpdatedAt,
           cachedAt: DateTime.now().toUtc(),
@@ -426,6 +431,28 @@ final class AnimalRepository {
     sourceDescription: row.sourceDescription,
     notes: row.notes,
     operationalStatus: row.operationalStatus,
+    latestWeight:
+        row.latestWeightId == null ||
+            row.latestWeightKg == null ||
+            row.latestWeightObservedAt == null
+        ? null
+        : AnimalWeight(
+            id: row.latestWeightId!,
+            organizationId: row.organizationId,
+            farmId: row.currentFarmId,
+            farmName: row.currentFarmName,
+            animalId: row.id,
+            animalNumber: row.animalNumber,
+            enteredValue: row.latestWeightKg!,
+            enteredUnit: 'kg',
+            normalizedKg: row.latestWeightKg!,
+            observedAt: row.latestWeightObservedAt!,
+            source: 'cached_projection',
+            recordedBy: '',
+            recordedByName: '',
+            isSuperseded: false,
+            serverUpdatedAt: row.serverUpdatedAt,
+          ),
     version: row.version,
     isArchived: row.isArchived,
     serverUpdatedAt: row.serverUpdatedAt,

@@ -1,3 +1,5 @@
+import 'package:dairycare_mobile/features/animals/domain/animal_weight_models.dart';
+
 final class AnimalSpecies {
   const AnimalSpecies({
     required this.id,
@@ -132,6 +134,7 @@ final class Animal {
     this.acquisitionDate,
     this.sourceDescription,
     this.notes,
+    this.latestWeight,
   });
 
   factory Animal.fromJson(Map<String, dynamic> json) => Animal(
@@ -168,6 +171,9 @@ final class Animal {
     acquisitionDate: _date(json['acquisition_date']),
     sourceDescription: json['source_description'] as String?,
     notes: json['notes'] as String?,
+    latestWeight: json['latest_weight'] is Map<String, dynamic>
+        ? AnimalWeight.fromJson(json['latest_weight'] as Map<String, dynamic>)
+        : null,
     operationalStatus: json['operational_status'] as String,
     version: json['version'] as int? ?? 1,
     isArchived: json['is_archived'] as bool? ?? false,
@@ -207,6 +213,7 @@ final class Animal {
   final DateTime? acquisitionDate;
   final String? sourceDescription;
   final String? notes;
+  final AnimalWeight? latestWeight;
   final String operationalStatus;
   final int version;
   final bool isArchived;
@@ -269,6 +276,7 @@ final class AnimalDraft {
   Map<String, dynamic> toJson({
     bool includeLocation = true,
     bool includeIdentifiers = true,
+    bool includeOperationalStatus = true,
   }) => {
     if (includeIdentifiers &&
         animalNumber != null &&
@@ -297,7 +305,7 @@ final class AnimalDraft {
     'acquisition_date': _dateString(acquisitionDate),
     'source_description': _nullIfEmpty(sourceDescription),
     'notes': _nullIfEmpty(notes),
-    'operational_status': operationalStatus,
+    if (includeOperationalStatus) 'operational_status': operationalStatus,
   };
 }
 

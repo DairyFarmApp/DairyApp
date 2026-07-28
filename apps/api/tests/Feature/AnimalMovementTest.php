@@ -98,6 +98,7 @@ class AnimalMovementTest extends TestCase
             'current_farm_id' => $context['destinationFarm']->id,
             'current_shed_id' => $context['destinationShed']->id,
             'current_animal_group_id' => $context['destinationGroup']->id,
+            'operational_status' => 'active',
             'version' => 2,
         ]);
         foreach ([

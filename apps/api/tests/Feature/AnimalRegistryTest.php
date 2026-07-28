@@ -297,10 +297,10 @@ class AnimalRegistryTest extends TestCase
 
         $updated = $this->patchJson('/api/v1/animals/'.$animal->id, [
             'name' => 'Updated Name',
-            'operational_status' => 'inactive',
             'version' => 1,
         ], $headers)->assertOk();
         $this->assertSame(2, $updated->json('data.version'));
+        $this->assertSame('active', $updated->json('data.operational_status'));
         $this->patchJson('/api/v1/animals/'.$animal->id, [
             'name' => 'Stale Name',
             'version' => 1,
