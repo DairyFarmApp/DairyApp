@@ -1,31 +1,52 @@
-# Phase 2C Task Record
+# Phase 2 UX and Web Stabilization Task Record
 
-Status: Animal Weights and Operational-Status History implemented locally. Date: 2026-07-23. Validation and owner approval are required before any commit.
+Status: Complete on `codex/phase-2-ux-stabilization`.
 
-## Completed scope
+## Approved intent
 
-- [x] Confirmed branch, upstream, clean preflight, committed/pushed Phase 2B baseline, and starting commit.
-- [x] Read all required source-of-truth and existing implementation files.
-- [x] Added tenant/farm-constrained `animal_weights` and `animal_status_changes` migrations without changing unrelated schema.
-- [x] Added exact decimal kg/lb normalization, configured maximum, observation-time validation, and deterministic latest-weight projection.
-- [x] Added immutable single-correction workflow with row locks, preserved source facts, supersession links, idempotency, and audit.
-- [x] Moved post-registration status changes to a row-locked, versioned, reasoned append command with atomic animal projection.
-- [x] Added five granular permissions with conservative seeded role defaults.
-- [x] Added six tenant-aware API operations with pagination, resources, policies, Form Requests, and safe errors.
-- [x] Added responsive Flutter weight/status forms, history, latest projection, and permission-aware controls using real APIs.
-- [x] Added Drift schema version 4 read caches and authorized bootstrap/incremental synchronization.
-- [x] Added backend and Flutter domain, cache, migration, permission, responsive, concurrency, sync, and schema tests.
-- [x] Completed the final MySQL, SQLite, PHP, OpenAPI, Flutter, and Android validation matrix.
-- [x] Completed the final repository hygiene matrix after documentation settled.
-- [x] Updated the required Phase 2C design and API documentation.
-- [x] Confirmed no Phase 2D or later-domain implementation was introduced.
+Make the completed Phase 1 and Phase 2A–2C workflows reliable and professional
+before beginning another dairy domain. This is a stabilization phase, not Phase
+2D and not a full-specification code dump.
 
-## Excluded by design
+## Current scope
 
-- QR, photos, and combined timeline
-- Offline animal/movement/weight/status/reference mutations and background upload
-- Milk, breeding, pregnancy, calving, health, medicines, feed, inventory, sales, mortality, finance, payroll, equipment, AI, IoT, and reporting
+- [x] Read the complete master specification and current completion records.
+- [x] Audit the repository, implemented modules, Flutter UI, runtime targets,
+  and current validation evidence.
+- [x] Reproduce and identify the Chrome crash caused by missing Drift web
+  options and runtime assets.
+- [x] Add version-matched Drift web configuration and official runtime assets.
+- [x] Introduce a responsive DairyCare design system and reusable UI surfaces.
+- [x] Redesign login, navigation shell, and the real-data farm dashboard.
+- [x] Prevent internal provider/stack-trace details from being rendered to end
+  users.
+- [x] Run formatting, analysis, unit/widget tests, web build, Android build, and
+  browser smoke tests.
+- [x] Inspect login, dashboard, animal registry, and responsive navigation
+  visually and correct defects found.
+- [x] Update completion and operating documentation with final evidence.
+
+## Explicit exclusions
+
+- QR identification, photos, a combined animal timeline, and offline animal
+  mutations
+- Milk, health, breeding, feed, inventory, purchasing, sales, finance,
+  workforce, equipment, reports, and other later modules
+- Windows desktop runner creation
+- Production deployment, signing, hosting, or secrets
+
+## Validation result
+
+- Dart format: 79 files formatted; the final check is clean.
+- Flutter analyze: no issues.
+- Flutter tests: 64 passed.
+- Release web build: passed, including the WebAssembly dry run.
+- Android debug build: passed.
+- Manual Chrome checks: login, farm selection, dashboard, registry, animal
+  profile, desktop navigation, and phone navigation rendered without browser
+  warnings or errors.
 
 ## Next action
 
-Stop after the completed Phase 2C validation and wait for owner approval. Do not commit or push.
+Stop for owner approval. Begin only one separately approved product phase; do
+not combine QR, photos, timeline, offline mutation, or later dairy domains.

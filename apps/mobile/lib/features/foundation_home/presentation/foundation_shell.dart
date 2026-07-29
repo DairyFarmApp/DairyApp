@@ -1,4 +1,5 @@
 import 'package:dairycare_mobile/core/auth/auth_controller.dart';
+import 'package:dairycare_mobile/core/widgets/app_surface.dart';
 import 'package:dairycare_mobile/core/widgets/status_indicators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,22 +15,77 @@ final class FoundationShell extends ConsumerWidget {
     final session = ref.watch(authControllerProvider).asData?.value;
     final location = GoRouterState.of(context).matchedLocation;
     final destinations = <_Destination>[
-      const _Destination('Foundation', Icons.home_outlined, '/home'),
+      const _Destination(
+        'Dashboard',
+        Icons.dashboard_outlined,
+        Icons.dashboard_rounded,
+        '/home',
+      ),
       if (session?.can('farms.view') ?? false)
-        const _Destination('Farms', Icons.agriculture_outlined, '/farms'),
+        const _Destination(
+          'Farms',
+          Icons.agriculture_outlined,
+          Icons.agriculture_rounded,
+          '/farms',
+        ),
       if (session?.can('sheds.view') ?? false)
-        const _Destination('Sheds', Icons.warehouse_outlined, '/sheds'),
+        const _Destination(
+          'Sheds',
+          Icons.warehouse_outlined,
+          Icons.warehouse_rounded,
+          '/sheds',
+        ),
       if (session?.can('animals.view') ?? false)
-        const _Destination('Animals', Icons.pets_outlined, '/animals'),
-      const _Destination('Sync', Icons.sync_outlined, '/sync'),
+        const _Destination(
+          'Animals',
+          Icons.pets_outlined,
+          Icons.pets_rounded,
+          '/animals',
+        ),
+      const _Destination(
+        'Sync',
+        Icons.sync_outlined,
+        Icons.sync_rounded,
+        '/sync',
+      ),
     ];
-    final selected = destinations.indexWhere((item) => location == item.path);
+    final selected = destinations.indexWhere(
+      (item) => location == item.path || location.startsWith('${item.path}/'),
+    );
     final index = selected < 0 ? 0 : selected;
-    final wide = MediaQuery.sizeOf(context).width >= 720;
+    final width = MediaQuery.sizeOf(context).width;
+    final wide = width >= 760;
 
     final content = Scaffold(
       appBar: AppBar(
-        title: Text(session?.activeFarm?.name ?? 'DairyCare'),
+        toolbarHeight: 72,
+        titleSpacing: wide ? 24 : 16,
+        title: Row(
+          children: [
+            if (!wide) ...[const AppMark(size: 38), const SizedBox(width: 12)],
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    session?.activeFarm?.name ?? 'DairyCare',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (session?.activeOrganization != null)
+                    Text(
+                      session!.activeOrganization!.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
         actions: [
           if (wide) const OfflineStatusIndicator(),
           if (wide)
@@ -37,23 +93,80 @@ final class FoundationShell extends ConsumerWidget {
               padding: EdgeInsets.only(right: 8),
               child: SyncStatusIndicator(),
             ),
-          PopupMenuButton<String>(
-            onSelected: (value) async {
-              if (value == 'farm') context.go('/farms/select');
-              if (value == 'organization') context.go('/organizations/select');
-              if (value == 'logout') {
-                await ref.read(authControllerProvider.notifier).logout();
-              }
-            },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'farm', child: Text('Switch farm')),
-              PopupMenuItem(
-                value: 'organization',
-                child: Text('Switch organization'),
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: PopupMenuButton<String>(
+              tooltip: 'Account and farm options',
+              icon: CircleAvatar(
+                radius: 18,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                child: Text(
+                  _initials(session?.user.name),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
-              PopupMenuDivider(),
-              PopupMenuItem(value: 'logout', child: Text('Sign out')),
-            ],
+              onSelected: (value) async {
+                if (value == 'farm' && context.mounted) {
+                  context.go('/farms/select');
+                }
+                if (value == 'organization' && context.mounted) {
+                  context.go('/organizations/select');
+                }
+                if (value == 'logout') {
+                  await ref.read(authControllerProvider.notifier).logout();
+                }
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  enabled: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        session?.user.name ?? 'DairyCare user',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      Text(
+                        session?.user.email ?? '',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+                const PopupMenuItem(
+                  value: 'farm',
+                  child: ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.agriculture_outlined),
+                    title: Text('Switch farm'),
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'organization',
+                  child: ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.business_outlined),
+                    title: Text('Switch organization'),
+                  ),
+                ),
+                const PopupMenuDivider(),
+                const PopupMenuItem(
+                  value: 'logout',
+                  child: ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.logout_rounded),
+                    title: Text('Sign out'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -68,6 +181,7 @@ final class FoundationShell extends ConsumerWidget {
                 for (final item in destinations)
                   NavigationDestination(
                     icon: Icon(item.icon),
+                    selectedIcon: Icon(item.selectedIcon),
                     label: item.label,
                   ),
               ],
@@ -77,18 +191,58 @@ final class FoundationShell extends ConsumerWidget {
     if (!wide) return content;
     return Row(
       children: [
-        NavigationRail(
-          selectedIndex: index,
-          extended: MediaQuery.sizeOf(context).width >= 1050,
-          onDestinationSelected: (value) =>
-              context.go(destinations[value].path),
-          destinations: [
-            for (final item in destinations)
-              NavigationRailDestination(
-                icon: Icon(item.icon),
-                label: Text(item.label),
+        Container(
+          width: width >= 1080 ? 224 : 96,
+          color: Theme.of(context).colorScheme.surface,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  width >= 1080 ? 20 : 12,
+                  18,
+                  width >= 1080 ? 20 : 12,
+                  14,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const AppMark(size: 42),
+                    if (width >= 1080) ...[
+                      const SizedBox(width: 12),
+                      Flexible(
+                        child: Text(
+                          'DairyCare',
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-          ],
+              Expanded(
+                child: NavigationRail(
+                  selectedIndex: index,
+                  extended: width >= 1080,
+                  groupAlignment: -0.82,
+                  onDestinationSelected: (value) =>
+                      context.go(destinations[value].path),
+                  destinations: [
+                    for (final item in destinations)
+                      NavigationRailDestination(
+                        icon: Icon(item.icon),
+                        selectedIcon: Icon(item.selectedIcon),
+                        label: Text(item.label),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         const VerticalDivider(width: 1),
         Expanded(child: content),
@@ -98,8 +252,20 @@ final class FoundationShell extends ConsumerWidget {
 }
 
 final class _Destination {
-  const _Destination(this.label, this.icon, this.path);
+  const _Destination(this.label, this.icon, this.selectedIcon, this.path);
+
   final String label;
   final IconData icon;
+  final IconData selectedIcon;
   final String path;
+}
+
+String _initials(String? name) {
+  final words = name
+      ?.trim()
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty)
+      .toList();
+  if (words == null || words.isEmpty) return 'DC';
+  return words.take(2).map((word) => word[0].toUpperCase()).join();
 }

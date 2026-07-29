@@ -1,4 +1,5 @@
 import 'package:dairycare_mobile/app/router.dart';
+import 'package:dairycare_mobile/app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,13 +10,9 @@ final class DairyCareApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
     title: 'DairyCare',
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF176B5B)),
-      useMaterial3: true,
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
-      ),
-    ),
+    theme: DairyCareTheme.light,
+    darkTheme: DairyCareTheme.dark,
+    themeMode: ThemeMode.system,
     routerConfig: ref.watch(routerProvider),
   );
 }

@@ -52,6 +52,19 @@ Implement online weight recording, exact unit normalization, immutable correctio
 
 Phase 2C deliberately keeps all animal mutations online-only. It does not extend the outbox or implement QR, photos, a combined timeline, milk, breeding, health, inventory, or any later domain. Completion evidence is recorded in `docs/PHASE_2C_COMPLETION.md`.
 
+## Phase 2 UX and web stabilization (implemented 2026-07-29)
+
+Stabilize the implemented Phase 1 and Phase 2A-2C client before another product
+capability. Add the version-matched Drift browser runtime, a responsive
+DairyCare visual system, polished authentication and context selection,
+permission-aware navigation, a real-data dashboard, and safe loading/error
+states. Validate desktop and phone layouts in Chrome and rebuild web and
+Android artifacts.
+
+This stabilization introduces no API endpoint, migration, database module, or
+later dairy feature. Completion evidence is recorded in
+`docs/PHASE_2_UX_WEB_STABILIZATION_COMPLETION.md`.
+
 ## Later phases
 
 1. **Remaining Phase 2 Animals:** only separately approved QR, photos, search-scale, lifecycle/death, or combined-timeline work; offline animal mutation remains a separate explicit decision.

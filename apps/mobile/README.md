@@ -10,6 +10,19 @@ C:\flutter\bin\flutter.bat pub run build_runner build
 C:\flutter\bin\flutter.bat run --dart-define=APP_ENV=development --dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1
 ```
 
+For Chrome/web development:
+
+```powershell
+C:\flutter\bin\flutter.bat run -d chrome --dart-define=APP_ENV=development --dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1
+```
+
+The web client uses the official `sqlite3.wasm` and `drift_worker.js` assets
+published with Drift `2.34.2`. `AppDatabase` supplies matching
+`DriftWebOptions`, allowing the authorized Drift cache to use the best durable
+browser storage implementation available. When Drift is upgraded, update both
+web assets from the same Drift release and rerun the web runtime configuration
+test and manual browser smoke test.
+
 The zero-byte `C:\Windows\System32\flutter` launcher on the inspected machine shadows the SDK; use the absolute SDK path shown above until the machine PATH is repaired.
 
 ## Quality
@@ -26,4 +39,11 @@ SQLite uses the operating-system native library via `pubspec.yaml` hooks because
 
 The Phase 1.1 Android debug build passed with Android SDK/build-tools 36.1 and the Android Studio JDK 21. The manifest contains `INTERNET` and Connectivity Plus contributes network-state permission. Production signing is intentionally not configured.
 
-Phase 2C analysis and all 62 Flutter tests pass. The debug APK builds successfully. Animal/breed/group/movement/weight/status writes require connectivity; Drift caches only authorized read data. Offline animal mutations, QR, photos, generic timeline, milk, breeding, health, inventory, finance, and all later-phase screens remain excluded.
+Phase 2C plus UX/web stabilization analysis and all 64 Flutter tests pass. The
+release web client and debug APK build successfully. Manual Chrome checks cover
+authentication, farm selection, dashboard, animal registry/profile, and
+desktop/phone navigation without browser warnings or errors.
+Animal/breed/group/movement/weight/status writes require connectivity; Drift
+caches only authorized read data. Offline animal mutations, QR, photos, generic
+timeline, milk, breeding, health, inventory, finance, and all later-phase
+screens remain excluded.

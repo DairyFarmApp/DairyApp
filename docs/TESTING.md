@@ -11,9 +11,23 @@ C:\flutter\bin\flutter.bat test --concurrency=1
 C:\flutter\bin\flutter.bat build apk --debug --dart-define=APP_ENV=development --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
 ```
 
-Phase 2C has 62 passing Flutter tests. In addition to foundation/registry/movement coverage, they test weight/status serialization, decimal-string payloads, online idempotent commands, offline cached histories, immutable correction projections, status changes without outbox writes, validated responsive forms/tables, incremental loading, permission-aware controls, Drift schema-3-to-4 migration, sync upserts, and farm/permission removal.
+Phase 2C plus UX/web stabilization has 64 passing Flutter tests. In addition to
+foundation/registry/movement coverage, they test weight/status serialization,
+decimal-string payloads, online idempotent commands, offline cached histories,
+immutable correction projections, status changes without outbox writes,
+validated responsive forms/tables, incremental loading, permission-aware
+controls, Drift schema-3-to-4 migration, sync upserts, farm/permission removal,
+the version-matched Drift browser runtime assets, and safe user-facing provider
+errors.
 
-The Android debug APK was built and inspected. It contains the expected application ID, `INTERNET`, and network-state permissions. Drift/system SQLite, Flutter Secure Storage, Connectivity Plus, Dio, and compile-time environment values all compiled successfully. A physical device is not required at this checkpoint.
+The Android debug APK and release web client were built successfully. The APK
+contains the expected application ID, `INTERNET`, and network-state permissions.
+Drift/system SQLite, Flutter Secure Storage, Connectivity Plus, Dio, and
+compile-time environment values all compiled successfully. Manual Chrome smoke
+tests at desktop and phone widths cover the polished login, context selection,
+real-data dashboard, animal registry/profile, and responsive navigation with no
+browser warnings or errors. A physical device is not required at this
+checkpoint.
 
 ## Laravel
 
