@@ -19,6 +19,54 @@ class AuthController extends AsyncNotifier<AuthSession?> {
     );
   }
 
+  Future<void> signupOwner({
+    required String name,
+    required String farmName,
+    required String email,
+    required String phoneNumber,
+    required String password,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref
+          .read(authRepositoryProvider)
+          .signupOwner(
+            name: name,
+            farmName: farmName,
+            email: email,
+            phoneNumber: phoneNumber,
+            password: password,
+          ),
+    );
+  }
+
+  Future<void> signupFamily({
+    required String invitationToken,
+    required String name,
+    required String email,
+    required String phoneNumber,
+    required String password,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref
+          .read(authRepositoryProvider)
+          .signupFamily(
+            invitationToken: invitationToken,
+            name: name,
+            email: email,
+            phoneNumber: phoneNumber,
+            password: password,
+          ),
+    );
+  }
+
+  Future<void> reload() async {
+    state = await AsyncValue.guard(
+      () => ref.read(authRepositoryProvider).restore(),
+    );
+  }
+
   Future<void> logout() async {
     await ref.read(authRepositoryProvider).logout();
     state = const AsyncData(null);

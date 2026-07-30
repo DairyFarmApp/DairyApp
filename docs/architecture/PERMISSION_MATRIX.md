@@ -19,6 +19,23 @@
 
 The seeder and this table share the same explicit catalog. API middleware applies implemented organization/farm permissions; user/role/audit management endpoints are intentionally not exposed until an approved workflow assigns them.
 
+## Self-service owner and family accounts
+
+| Capability | Primary owner | Family admin |
+|---|---:|---:|
+| Manage implemented farm data | Yes | Yes |
+| Edit own profile/photo | Yes | Yes |
+| View family membership list | Yes | No |
+| Create/disable/regenerate family link | Yes | No |
+| Remove/restore family accounts | Yes | No |
+| Remove or replace primary owner | No | No |
+| Create another farm | No | No |
+| Archive the only farm | No | No |
+
+Both membership types receive the single-farm organization-owner permission
+set for ordinary farm work. Membership administration additionally requires
+`membership_type = primary_owner`; `users.manage` alone is insufficient.
+
 ## Implemented Phase 2A permissions
 
 | Permission | Organization Owner | Farm Manager | Farm Worker | Viewer |
@@ -60,6 +77,22 @@ The seeded approval setting requires a requester and approver to be different us
 
 Permission never expands organization membership or farm grants. Corrections require access to both the observation farm and the animal's current farm. Status changes require a current animal version and farm access.
 
+## Implemented inventory permissions
+
+| Permission | Organization Owner | Farm Manager | Farm Worker | Viewer |
+|---|---:|---:|---:|---:|
+| `inventory.view` | Yes | Yes, authorized farm | Yes, authorized farm | Yes, authorized farm |
+| `inventory.manage` | Yes | Yes, authorized farm | No | No |
+| `inventory.export` | Yes | Yes, authorized farm | No | No |
+
+`inventory.view` covers the selector, summaries, filtered item lists, and stock
+movement history. `inventory.manage` covers item creation, versioned metadata
+changes, and receipt commands. Every route also requires active membership,
+active session farm, and authorized farm access. `inventory.export` separately
+controls PDF receipts and Excel downloads. Family admins inherit the
+organization-owner work permissions while their membership is active, but
+cannot manage the reusable family invitation.
+
 ## Product-wide proposed baseline
 
 This is a conservative baseline. Organization owners can customize roles but cannot bypass platform boundaries. `Scope` is additionally restricted by membership and farm grants.
@@ -84,6 +117,6 @@ Legend: M = manage/create/update, V = view, A = approve/override, — = none by 
 
 ## Permission naming
 
-Use explicit abilities such as the implemented `animals.view`, `animals.create`, `animals.update`, `animals.move`, `animal_movements.view`, `animal_movements.approve`, `animal_movements.reject`, `animal_movements.cancel`, `animals.record_weight`, `animals.correct_weight`, `animals.view_weight_history`, `animals.change_status`, and `animals.view_status_history`, plus future abilities such as `animals.record_death`, `milk.create`, `milk.correct.request`, `milk.correct.approve`, `health.manage`, `withdrawals.override`, `inventory.issue`, `inventory.adjust.request`, `inventory.adjust.approve`, `sales.create`, `payments.receive`, `expenses.approve`, `payroll.process`, `reports.export`, `users.manage`, `audit_logs.view`, and `backups.restore`.
+Use explicit abilities such as the implemented `animals.view`, `animals.create`, `animals.update`, `animals.move`, `animal_movements.view`, `animal_movements.approve`, `animal_movements.reject`, `animal_movements.cancel`, `animals.record_weight`, `animals.correct_weight`, `animals.view_weight_history`, `animals.change_status`, `animals.view_status_history`, `inventory.view`, `inventory.manage`, and `inventory.export`, plus future abilities such as `animals.record_death`, `milk.create`, `milk.correct.request`, `milk.correct.approve`, `health.manage`, `withdrawals.override`, `inventory.issue`, `inventory.adjust.request`, `inventory.adjust.approve`, `sales.create`, `payments.receive`, `expenses.approve`, `payroll.process`, `reports.export`, `users.manage`, `audit_logs.view`, and `backups.restore`.
 
 Approval requires a distinct ability and, by default, requester and approver separation. No role implicitly gains financial reporting from general farm access. Veterinarian and worker defaults deliberately exclude customer balances and payroll. Field-level filtering protects employee identity/bank data and confidential finance data even when a broader record is viewable.

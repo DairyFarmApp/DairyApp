@@ -49,4 +49,22 @@ Phase 2A implements the Animal Registry portion of `Animals`: species, breeds, f
 - Flutter presentation depends on animal measurement repositories/providers; Drift is a read cache, not a second authority.
 - Sync reads weight/status changes after server authorization. No Phase 2C mutation depends on or writes the outbox.
 
-Foundation -> animal registry -> online animal movements -> separately approved offline animal workflows -> remaining approved animal capabilities -> milk -> health/breeding -> inventory/feed -> purchase/sales -> finance/workforce -> equipment/reports/advanced sync -> hardening. A later module may depend on stable public contracts from an earlier module, never on its UI or private persistence details.
+## Inventory-core dependency detail
+
+- `Inventory` depends on tenancy, active-farm access, role permissions,
+  idempotency, audit, and MySQL transactions; it does not depend on animals,
+  health, feed rations, purchasing, or finance.
+- Item metadata is separate from batches and permanent stock movements.
+  Consumers must request future issue/receipt actions from Inventory and must
+  never update its quantity projection directly.
+- Flutter presentation depends on the inventory repository/providers. Inventory
+  does not yet depend on Drift or the sync outbox.
+- Future health, feed, purchasing, sales, and equipment integrations must use
+  stable inventory commands rather than importing inventory persistence.
+
+Foundation -> animal registry -> online animal movements/measurements -> owner
+onboarding -> inventory core -> remaining approved animal capabilities -> milk
+-> health/breeding -> inventory expansion/feed -> purchase/sales ->
+finance/workforce -> equipment/reports/advanced sync -> hardening. A later
+module may depend on stable public contracts from an earlier module, never on
+its UI or private persistence details.

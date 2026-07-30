@@ -54,3 +54,37 @@ The full evidence and known limitations are in `docs/PHASE_2B_COMPLETION.md`.
 - PHP syntax, Pint, Composer validation/audit, Redocly lint/bundle and 52-operation parity, Dart generation/format, Flutter analysis, and Android debug build passed.
 
 The full evidence and known limitations are in `docs/PHASE_2C_COMPLETION.md`.
+
+## Owner onboarding and family-access evidence
+
+- MySQL 8: 74 tests and 760 assertions, including reusable invitations,
+  multiple family signups, token-at-rest checks, link disable/rotation,
+  primary-owner-only management, immediate session revocation, restoration,
+  cross-farm concealment, profile/password protection, and private photo
+  storage.
+- SQLite portability: 66 passed with 638 assertions; the same eight
+  process-concurrency tests remain MySQL-only.
+- Flutter: 71 tests covering owner/family signup validation and routing,
+  account repositories, profile UI, reusable-link language, removal controls,
+  membership-aware navigation, and all prior product regressions.
+- MySQL fresh migration/seed, Pint, PHP syntax, Composer validation/audit,
+  67-operation OpenAPI parity, Redocly lint/bundle, Dart format, Flutter
+  analysis, release web build, and Android debug build passed.
+
+Full evidence is in `docs/OWNER_ONBOARDING_COMPLETION.md`.
+
+## Inventory core and glass appearance executed evidence
+
+- MySQL 8.4.9: 79 tests, 808 assertions, including stock-ledger creation,
+  idempotent receipt replay, protected metadata updates, stale-version
+  rejection, permission denial, and cross-farm concealment.
+- SQLite portability: 79 discovered, 71 passed, 686 assertions, with the eight
+  existing process-concurrency tests skipped.
+- Flutter: 78 tests covering inventory transport, responsive screens, local
+  decimal/date/order validation, permission-aware navigation, and persistent
+  System/White/Dark choices.
+- MySQL fresh migration/seed, PHP syntax for 180 files, Pint, Composer
+  validation/audit, 73-operation OpenAPI parity, Redocly lint/bundle, Flutter
+  analysis, Android debug, release web, and manual browser QA passed.
+
+Full evidence is in `docs/INVENTORY_GLASS_THEME_COMPLETION.md`.

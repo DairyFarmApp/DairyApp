@@ -65,11 +65,11 @@ abstract final class DairyCareTheme {
     final outline = colors.outlineVariant.withValues(alpha: dark ? 0.45 : 0.7);
     return base.copyWith(
       textTheme: textTheme,
-      scaffoldBackgroundColor: dark ? const Color(0xFF0E1714) : AppColors.cream,
+      scaffoldBackgroundColor: Colors.transparent,
       appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: dark ? const Color(0xFF0E1714) : AppColors.cream,
+        backgroundColor: Colors.transparent,
         foregroundColor: colors.onSurface,
         surfaceTintColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge?.copyWith(
@@ -80,7 +80,9 @@ abstract final class DairyCareTheme {
       cardTheme: CardThemeData(
         elevation: 0,
         margin: EdgeInsets.zero,
-        color: colors.surface,
+        color: dark
+            ? colors.surface.withValues(alpha: 0.62)
+            : Colors.white.withValues(alpha: 0.64),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -144,12 +146,12 @@ abstract final class DairyCareTheme {
       navigationBarTheme: NavigationBarThemeData(
         height: 72,
         elevation: 0,
-        backgroundColor: colors.surface,
+        backgroundColor: colors.surface.withValues(alpha: 0.72),
         indicatorColor: colors.primaryContainer,
         labelTextStyle: WidgetStatePropertyAll(textTheme.labelMedium),
       ),
       navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: colors.surface,
+        backgroundColor: colors.surface.withValues(alpha: 0.70),
         indicatorColor: colors.primaryContainer,
         selectedIconTheme: IconThemeData(color: colors.onPrimaryContainer),
         selectedLabelTextStyle: textTheme.labelLarge?.copyWith(

@@ -8,6 +8,10 @@ void main() {
     expect(authRedirect(auth: const AsyncData(null), path: '/home'), '/login');
   });
 
+  test('router allows unauthenticated owner and family signup pages', () {
+    expect(authRedirect(auth: const AsyncData(null), path: '/signup'), isNull);
+  });
+
   test('router sends a complete authenticated context home', () {
     expect(
       authRedirect(auth: AsyncData(foundationSession()), path: '/login'),

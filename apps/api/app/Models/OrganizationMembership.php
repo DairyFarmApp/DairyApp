@@ -11,7 +11,7 @@ class OrganizationMembership extends Model
 {
     use UsesUuidV7;
 
-    protected $fillable = ['organization_id', 'user_id', 'status', 'all_farms'];
+    protected $fillable = ['organization_id', 'user_id', 'status', 'membership_type', 'all_farms', 'invited_by_membership_id'];
 
     protected function casts(): array
     {

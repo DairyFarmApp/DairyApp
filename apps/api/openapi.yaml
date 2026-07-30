@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
-  title: DairyCare Foundation API
-  version: 2.2.0-phase2c
-  description: Phase 1 foundation, Phase 2A animal registry, Phase 2B movements, and Phase 2C online animal weights and operational-status history.
+  title: DairyCare API
+  version: 2.5.0-inventory-actions-exports
+  description: Foundation, animal management, owner/family access, and ledger-backed inventory with archival, PDF receipts, and date-filtered Excel exports.
 servers:
   - url: http://127.0.0.1:8000/api/v1
 security:
@@ -41,6 +41,50 @@ paths:
       responses:
         '200': { $ref: '#/components/responses/SessionResponse' }
         '401': { $ref: '#/components/responses/ErrorResponse' }
+  /auth/owner-signup:
+    post:
+      security: []
+      summary: Create a private single-farm account and its primary owner
+      operationId: signupPrimaryOwner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OwnerSignupRequest' }
+      responses:
+        '201': { $ref: '#/components/responses/SessionResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+        '429': { $ref: '#/components/responses/ErrorResponse' }
+  /auth/family-invite/inspect:
+    post:
+      security: []
+      summary: Validate a reusable family invitation without consuming it
+      operationId: inspectFamilyInvite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FamilyInviteToken' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+        '429': { $ref: '#/components/responses/ErrorResponse' }
+  /auth/family-signup:
+    post:
+      security: []
+      summary: Create a persistent family account through a reusable farm invitation
+      operationId: signupFamilyAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FamilySignupRequest' }
+      responses:
+        '201': { $ref: '#/components/responses/SessionResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+        '429': { $ref: '#/components/responses/ErrorResponse' }
   /auth/logout:
     post:
       summary: Sign out the current session
@@ -53,6 +97,55 @@ paths:
       operationId: currentUser
       responses:
         '200': { $ref: '#/components/responses/SessionResponse' }
+  /auth/profile:
+    get:
+      summary: Read the current user's editable profile
+      operationId: getProfile
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+    patch:
+      summary: Update the current user's name, phone number, or email
+      operationId: updateProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProfileUpdate' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /auth/profile/photo:
+    get:
+      summary: Download the current user's profile picture
+      operationId: getProfilePhoto
+      responses:
+        '200':
+          description: Profile picture bytes
+          content:
+            image/jpeg: { schema: { type: string, format: binary } }
+            image/png: { schema: { type: string, format: binary } }
+            image/webp: { schema: { type: string, format: binary } }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+    post:
+      summary: Upload or replace the current user's profile picture
+      operationId: uploadProfilePhoto
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [photo]
+              properties:
+                photo: { type: string, format: binary }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+    delete:
+      summary: Remove the current user's profile picture
+      operationId: deleteProfilePhoto
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
   /auth/sessions:
     get:
       summary: List the current user's sessions
@@ -100,6 +193,69 @@ paths:
       responses:
         '200': { $ref: '#/components/responses/SessionResponse' }
         '403': { $ref: '#/components/responses/ErrorResponse' }
+  /family-invite:
+    get:
+      summary: Read the primary owner's reusable family invitation
+      operationId: getFamilyInvite
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+    post:
+      summary: Create or regenerate the reusable family invitation
+      operationId: rotateFamilyInvite
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+    delete:
+      summary: Disable the reusable family invitation
+      operationId: disableFamilyInvite
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+  /family-members:
+    get:
+      summary: List active and removed family accounts
+      operationId: listFamilyMembers
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+  /family-members/{membership}:
+    parameters:
+      - $ref: '#/components/parameters/MembershipId'
+    delete:
+      summary: Remove a family account and revoke its active farm sessions
+      operationId: removeFamilyMember
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+  /family-members/{membership}/restore:
+    parameters:
+      - $ref: '#/components/parameters/MembershipId'
+    post:
+      summary: Restore a previously removed family account
+      operationId: restoreFamilyMember
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+  /profile-photos/{user}:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    get:
+      summary: Download an active member's profile picture within the current farm account
+      operationId: getMemberProfilePhoto
+      responses:
+        '200':
+          description: Profile picture bytes
+          content:
+            image/jpeg: { schema: { type: string, format: binary } }
+            image/png: { schema: { type: string, format: binary } }
+            image/webp: { schema: { type: string, format: binary } }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
   /organizations:
     get:
       summary: List authorized organizations
@@ -631,6 +787,197 @@ paths:
         '404': { $ref: '#/components/responses/ErrorResponse' }
         '409': { $ref: '#/components/responses/ErrorResponse' }
         '422': { $ref: '#/components/responses/ErrorResponse' }
+  /inventory:
+    get:
+      summary: Read medicine, semen, and feed inventory summaries for the active farm
+      operationId: inventoryDashboard
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+  /inventory/{kind}:
+    parameters:
+      - name: kind
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/InventoryKind' }
+    get:
+      summary: Search and filter one inventory type with its stock overview
+      operationId: inventoryOverview
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema: { type: string, maxLength: 180 }
+        - name: category
+          in: query
+          required: false
+          schema: { type: string, maxLength: 100 }
+        - name: supplier
+          in: query
+          required: false
+          schema: { type: string, maxLength: 180 }
+        - name: low_stock
+          in: query
+          required: false
+          schema: { type: boolean, default: false }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+  /inventory/{kind}/exports/receipt:
+    parameters:
+      - name: kind
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/InventoryKind' }
+    get:
+      summary: Download a PDF receipt for selected or all filtered inventory items and movement dates
+      operationId: exportInventoryReceipt
+      parameters:
+        - $ref: '#/components/parameters/InventoryItemIds'
+        - $ref: '#/components/parameters/InventoryFromDate'
+        - $ref: '#/components/parameters/InventoryToDate'
+      responses:
+        '200':
+          description: PDF inventory receipt
+          headers:
+            Content-Disposition:
+              schema: { type: string }
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /inventory/{kind}/exports/spreadsheet:
+    parameters:
+      - name: kind
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/InventoryKind' }
+    get:
+      summary: Download a two-sheet Excel workbook for selected or all filtered inventory items and movement dates
+      operationId: exportInventorySpreadsheet
+      parameters:
+        - $ref: '#/components/parameters/InventoryItemIds'
+        - $ref: '#/components/parameters/InventoryFromDate'
+        - $ref: '#/components/parameters/InventoryToDate'
+      responses:
+        '200':
+          description: XLSX inventory workbook
+          headers:
+            Content-Disposition:
+              schema: { type: string }
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema: { type: string, format: binary }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /inventory/{kind}/items:
+    parameters:
+      - name: kind
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/InventoryKind' }
+    post:
+      summary: Create an inventory item, first batch, and opening-stock movement
+      operationId: createInventoryItem
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InventoryItemCreate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /inventory/{kind}/items/{item}:
+    parameters:
+      - name: kind
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/InventoryKind' }
+      - name: item
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/Uuid' }
+    patch:
+      summary: Update inventory item metadata without changing stock directly
+      operationId: updateInventoryItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InventoryItemUpdate' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '412': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+    delete:
+      summary: Archive a zero-stock inventory item while retaining all batch and movement history
+      operationId: archiveInventoryItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VersionRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '412': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /inventory/{kind}/items/{item}/receipts:
+    parameters:
+      - name: kind
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/InventoryKind' }
+      - name: item
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/Uuid' }
+    post:
+      summary: Receive a batch and append a purchase-receipt stock movement
+      operationId: receiveInventoryStock
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InventoryReceipt' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /inventory/{kind}/items/{item}/movements:
+    parameters:
+      - name: kind
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/InventoryKind' }
+      - name: item
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/Uuid' }
+    get:
+      summary: Read the immutable stock ledger for an inventory item
+      operationId: inventoryStockMovements
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
   /sync/bootstrap:
     get:
       summary: Bootstrap authorized reference data
@@ -665,10 +1012,36 @@ components:
     AnimalId: { name: animal, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     AnimalMovementId: { name: movement, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     AnimalWeightId: { name: weight, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    MembershipId: { name: membership, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    UserId: { name: user, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
     IdempotencyKey: { name: Idempotency-Key, in: header, required: false, schema: { type: string, maxLength: 160 } }
     PageSize: { name: 'page[size]', in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 25 } }
     PageNumber: { name: 'page[page]', in: query, required: false, schema: { type: integer, minimum: 1, default: 1 } }
     ArchiveState: { name: 'filter[archive_state]', in: query, required: false, schema: { type: string, enum: [active, archived, all], default: active } }
+    InventoryItemIds:
+      name: item_ids
+      in: query
+      required: false
+      description: One to 200 active inventory item UUIDs. Omit to include every active item of the selected kind in the active farm.
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 200
+        uniqueItems: true
+        items: { $ref: '#/components/schemas/Uuid' }
+    InventoryFromDate:
+      name: from_date
+      in: query
+      required: false
+      description: Inclusive stock-movement date in the active farm timezone.
+      schema: { type: string, format: date }
+    InventoryToDate:
+      name: to_date
+      in: query
+      required: false
+      description: Inclusive stock-movement date in the active farm timezone.
+      schema: { type: string, format: date }
   schemas:
     Uuid: { type: string, format: uuid }
     AnimalSex: { type: string, enum: [female, male] }
@@ -678,6 +1051,57 @@ components:
     AnimalMovementStatus: { type: string, enum: [pending, approved, rejected, cancelled] }
     AnimalWeightUnit: { type: string, enum: [kg, lb] }
     AnimalWeightSource: { type: string, enum: [manual, scale, estimated, imported] }
+    InventoryKind: { type: string, enum: [medicine, semen, feed] }
+    VersionRequest:
+      type: object
+      required: [version]
+      properties:
+        version: { type: integer, minimum: 1 }
+    InventoryItemCreate:
+      type: object
+      required: [farm_id, name, category, unit, minimum_stock, batch_number, opening_quantity, unit_cost]
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        farm_id: { $ref: '#/components/schemas/Uuid' }
+        item_code: { type: [string, 'null'], maxLength: 60 }
+        barcode: { type: [string, 'null'], maxLength: 120 }
+        name: { type: string, maxLength: 180 }
+        category: { type: string, maxLength: 100 }
+        brand: { type: [string, 'null'], maxLength: 160 }
+        unit: { type: string, maxLength: 40 }
+        minimum_stock: { type: string, pattern: '^\d{1,14}(?:\.\d{1,3})?$' }
+        maximum_stock: { type: [string, 'null'], pattern: '^\d{1,14}(?:\.\d{1,3})?$' }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+        batch_number: { type: string, maxLength: 120 }
+        supplier: { type: [string, 'null'], maxLength: 180 }
+        purchase_date: { type: [string, 'null'], format: date }
+        expiry_date: { type: [string, 'null'], format: date }
+        opening_quantity: { type: string, pattern: '^\d{1,14}(?:\.\d{1,3})?$' }
+        unit_cost: { type: string, pattern: '^\d{1,14}(?:\.\d{1,4})?$' }
+    InventoryItemUpdate:
+      type: object
+      required: [name, category, unit, minimum_stock, version]
+      properties:
+        name: { type: string, maxLength: 180 }
+        category: { type: string, maxLength: 100 }
+        barcode: { type: [string, 'null'], maxLength: 120 }
+        brand: { type: [string, 'null'], maxLength: 160 }
+        unit: { type: string, maxLength: 40 }
+        minimum_stock: { type: string }
+        maximum_stock: { type: [string, 'null'] }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+        version: { type: integer, minimum: 1 }
+    InventoryReceipt:
+      type: object
+      required: [batch_number, quantity, unit_cost]
+      properties:
+        batch_number: { type: string, maxLength: 120 }
+        supplier: { type: [string, 'null'], maxLength: 180 }
+        purchase_date: { type: [string, 'null'], format: date }
+        expiry_date: { type: [string, 'null'], format: date }
+        quantity: { type: string, pattern: '^\d{1,14}(?:\.\d{1,3})?$' }
+        unit_cost: { type: string, pattern: '^\d{1,14}(?:\.\d{1,4})?$' }
+        reason: { type: [string, 'null'], maxLength: 1000 }
     LoginRequest:
       type: object
       required: [email, password]
@@ -686,6 +1110,59 @@ components:
         password: { type: string, format: password }
         device_id: { $ref: '#/components/schemas/Uuid' }
         device_name: { type: string, maxLength: 120 }
+    OwnerSignupRequest:
+      type: object
+      required: [name, farm_name, email, password, password_confirmation]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 160 }
+        farm_name: { type: string, minLength: 2, maxLength: 160 }
+        email: { type: string, format: email, maxLength: 255 }
+        phone_number:
+          type: [string, 'null']
+          minLength: 7
+          maxLength: 40
+          pattern: '^[0-9+(). -]+$'
+        password: { type: string, format: password, minLength: 10 }
+        password_confirmation: { type: string, format: password, minLength: 10 }
+        timezone: { type: string, default: UTC }
+        device_id: { $ref: '#/components/schemas/Uuid' }
+        device_name: { type: string, maxLength: 120 }
+    FamilyInviteToken:
+      type: object
+      required: [invitation_token]
+      properties:
+        invitation_token: { type: string, maxLength: 250 }
+    FamilySignupRequest:
+      allOf:
+        - $ref: '#/components/schemas/FamilyInviteToken'
+        - type: object
+          required: [name, email, password, password_confirmation]
+          properties:
+            name: { type: string, minLength: 2, maxLength: 160 }
+            email: { type: string, format: email, maxLength: 255 }
+            phone_number:
+              type: [string, 'null']
+              minLength: 7
+              maxLength: 40
+              pattern: '^[0-9+(). -]+$'
+            password: { type: string, format: password, minLength: 10 }
+            password_confirmation: { type: string, format: password, minLength: 10 }
+            device_id: { $ref: '#/components/schemas/Uuid' }
+            device_name: { type: string, maxLength: 120 }
+    ProfileUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 2, maxLength: 160 }
+        email: { type: string, format: email, maxLength: 255 }
+        phone_number:
+          type: [string, 'null']
+          minLength: 7
+          maxLength: 40
+          pattern: '^[0-9+(). -]+$'
+        current_password:
+          type: string
+          format: password
+          description: Required when changing the email address.
     OrganizationPatch:
       type: object
       properties:

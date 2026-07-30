@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\Setting;
 use App\Models\Shed;
 use App\Models\User;
+use App\Support\PermissionCatalog;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -59,22 +60,7 @@ class DatabaseSeeder extends Seeder
                 );
             }
 
-            $permissionNames = [
-                'organizations.view', 'organizations.update',
-                'farms.view', 'farms.create', 'farms.update', 'farms.archive',
-                'sheds.view', 'sheds.create', 'sheds.update', 'sheds.archive',
-                'users.view', 'users.manage', 'roles.view', 'roles.manage',
-                'sessions.view_own', 'sessions.revoke_own', 'audit_logs.view',
-                'animals.view', 'animals.create', 'animals.update', 'animals.archive',
-                'animals.restore', 'animals.manage_identifiers',
-                'animal_breeds.view', 'animal_breeds.manage',
-                'animal_groups.view', 'animal_groups.manage',
-                'animals.move', 'animal_movements.view', 'animal_movements.approve',
-                'animal_movements.reject', 'animal_movements.cancel',
-                'animals.record_weight', 'animals.correct_weight',
-                'animals.view_weight_history', 'animals.change_status',
-                'animals.view_status_history',
-            ];
+            $permissionNames = PermissionCatalog::all();
             $permissions = collect($permissionNames)->mapWithKeys(
                 fn ($name) => [$name => Permission::query()->firstOrCreate(['name' => $name])],
             );
@@ -91,6 +77,7 @@ class DatabaseSeeder extends Seeder
                     'animals.record_weight', 'animals.correct_weight',
                     'animals.view_weight_history', 'animals.change_status',
                     'animals.view_status_history',
+                    'inventory.view', 'inventory.manage', 'inventory.export',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'farm-worker' => ['Farm Worker', [
@@ -99,6 +86,7 @@ class DatabaseSeeder extends Seeder
                     'animals.move', 'animal_movements.view',
                     'animals.record_weight', 'animals.view_weight_history',
                     'animals.view_status_history',
+                    'inventory.view',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'viewer' => ['Viewer', [
@@ -106,6 +94,7 @@ class DatabaseSeeder extends Seeder
                     'animal_breeds.view', 'animal_groups.view',
                     'animal_movements.view',
                     'animals.view_weight_history', 'animals.view_status_history',
+                    'inventory.view',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
             ];
@@ -120,19 +109,19 @@ class DatabaseSeeder extends Seeder
             });
 
             $people = [
-                ['Ayesha Khan', 'owner@dairycare.local', 'organization-owner', true, []],
-                ['Bilal Ahmed', 'manager@dairycare.local', 'farm-manager', false, [$north->id]],
-                ['Nadia Iqbal', 'worker@dairycare.local', 'farm-worker', false, [$north->id]],
-                ['Usman Raza', 'viewer@dairycare.local', 'viewer', false, [$north->id, $riverside->id]],
+                ['Ayesha Khan', 'owner@dairycare.local', 'organization-owner', true, [], 'primary_owner'],
+                ['Bilal Ahmed', 'manager@dairycare.local', 'farm-manager', false, [$north->id], 'member'],
+                ['Nadia Iqbal', 'worker@dairycare.local', 'farm-worker', false, [$north->id], 'member'],
+                ['Usman Raza', 'viewer@dairycare.local', 'viewer', false, [$north->id, $riverside->id], 'member'],
             ];
-            foreach ($people as [$name, $email, $roleSlug, $allFarms, $farmIds]) {
+            foreach ($people as [$name, $email, $roleSlug, $allFarms, $farmIds, $membershipType]) {
                 $user = User::query()->updateOrCreate(
                     ['email' => $email],
                     ['name' => $name, 'password' => Hash::make($password), 'email_verified_at' => now(), 'is_active' => true],
                 );
                 $membership = OrganizationMembership::query()->updateOrCreate(
                     ['organization_id' => $organization->id, 'user_id' => $user->id],
-                    ['status' => 'active', 'all_farms' => $allFarms],
+                    ['status' => 'active', 'membership_type' => $membershipType, 'all_farms' => $allFarms],
                 );
                 $membership->roles()->sync([$roleModels[$roleSlug]->id => ['organization_id' => $organization->id]]);
                 $membership->farms()->sync(collect($farmIds)->mapWithKeys(

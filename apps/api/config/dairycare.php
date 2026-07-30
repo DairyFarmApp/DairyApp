@@ -8,5 +8,6 @@ return [
         'failure_window_minutes' => (int) env('AUTH_FAILURE_WINDOW_MINUTES', 15),
         'lock_threshold' => (int) env('AUTH_LOCK_THRESHOLD', 5),
         'lock_minutes' => (int) env('AUTH_LOCK_MINUTES', 5),
+        'maximum_family_accounts' => (int) env('AUTH_MAXIMUM_FAMILY_ACCOUNTS', 25),
     ],
 ];

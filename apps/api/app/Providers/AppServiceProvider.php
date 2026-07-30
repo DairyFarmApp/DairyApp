@@ -43,5 +43,9 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(30)->by($request->ip()),
         ]);
         RateLimiter::for('renew', fn (Request $request) => Limit::perMinute(20)->by($request->ip()));
+        RateLimiter::for('signup', fn (Request $request) => [
+            Limit::perHour(10)->by($request->ip()),
+            Limit::perHour(5)->by('signup:'.hash('sha256', strtolower((string) $request->input('email')))),
+        ]);
     }
 }

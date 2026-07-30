@@ -8,8 +8,12 @@ use App\Http\Controllers\Api\V1\AnimalSpeciesController;
 use App\Http\Controllers\Api\V1\AnimalStatusController;
 use App\Http\Controllers\Api\V1\AnimalWeightController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\FamilyAccountController;
 use App\Http\Controllers\Api\V1\FarmController;
+use App\Http\Controllers\Api\V1\InventoryController;
 use App\Http\Controllers\Api\V1\OrganizationController;
+use App\Http\Controllers\Api\V1\OwnerAccountController;
+use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ShedController;
 use App\Http\Controllers\Api\V1\SyncController;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +21,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function (): void {
     Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::post('auth/renew', [AuthController::class, 'renew'])->middleware('throttle:renew');
+    Route::post('auth/owner-signup', [OwnerAccountController::class, 'signup'])->middleware('throttle:signup');
+    Route::post('auth/family-invite/inspect', [OwnerAccountController::class, 'inspectFamilyInvite'])->middleware('throttle:signup');
+    Route::post('auth/family-signup', [OwnerAccountController::class, 'familySignup'])->middleware('throttle:signup');
 
     Route::middleware('auth.opaque')->group(function (): void {
         Route::post('auth/logout', [AuthController::class, 'logout']);
@@ -25,9 +32,21 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('auth/sessions/{session}', [AuthController::class, 'revokeSession'])->middleware(['tenant', 'permission:sessions.revoke_own']);
         Route::post('auth/switch-organization', [AuthController::class, 'switchOrganization']);
         Route::post('auth/switch-farm', [AuthController::class, 'switchFarm']);
+        Route::get('auth/profile', [ProfileController::class, 'show']);
+        Route::patch('auth/profile', [ProfileController::class, 'update']);
+        Route::post('auth/profile/photo', [ProfileController::class, 'uploadPhoto']);
+        Route::delete('auth/profile/photo', [ProfileController::class, 'deletePhoto']);
+        Route::get('auth/profile/photo', [ProfileController::class, 'photo']);
         Route::get('organizations', [OrganizationController::class, 'index']);
 
         Route::middleware('tenant')->group(function (): void {
+            Route::get('profile-photos/{user}', [ProfileController::class, 'memberPhoto']);
+            Route::get('family-members', [FamilyAccountController::class, 'index'])->middleware('permission:users.view');
+            Route::delete('family-members/{membership}', [FamilyAccountController::class, 'remove'])->middleware('permission:users.manage');
+            Route::post('family-members/{membership}/restore', [FamilyAccountController::class, 'restore'])->middleware('permission:users.manage');
+            Route::get('family-invite', [FamilyAccountController::class, 'invite'])->middleware('permission:users.manage');
+            Route::post('family-invite', [FamilyAccountController::class, 'rotateInvite'])->middleware('permission:users.manage');
+            Route::delete('family-invite', [FamilyAccountController::class, 'disableInvite'])->middleware('permission:users.manage');
             Route::get('organizations/{organization}', [OrganizationController::class, 'show'])->middleware('permission:organizations.view');
             Route::patch('organizations/{organization}', [OrganizationController::class, 'update'])->middleware('permission:organizations.update');
             Route::get('farms', [FarmController::class, 'index'])->middleware('permission:farms.view');
@@ -69,6 +88,15 @@ Route::prefix('v1')->group(function (): void {
             Route::post('animal-movements/{movement}/cancel', [AnimalMovementController::class, 'cancel'])->middleware('permission:animal_movements.cancel');
             Route::get('animal-weights/{weight}', [AnimalWeightController::class, 'show'])->middleware('permission:animals.view_weight_history');
             Route::post('animal-weights/{weight}/correct', [AnimalWeightController::class, 'correct'])->middleware('permission:animals.correct_weight');
+            Route::get('inventory', [InventoryController::class, 'dashboard'])->middleware('permission:inventory.view');
+            Route::get('inventory/{kind}', [InventoryController::class, 'index'])->middleware('permission:inventory.view');
+            Route::get('inventory/{kind}/exports/receipt', [InventoryController::class, 'receiptExport'])->middleware('permission:inventory.export');
+            Route::get('inventory/{kind}/exports/spreadsheet', [InventoryController::class, 'spreadsheetExport'])->middleware('permission:inventory.export');
+            Route::post('inventory/{kind}/items', [InventoryController::class, 'store'])->middleware('permission:inventory.manage');
+            Route::patch('inventory/{kind}/items/{item}', [InventoryController::class, 'update'])->middleware('permission:inventory.manage');
+            Route::delete('inventory/{kind}/items/{item}', [InventoryController::class, 'archive'])->middleware('permission:inventory.manage');
+            Route::post('inventory/{kind}/items/{item}/receipts', [InventoryController::class, 'receipt'])->middleware('permission:inventory.manage');
+            Route::get('inventory/{kind}/items/{item}/movements', [InventoryController::class, 'movements'])->middleware('permission:inventory.view');
             Route::get('sync/bootstrap', [SyncController::class, 'bootstrap']);
             Route::get('sync/changes', [SyncController::class, 'changes']);
         });

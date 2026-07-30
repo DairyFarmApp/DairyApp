@@ -30,13 +30,32 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     FakeAuthController.session = foundationSession(
-      permissions: const {'farms.view', 'sheds.view'},
+      permissions: const {'farms.view', 'sheds.view', 'inventory.view'},
     );
     await tester.pumpWidget(_app());
     await tester.pump();
     expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.text('Farms'), findsOneWidget);
     expect(find.text('Sheds'), findsOneWidget);
+    expect(find.text('Inventory'), findsOneWidget);
+  });
+
+  testWidgets('primary owner menu exposes profile and family management', (
+    tester,
+  ) async {
+    FakeAuthController.session = foundationSession(
+      membershipType: 'primary_owner',
+    );
+    await tester.pumpWidget(_app());
+    await tester.pump();
+    await tester.tap(find.byTooltip('Account and farm options'));
+    await tester.pumpAndSettle();
+    expect(find.text('My profile'), findsOneWidget);
+    expect(find.text('Family accounts'), findsOneWidget);
+    expect(find.text('System theme'), findsOneWidget);
+    expect(find.text('White theme'), findsOneWidget);
+    expect(find.text('Dark theme'), findsOneWidget);
+    expect(find.text('Switch farm'), findsNothing);
   });
 }
 
@@ -50,6 +69,7 @@ Widget _app() {
           GoRoute(path: '/home', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/farms', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/sheds', builder: (_, _) => const SizedBox()),
+          GoRoute(path: '/inventory', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/sync', builder: (_, _) => const SizedBox()),
         ],
       ),

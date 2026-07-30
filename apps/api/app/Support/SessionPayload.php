@@ -21,12 +21,19 @@ final class SessionPayload
 
         return [
             ...$tokens,
-            'user' => ['id' => $session->user->id, 'name' => $session->user->name, 'email' => $session->user->email],
+            'user' => [
+                'id' => $session->user->id,
+                'name' => $session->user->name,
+                'email' => $session->user->email,
+                'phone_number' => $session->user->phone_number,
+                'has_profile_photo' => $session->user->profile_photo_path !== null,
+            ],
             'organizations' => $memberships->map(fn ($membership) => ['id' => $membership->organization->id, 'name' => $membership->organization->name])->values(),
             'farms' => $farms->map(fn ($farm) => ['id' => $farm->id, 'organization_id' => $farm->organization_id, 'name' => $farm->name])->values(),
             'permissions' => $active?->permissions() ?? [],
             'active_organization_id' => $session->organization_id,
             'active_farm_id' => $session->farm_id,
+            'active_membership_type' => $active?->membership_type,
         ];
     }
 }

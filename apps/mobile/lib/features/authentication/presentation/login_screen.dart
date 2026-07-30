@@ -1,7 +1,10 @@
 import 'package:dairycare_mobile/core/auth/auth_controller.dart';
+import 'package:dairycare_mobile/core/widgets/async_state_view.dart';
 import 'package:dairycare_mobile/core/widgets/app_surface.dart';
+import 'package:dairycare_mobile/features/authentication/presentation/auth_page_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 final class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -36,47 +39,7 @@ final class _LoginScreenState extends ConsumerState<LoginScreen> {
       onSubmit: _submit,
     );
 
-    return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 900;
-          return SafeArea(
-            child: wide
-                ? Row(
-                    children: [
-                      const Expanded(flex: 11, child: _LoginBrandPanel()),
-                      Expanded(
-                        flex: 9,
-                        child: Center(
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.all(48),
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 460),
-                              child: form,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Stack(
-                    children: [
-                      const Positioned.fill(child: _MobileLoginBackdrop()),
-                      Center(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.all(20),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 460),
-                            child: form,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-          );
-        },
-      ),
-    );
+    return AuthPageScaffold(child: form);
   }
 
   Future<void> _submit() async {
@@ -193,7 +156,7 @@ final class _LoginForm extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          auth.error.toString(),
+                          safeErrorMessage(auth.error.toString()),
                           style: TextStyle(
                             color: Theme.of(
                               context,
@@ -217,158 +180,16 @@ final class _LoginForm extends StatelessWidget {
                     : const Icon(Icons.arrow_forward_rounded),
                 label: Text(auth.isLoading ? 'Signing in…' : 'Sign in'),
               ),
+              const SizedBox(height: 14),
+              TextButton(
+                key: const Key('open_signup'),
+                onPressed: auth.isLoading ? null : () => context.go('/signup'),
+                child: const Text('New farm owner? Create your farm account'),
+              ),
             ],
           ),
         ),
       ),
-    ),
-  );
-}
-
-final class _LoginBrandPanel extends StatelessWidget {
-  const _LoginBrandPanel();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.all(16),
-    padding: const EdgeInsets.all(56),
-    decoration: BoxDecoration(
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFF0B3D32), Color(0xFF1E7058), Color(0xFF4B9568)],
-      ),
-      borderRadius: BorderRadius.circular(32),
-    ),
-    child: Stack(
-      children: [
-        const Positioned(
-          right: -80,
-          top: -80,
-          child: _Glow(size: 300, opacity: 0.08),
-        ),
-        const Positioned(
-          left: -120,
-          bottom: -140,
-          child: _Glow(size: 380, opacity: 0.06),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AppMark(size: 64, inverted: true),
-                const SizedBox(height: 32),
-                Text(
-                  'Run your farm with clarity.',
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  'Secure animal records, controlled movements, weight '
-                  'history, and reliable farm data—available wherever the '
-                  'day takes you.',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.82),
-                    height: 1.55,
-                  ),
-                ),
-                const SizedBox(height: 38),
-                const Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    _BrandFeature(
-                      icon: Icons.verified_user_outlined,
-                      label: 'Secure access',
-                    ),
-                    _BrandFeature(
-                      icon: Icons.sync_rounded,
-                      label: 'Offline-ready',
-                    ),
-                    _BrandFeature(
-                      icon: Icons.devices_outlined,
-                      label: 'Responsive',
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-final class _MobileLoginBackdrop extends StatelessWidget {
-  const _MobileLoginBackdrop();
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          Theme.of(context).colorScheme.primaryContainer,
-          Theme.of(context).scaffoldBackgroundColor,
-        ],
-      ),
-    ),
-  );
-}
-
-final class _Glow extends StatelessWidget {
-  const _Glow({required this.size, required this.opacity});
-
-  final double size;
-  final double opacity;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: size,
-    height: size,
-    decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: opacity),
-      shape: BoxShape.circle,
-    ),
-  );
-}
-
-final class _BrandFeature extends StatelessWidget {
-  const _BrandFeature({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 11),
-    decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(999),
-      border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: Colors.white, size: 18),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
     ),
   );
 }

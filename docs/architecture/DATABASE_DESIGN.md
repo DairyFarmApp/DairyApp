@@ -13,6 +13,21 @@
 
 Phase 1.1 replaces the original combined migration before production data exists. Foundation tables are grouped as tenancy (`000100`), access control (`000110`), authentication and hashed renewal history (`000120`), governance (`000130`), and synchronization (`000140`). Composite foreign keys prevent cross-organization shed/farm, membership/role, membership/farm, and session-context links. Default Laravel users, cache, and jobs remain in their original migrations.
 
+## Implemented owner onboarding and family access
+
+The owner-onboarding migration adds optional phone/profile-photo fields to
+`users`, a `membership_type` plus same-organization inviter reference to
+`organization_memberships`, and one `farm_invite_links` row per organization.
+Primary owners have `membership_type = primary_owner`; invited relatives have
+`membership_type = family_admin`. Membership removal changes status to
+`removed` and preserves history.
+
+`farm_invite_links` belongs to exactly one organization and farm. Composite
+foreign keys prevent its farm or creator membership from crossing tenants.
+The reusable secret is validated with `token_hash`; `token_ciphertext` is
+application encrypted so the primary owner can copy the current link. Rotation
+changes both values and increments `generation`, invalidating the old link.
+
 ## Implemented Phase 2A animal registry
 
 Phase 2A adds:
@@ -46,6 +61,21 @@ The request action locks the animal before validating the source snapshot and ch
 
 Both tables use UUIDv7 identifiers and composite tenant/farm foreign keys. Weight corrections preserve the original observation farm/time/source, retain both rows, and enforce unique forward/back links. Status changes append history while atomically updating the versioned `animals.operational_status` projection. Indexes support authorized animal history, latest non-superseded weight selection, farm-scoped sync, and organization update cursors.
 
+## Implemented inventory core
+
+| Table | Scope and key constraints |
+|---|---|
+| `inventory_items` | Organization + farm + kind (`medicine`, `semen`, `feed`); scoped unique code/barcode; unit, reorder levels, active state, optimistic version, actors, soft deletion |
+| `inventory_batches` | Organization + farm + item; batch number, supplier, purchase/expiry dates, unit cost, current-quantity projection, version |
+| `stock_movements` | Organization + farm + item + batch; append-only movement type, signed quantity, unit cost, occurrence/reason/actor |
+
+Composite foreign keys prevent item, batch, and movement links from crossing
+organization or farm boundaries. Item creation atomically appends the first
+batch and `opening_stock` movement. A receipt locks the item and batch,
+increments the quantity projection, appends `purchase_receipt`, and records the
+audit event in one transaction. Item metadata updates never accept stock and
+recheck optimistic version under a row lock.
+
 ## Modules and principal tables
 
 | Module | Principal data | Key relationships/invariants |
@@ -56,7 +86,7 @@ Both tables use UUIDv7 identifiers and composite tenant/farm foreign keys. Weigh
 | Milk | milk_sessions, milk_entries, milk_collection_batches, milk_batch_sources, milk_tank_movements, milk_quality_tests, milk_restrictions | Unique normal entry per animal/date/session; tank balance derives from movements; restricted quantity excluded from sellable stock |
 | Breeding/calving | heat_records, breeding_services, pregnancy_checks, pregnancies, calving_events, calving_offspring | Female/age rules; calving closes pregnancy and links newly created animal records |
 | Health | health_cases, treatments, medicines, treatment_medicines, vaccinations, vaccination_schedules, deworming_records | Medicine treatment can create withdrawal restriction; histories are retained |
-| Feed/inventory | inventory_categories, inventory_items, inventory_batches, stock_movements, ration_plans, ration_plan_items, feed_issues | Stock is summed from movements; batches track expiry; negative-stock policy checked transactionally |
+| Feed/inventory | Implemented: inventory_items, inventory_batches, stock_movements. Future: inventory_categories, warehouses, ration_plans, ration_plan_items, feed_issues | Opening/receipt stock is ledger-backed; batch projection supports current totals and expiry; future issues/adjustments must block negative stock transactionally |
 | Purchasing | suppliers, purchase_requests, purchase_orders/items, goods_receipts/items, supplier_invoices/items, supplier_payments, purchase_returns | Receipt posts stock movement; payable ledger derives from posted documents |
 | Sales/delivery | customers, milk_sales/items, customer_payments, delivery_routes/stops, deliveries/items, sale_returns | Confirmed sale posts milk/customer ledger effects; cancellation uses reversal |
 | Finance | accounts, journal_entries, journal_lines, expenses, income_records, account_transfers, fiscal_periods | Balanced double-entry journals; posted entries immutable; dimensions include farm/cost centre |
@@ -70,7 +100,7 @@ Both tables use UUIDv7 identifiers and composite tenant/farm foreign keys. Weigh
 - Farm is the stable operational boundary. Branch is an optional administrative/site subdivision; shed, pen, warehouse, tank, and cost centre reference farm directly to simplify scoping.
 - Phase 2A animals store their validated initial/current location projection. Phase 2B permits only an approved movement action to update it; `animal_movements` is the transition source of truth.
 - Do not create a separate `calves` identity table: offspring are rows in `animals`; `calving_offspring` carries birth-event-specific facts.
-- Inventory item definition is organization-wide; batches and movements are warehouse/farm scoped. Feed and medicines specialize/reference inventory items rather than duplicating stock.
+- The implemented one-farm inventory item, batch, and movement rows are organization/farm scoped. If multi-warehouse stock is approved later, item definitions can be promoted to organization scope while stock remains warehouse/farm scoped; that migration must preserve the ledger.
 - Customer/supplier balances and milk/tank quantities are projections of immutable ledgers, optionally cached with reconciliation controls.
 - Settings use typed, whitelisted keys with organization defaults and farm overrides; a deterministic scope hash enforces one organization/farm/key value even when `farm_id` is null, and the composite farm/organization foreign key prevents cross-tenant overrides. Arbitrary settings must not replace proper relational fields.
 

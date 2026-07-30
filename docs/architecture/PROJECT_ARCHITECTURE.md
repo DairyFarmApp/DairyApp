@@ -1,12 +1,27 @@
 # Project Architecture
 
-Status: Phase 0 proposal updated through implemented Phase 2C, 2026-07-23. Later-domain sections remain guidance unless explicitly marked implemented.
+Status: Phase 0 proposal updated through owner/family onboarding and the
+implemented inventory core/glass appearance, 2026-07-29. Later-domain sections
+remain guidance unless explicitly marked implemented.
 
 ## Repository baseline
 
-The original Phase 0 inspection found only `AGENTS.md` and the master specification. That statement is historical. The current repository contains the Phase 1 foundation/hardening, verified MySQL 8.4 environment, Phase 2A animal registry, Phase 2B online animal movements, and Phase 2C online weights/status history across Flutter, Laravel, Drift, migrations, tests, documentation, and CI.
+The original Phase 0 inspection found only `AGENTS.md` and the master
+specification. That statement is historical. The current repository contains
+the Phase 1 foundation/hardening, verified MySQL 8.4 environment, Phase 2 animal
+registry/movement/measurement workflows, one-farm owner/family onboarding, and
+medicine/semen/feed inventory core across Flutter, Laravel, Drift, migrations,
+tests, documentation, and CI.
 
-The modular monolith keeps `app/Domain/AnimalRegistry`, `app/Domain/AnimalMovements`, `app/Domain/AnimalWeights`, and `app/Domain/AnimalStatuses` separate. Registry owns identity/current projections; movement actions own location transitions; weight/status actions own their append histories and projection updates. Flutter keeps these inside the `features/animals` layers without adding a generic timeline. No QR, photo, offline-mutation, or later dairy domain was initialized.
+The modular monolith keeps `app/Domain/AnimalRegistry`,
+`app/Domain/AnimalMovements`, `app/Domain/AnimalWeights`,
+`app/Domain/AnimalStatuses`, `app/Domain/OwnerAccounts`, and
+`app/Domain/Inventory` separate. Registry owns identity/current projections;
+movement and measurement actions own append histories/projection updates;
+Inventory owns item/batch/movement stock rules. Flutter separates account,
+animal, and inventory features. Inventory and animal mutations remain
+online-only; no milk, health, breeding, finance, or purchasing domain has been
+initialized.
 
 ## Recommended topology
 

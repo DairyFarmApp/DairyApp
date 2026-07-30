@@ -2,6 +2,7 @@ import 'package:dairycare_mobile/app/environment.dart';
 import 'package:dairycare_mobile/core/api/api_error_mapper.dart';
 import 'package:dairycare_mobile/core/errors/app_exception.dart';
 import 'package:dio/dio.dart';
+import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 
 typedef AccessTokenReader = Future<String?> Function();
@@ -80,6 +81,40 @@ final class ApiClient {
     try {
       final response = await dio.patch<Object>(path, data: data);
       return _asJson(response.data);
+    } catch (error) {
+      throw _errorMapper.map(error);
+    }
+  }
+
+  Future<Map<String, dynamic>> postMultipart(
+    String path, {
+    required Map<String, dynamic> fields,
+    required String fileField,
+    required Uint8List bytes,
+    required String filename,
+  }) async {
+    try {
+      final response = await dio.post<Object>(
+        path,
+        data: FormData.fromMap({
+          ...fields,
+          fileField: MultipartFile.fromBytes(bytes, filename: filename),
+        }),
+      );
+      return _asJson(response.data);
+    } catch (error) {
+      throw _errorMapper.map(error);
+    }
+  }
+
+  Future<Uint8List> getBytes(String path, {Map<String, dynamic>? query}) async {
+    try {
+      final response = await dio.get<List<int>>(
+        path,
+        queryParameters: query,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      return Uint8List.fromList(response.data ?? const []);
     } catch (error) {
       throw _errorMapper.map(error);
     }

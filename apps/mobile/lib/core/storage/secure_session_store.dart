@@ -34,5 +34,8 @@ final class SecureSessionStore implements SessionStore {
   }
 
   @override
-  Future<void> clear() => _storage.deleteAll();
+  Future<void> clear() async {
+    await _storage.delete(key: _accessTokenKey);
+    await _storage.delete(key: _renewalKey);
+  }
 }

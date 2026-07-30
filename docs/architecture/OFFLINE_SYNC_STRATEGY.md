@@ -39,6 +39,13 @@ Retry only network failures, `408`, `425`, `429`, and transient `5xx`, using exp
 
 Animal, breed, and group create/update/archive/restore plus every movement request/decision bypass the outbox and require an online API result. Phase 2C weight record/correction and status-change commands follow the same online-only rule. Clients still send UUIDv7 and a durable idempotency key so an uncertain online response can be retried without duplicating a committed command.
 
+The inventory core is also deliberately online-only. Inventory item creation
+and receipts send UUIDv7/idempotency data directly to the API; item metadata
+uses optimistic version. No inventory table, balance, or command is stored in
+Drift or the outbox. Offline inventory requires a separately approved cache,
+cursor/tombstone, command-dependency, conflict, and reconciliation design
+because a disconnected device must not assume its cached stock is current.
+
 Drift schema version 4 caches authorized `animal_weights` and `animal_status_changes` and the current animal latest-weight projection. Bootstrap/incremental payloads carry separate history authorization flags. Upserts are UUID-based; correction rows update supersession links, and latest selection excludes superseded rows with `observed_at`, `created_at`, then UUID ordering. Farm or permission revocation makes stale cached rows inaccessible. None of these reads creates an outbox item.
 
 ## Conflict policy

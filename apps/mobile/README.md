@@ -1,6 +1,13 @@
 # DairyCare Mobile
 
-Flutter 3.41.9 / Dart 3.11.5 client for the Phase 1 foundation, Phase 2A registry, Phase 2B online animal movements, and Phase 2C online weights/status history. Implemented features include authentication/context, responsive permission-aware navigation, farm/shed foundation data, animal registry and breed/group management, movement history/request/decisions, weight/status forms and histories, Drift authorized read caches, connectivity, sync, and diagnostics.
+Flutter 3.41.9 / Dart 3.11.5 client for the Phase 1 foundation, Phase 2 animal
+workflows, one-farm owner/family onboarding, and medicine/semen/feed inventory.
+Implemented features include owner signup, reusable family-link signup,
+editable profile/photo, owner-controlled family access,
+authentication/context, responsive navigation, farm/shed data, animal
+registry, movements, weights/status history, online inventory overviews and
+receipts, persistent glass appearance themes, Drift read caches, connectivity,
+sync, and diagnostics.
 
 ## Run
 
@@ -39,11 +46,12 @@ SQLite uses the operating-system native library via `pubspec.yaml` hooks because
 
 The Phase 1.1 Android debug build passed with Android SDK/build-tools 36.1 and the Android Studio JDK 21. The manifest contains `INTERNET` and Connectivity Plus contributes network-state permission. Production signing is intentionally not configured.
 
-Phase 2C plus UX/web stabilization analysis and all 64 Flutter tests pass. The
-release web client and debug APK build successfully. Manual Chrome checks cover
-authentication, farm selection, dashboard, animal registry/profile, and
-desktop/phone navigation without browser warnings or errors.
+Current analysis, test, and build evidence is recorded in
+[`docs/INVENTORY_GLASS_THEME_COMPLETION.md`](../../docs/INVENTORY_GLASS_THEME_COMPLETION.md).
+Manual Chrome checks cover authentication, farm selection, dashboard, animal
+registry/profile, all three inventory areas, stock creation, and live
+System/White/Dark theme switching.
 Animal/breed/group/movement/weight/status writes require connectivity; Drift
-caches only authorized read data. Offline animal mutations, QR, photos, generic
-timeline, milk, breeding, health, inventory, finance, and all later-phase
-screens remain excluded.
+caches only authorized read data. Inventory is also online-only at this
+checkpoint. Offline animal/inventory mutations, QR, photos, generic timeline,
+milk, breeding, health, finance, and all later-phase screens remain excluded.

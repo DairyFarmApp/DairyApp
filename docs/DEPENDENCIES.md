@@ -27,6 +27,9 @@ Validated on 2026-07-22 from the resolved lock files and installed toolchain. Th
 | `connectivity_plus` | 7.3.0 | Network availability hints; never treated as proof of API reachability |
 | `uuid` | 4.6.0 | Client-generated UUIDv7 identifiers and request/idempotency identifiers |
 | `intl` | 0.20.3 | Locale-aware date/time presentation |
+| `file_selector` | 1.1.0 | Official cross-platform profile-picture file selection |
+| `share_plus` | 13.3.0 | Native mobile file sharing/save handoff for authenticated inventory exports |
+| `web` | 1.1.1 | Browser Blob download bridge for authenticated PDF/XLSX bytes |
 | `freezed_annotation` | 3.1.0 | Immutable typed model annotations |
 | `json_annotation` | 4.12.0 | JSON mapping annotations |
 | `cupertino_icons` | 1.0.9 | Standard iOS icon glyphs retained from Flutter foundation |
@@ -39,6 +42,8 @@ Development-only packages are `build_runner` 2.15.1, `drift_dev` 2.34.0, `freeze
 | --- | --- | --- |
 | `laravel/framework` | 13.21.1 | API routing, validation, ORM, migrations, queue, rate limiting, and testing foundation |
 | `laravel/tinker` | 3.0.2 | Local framework REPL for controlled diagnostics |
+| `dompdf/dompdf` | 3.1.6 | Server-side, farm-scoped inventory PDF receipt generation |
+| `openspout/openspout` | 4.32.0 | Memory-bounded XLSX inventory summary and movement export |
 | `laravel/pail` | 1.2.7 | Local log inspection supplied by the Laravel skeleton |
 | `laravel/pao` | 1.1.2 | Compact test-tool output supplied by the Laravel skeleton |
 | `fakerphp/faker` | 1.24.1 | Test factories and environment-controlled development seeds |

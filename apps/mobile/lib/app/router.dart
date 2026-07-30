@@ -1,6 +1,9 @@
 import 'package:dairycare_mobile/core/auth/auth_controller.dart';
 import 'package:dairycare_mobile/core/auth/session_models.dart';
+import 'package:dairycare_mobile/features/account/presentation/family_management_screen.dart';
+import 'package:dairycare_mobile/features/account/presentation/profile_screen.dart';
 import 'package:dairycare_mobile/features/authentication/presentation/login_screen.dart';
+import 'package:dairycare_mobile/features/authentication/presentation/signup_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_detail_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_form_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_group_management_screen.dart';
@@ -14,6 +17,10 @@ import 'package:dairycare_mobile/features/farms/presentation/farm_list_screen.da
 import 'package:dairycare_mobile/features/foundation_home/presentation/foundation_home_screen.dart';
 import 'package:dairycare_mobile/features/foundation_home/presentation/foundation_shell.dart';
 import 'package:dairycare_mobile/features/foundation_home/presentation/sync_diagnostics_screen.dart';
+import 'package:dairycare_mobile/features/inventory/domain/inventory_models.dart';
+import 'package:dairycare_mobile/features/inventory/presentation/inventory_dashboard_screen.dart';
+import 'package:dairycare_mobile/features/inventory/presentation/inventory_item_form_screen.dart';
+import 'package:dairycare_mobile/features/inventory/presentation/inventory_overview_screen.dart';
 import 'package:dairycare_mobile/features/organizations/presentation/organization_selection_screen.dart';
 import 'package:dairycare_mobile/features/sheds/presentation/shed_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +40,12 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: '/loading', builder: (_, _) => const _LoadingScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
+      GoRoute(
+        path: '/signup',
+        builder: (_, state) => SignupScreen(
+          familyInvitationToken: state.uri.queryParameters['family_invite'],
+        ),
+      ),
       GoRoute(
         path: '/organizations/select',
         builder: (_, _) => const OrganizationSelectionScreen(),
@@ -105,6 +118,27 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/sync',
             builder: (_, _) => const SyncDiagnosticsScreen(),
           ),
+          GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
+          GoRoute(
+            path: '/family',
+            builder: (_, _) => const FamilyManagementScreen(),
+          ),
+          GoRoute(
+            path: '/inventory',
+            builder: (_, _) => const InventoryDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/inventory/:kind',
+            builder: (_, state) => InventoryOverviewScreen(
+              kind: InventoryKind.fromPath(state.pathParameters['kind']!)!,
+            ),
+          ),
+          GoRoute(
+            path: '/inventory/:kind/new',
+            builder: (_, state) => InventoryItemFormScreen(
+              kind: InventoryKind.fromPath(state.pathParameters['kind']!)!,
+            ),
+          ),
         ],
       ),
     ],
@@ -117,8 +151,9 @@ String? authRedirect({
 }) {
   if (auth.isLoading) return path == '/loading' ? null : '/loading';
   final session = auth.asData?.value;
-  if (session == null) return path == '/login' ? null : '/login';
-  if (path == '/login' || path == '/loading') {
+  final isPublicAuthPage = path == '/login' || path == '/signup';
+  if (session == null) return isPublicAuthPage ? null : '/login';
+  if (isPublicAuthPage || path == '/loading') {
     if (session.activeOrganizationId == null) return '/organizations/select';
     if (session.activeFarmId == null) return '/farms/select';
     return '/home';

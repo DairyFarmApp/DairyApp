@@ -1,5 +1,24 @@
 # ERD
 
+## Implemented owner and family account relationships
+
+```mermaid
+erDiagram
+  USER ||--o{ ORGANIZATION_MEMBERSHIP : has
+  ORGANIZATION ||--o{ ORGANIZATION_MEMBERSHIP : admits
+  ORGANIZATION ||--|| FARM_INVITE_LINK : owns
+  FARM ||--|| FARM_INVITE_LINK : joins
+  ORGANIZATION_MEMBERSHIP ||--o| FARM_INVITE_LINK : creates
+  ORGANIZATION_MEMBERSHIP ||--o{ ORGANIZATION_MEMBERSHIP : invites
+  USER ||--o{ API_SESSION : authenticates
+  ORGANIZATION ||--o{ FARM : owns
+```
+
+One `primary_owner` creates and controls the reusable invite. Each accepted
+invite creates another user with a persistent `family_admin` membership in the
+same organization/farm. Removing access changes membership status and revokes
+sessions; it does not delete identity or history.
+
 ## Implemented Phase 2A registry, Phase 2B movements, and Phase 2C measurements
 
 ```mermaid
@@ -42,6 +61,25 @@ erDiagram
 ```
 
 Every tenant relationship shown above is constrained or scoped by organization; operational farm links additionally use composite keys so a valid UUID from another tenant/farm cannot be linked. Parent links preserve historical archived rows. An approved movement atomically advances current location. A status command appends history and advances operational status/version atomically. Weight corrections retain and link both rows; latest weight excludes superseded observations.
+
+## Implemented inventory core
+
+```mermaid
+erDiagram
+  ORGANIZATION ||--o{ INVENTORY_ITEM : owns
+  FARM ||--o{ INVENTORY_ITEM : stocks
+  INVENTORY_ITEM ||--o{ INVENTORY_BATCH : has
+  INVENTORY_ITEM ||--o{ STOCK_MOVEMENT : records
+  INVENTORY_BATCH ||--o{ STOCK_MOVEMENT : posts
+  USER ||--o{ INVENTORY_ITEM : creates_or_updates
+  USER ||--o{ STOCK_MOVEMENT : records
+  ORGANIZATION ||--o{ AUDIT_LOG : records
+```
+
+Item, batch, and movement rows repeat organization and farm identifiers so
+composite foreign keys can reject cross-tenant or cross-farm links. The batch
+quantity is a current projection; the append-only movement is the stock-event
+history. Creating opening stock or receiving stock changes both atomically.
 
 ## Product-wide preliminary ERD
 

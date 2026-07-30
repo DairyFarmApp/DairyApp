@@ -30,6 +30,46 @@ final class AuthRepository {
     required String password,
   }) => _authenticate('/auth/login', {'email': email, 'password': password});
 
+  Future<AuthSession> signupOwner({
+    required String name,
+    required String farmName,
+    required String email,
+    required String phoneNumber,
+    required String password,
+  }) => _authenticate('/auth/owner-signup', {
+    'name': name,
+    'farm_name': farmName,
+    'email': email,
+    'phone_number': phoneNumber,
+    'password': password,
+    'password_confirmation': password,
+    'device_name': 'DairyCare app',
+  });
+
+  Future<AuthSession> signupFamily({
+    required String invitationToken,
+    required String name,
+    required String email,
+    required String phoneNumber,
+    required String password,
+  }) => _authenticate('/auth/family-signup', {
+    'invitation_token': invitationToken,
+    'name': name,
+    'email': email,
+    'phone_number': phoneNumber,
+    'password': password,
+    'password_confirmation': password,
+    'device_name': 'DairyCare app',
+  });
+
+  Future<FamilyInvitePreview> inspectFamilyInvite(String token) async {
+    final body = await _api.postJson(
+      '/auth/family-invite/inspect',
+      data: {'invitation_token': token},
+    );
+    return FamilyInvitePreview.fromJson(body['data'] as Map<String, dynamic>);
+  }
+
   Future<AuthSession> renew() async {
     final credential = await _store.readRenewalCredential();
     if (credential == null) {
@@ -86,4 +126,26 @@ final class AuthRepository {
 
   AuthSession _sessionFrom(Map<String, dynamic> body) =>
       AuthSession.fromJson(body['data'] as Map<String, dynamic>);
+}
+
+final class FamilyInvitePreview {
+  const FamilyInvitePreview({
+    required this.farmId,
+    required this.farmName,
+    required this.organizationName,
+  });
+
+  factory FamilyInvitePreview.fromJson(Map<String, dynamic> json) {
+    final farm = json['farm'] as Map<String, dynamic>;
+    final organization = json['organization'] as Map<String, dynamic>;
+    return FamilyInvitePreview(
+      farmId: farm['id'] as String,
+      farmName: farm['name'] as String,
+      organizationName: organization['name'] as String,
+    );
+  }
+
+  final String farmId;
+  final String farmName;
+  final String organizationName;
 }

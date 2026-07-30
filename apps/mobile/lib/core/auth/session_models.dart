@@ -34,17 +34,23 @@ final class FoundationUser {
     required this.id,
     required this.name,
     required this.email,
+    this.phoneNumber,
+    this.hasProfilePhoto = false,
   });
 
   factory FoundationUser.fromJson(Map<String, dynamic> json) => FoundationUser(
     id: json['id'] as String,
     name: json['name'] as String,
     email: json['email'] as String,
+    phoneNumber: json['phone_number'] as String?,
+    hasProfilePhoto: json['has_profile_photo'] as bool? ?? false,
   );
 
   final String id;
   final String name;
   final String email;
+  final String? phoneNumber;
+  final bool hasProfilePhoto;
 }
 
 final class AuthSession {
@@ -55,6 +61,7 @@ final class AuthSession {
     required this.permissions,
     this.activeOrganizationId,
     this.activeFarmId,
+    this.activeMembershipType,
   });
 
   factory AuthSession.fromJson(Map<String, dynamic> json) {
@@ -71,6 +78,7 @@ final class AuthSession {
       ),
       activeOrganizationId: json['active_organization_id'] as String?,
       activeFarmId: json['active_farm_id'] as String?,
+      activeMembershipType: json['active_membership_type'] as String?,
     );
   }
 
@@ -80,6 +88,7 @@ final class AuthSession {
   final Set<String> permissions;
   final String? activeOrganizationId;
   final String? activeFarmId;
+  final String? activeMembershipType;
 
   OrganizationSummary? get activeOrganization => organizations
       .where((item) => item.id == activeOrganizationId)
@@ -88,4 +97,5 @@ final class AuthSession {
       farms.where((item) => item.id == activeFarmId).firstOrNull;
 
   bool can(String permission) => permissions.contains(permission);
+  bool get isPrimaryOwner => activeMembershipType == 'primary_owner';
 }

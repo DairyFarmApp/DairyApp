@@ -23,5 +23,7 @@
 | R19 | Floating-point or inconsistent unit conversion corrupts longitudinal weights | M / High | Decimal-string API, integer millionths, exact lb factor, canonical kg, configurable maximum, boundary tests | Phase 2C onward |
 | R20 | Concurrent corrections or status changes create multiple successors or stale projections | M / High | Row locks, unique supersession/sequence constraints, optimistic version, atomic projection/audit, MySQL race tests | Phase 2C onward |
 | R21 | Revoked farm/permission access leaves sensitive weight/status data visible offline | M / High | Independent authorization flags, authorized farm reconciliation, inaccessible cache state, repository filtering and sync tests | Phase 2C onward |
+| R22 | Batch projection diverges from permanent stock movements | M / High | Same-transaction projection/ledger writes, idempotent commands, reconciliation before issue/adjustment expansion, invariant tests | Inventory core onward |
+| R23 | Concurrent inventory updates silently overwrite configuration or duplicate stock | M / High | Row locks, optimistic versions, idempotency keys, composite tenant keys, MySQL regression tests | Inventory core onward |
 
 Risk status is reviewed at each phase gate. Critical residual risks require owner acceptance before production deployment.

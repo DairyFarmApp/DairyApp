@@ -65,15 +65,47 @@ This stabilization introduces no API endpoint, migration, database module, or
 later dairy feature. Completion evidence is recorded in
 `docs/PHASE_2_UX_WEB_STABILIZATION_COMPLETION.md`.
 
+## Owner onboarding and family access (implemented 2026-07-29)
+
+Add self-service creation of one private named farm, direct single-farm login,
+editable owner/family profiles and private photos, a reusable primary-owner
+invitation link, multiple persistent family logins, and owner-controlled
+removal/restoration with immediate session revocation. Keep family management
+with the primary owner while granting family accounts the same implemented
+farm-work capabilities.
+
+This controlled phase excludes employee accounts, custom roles, email delivery,
+password reset, email verification, MFA, ownership transfer, multi-farm
+self-service accounts, and production deep links. Completion evidence is in
+`docs/OWNER_ONBOARDING_COMPLETION.md`.
+
+## Inventory core, actions, exports, and glass appearance (implemented 2026-07-29 through 2026-07-30)
+
+Add controlled medicine, semen, and feed inventory selection and overviews,
+batch-backed opening stock, idempotent stock receipts, low/expiry/value
+summaries, search/category/supplier filters, role/farm isolation, audit,
+OpenAPI, and responsive Flutter tables/cards/forms. Add persistent glass
+`System`, `White`, and `Dark` appearance choices across authentication and the
+authenticated shell. The approved extension adds metadata edit controls,
+versioned zero-stock archival, single/combined PDF receipts, selected
+date-filtered XLSX exports, calendar pickers, export authorization, and export
+audit events.
+
+This controlled core keeps inventory online-only and excludes issue,
+consumption, damage, expiry write-off, adjustment, transfer, purchasing,
+supplier master data, ration plans, accounting valuation, barcode scanning,
+notifications, and offline inventory sync. Completion evidence is in
+`docs/INVENTORY_GLASS_THEME_COMPLETION.md`.
+
 ## Later phases
 
 1. **Remaining Phase 2 Animals:** only separately approved QR, photos, search-scale, lifecycle/death, or combined-timeline work; offline animal mutation remains a separate explicit decision.
 2. **Phase 3 Milk:** sessions/entry, batches, tanks/movement ledger, quality/balance, basic reports and alerts.
 3. **Phase 4 Health and breeding:** cases/treatments/withdrawals, vaccination/deworming, heat/service/pregnancy/calving/offspring.
-4. **Phase 5 Feed and inventory:** item/batch/movement ledger, ration/feed issue, transfer/adjustment, thresholds/expiry.
+4. **Phase 5 Feed and inventory expansion:** issue/consumption, transfer/adjustment, ration/feed workflows, purchasing integration, warehouse support, costing, and notifications on the implemented item/batch/movement core.
 5. **Phase 6 Purchasing, customers, sales:** procure-to-receipt, supplier/customer ledgers, milk sales/delivery/returns/payments.
 6. **Phase 7 Finance and workforce:** double-entry core, expenses/income/P&L, employees/attendance/payroll/tasks.
-7. **Phase 8 Equipment, reports, advanced offline:** assets/maintenance, exports, broader offline operations and conflict resolution, backup monitoring.
+7. **Phase 8 Equipment, reports, advanced offline:** assets/maintenance, cross-domain/financial reports and exports, broader offline operations and conflict resolution, backup monitoring.
 8. **Phase 9 Hardening/release:** security/performance/data integrity/accessibility/localization, restore drill, production deployment and manuals.
 
 ## Approval gates

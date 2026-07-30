@@ -16,7 +16,7 @@ class User extends Authenticatable
 
     protected $keyType = 'string';
 
-    protected $fillable = ['name', 'email', 'password', 'is_active', 'failed_login_count', 'last_failed_login_at', 'locked_until'];
+    protected $fillable = ['name', 'email', 'phone_number', 'password', 'profile_photo_path', 'is_active', 'failed_login_count', 'last_failed_login_at', 'locked_until'];
 
     protected $hidden = ['password'];
 

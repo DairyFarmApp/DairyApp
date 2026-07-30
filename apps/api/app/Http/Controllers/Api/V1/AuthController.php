@@ -51,7 +51,23 @@ class AuthController extends Controller
         $user->forceFill(['failed_login_count' => 0, 'last_failed_login_at' => null, 'locked_until' => null])->save();
         $memberships = $user->memberships()->where('status', 'active')->get();
         $organizationId = $memberships->count() === 1 ? $memberships->first()->organization_id : null;
-        $tokens = $this->tokens->issue($user, $request, $organizationId);
+        $farmId = null;
+        if ($organizationId !== null) {
+            $membership = $memberships->first();
+            $farmIds = Farm::query()
+                ->where('organization_id', $organizationId)
+                ->when(
+                    ! $membership->all_farms,
+                    fn ($query) => $query->whereIn(
+                        'id',
+                        $membership->farms()->pluck('farms.id'),
+                    ),
+                )
+                ->limit(2)
+                ->pluck('id');
+            $farmId = $farmIds->count() === 1 ? $farmIds->first() : null;
+        }
+        $tokens = $this->tokens->issue($user, $request, $organizationId, $farmId);
         $session = $tokens['session'];
         unset($tokens['session']);
         $request->setUserResolver(fn () => $user);

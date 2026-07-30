@@ -135,6 +135,12 @@ final class FoundationHomeScreen extends ConsumerWidget {
                           label: 'Record weight',
                           onTap: () => context.go('/animals'),
                         ),
+                      if (session?.can('inventory.view') ?? false)
+                        _QuickAction(
+                          icon: Icons.inventory_2_outlined,
+                          label: 'Manage inventory',
+                          onTap: () => context.go('/inventory'),
+                        ),
                       _QuickAction(
                         icon: Icons.sync_rounded,
                         label: 'Sync diagnostics',

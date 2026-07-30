@@ -1,5 +1,6 @@
 import 'package:dairycare_mobile/app/router.dart';
 import 'package:dairycare_mobile/app/theme.dart';
+import 'package:dairycare_mobile/app/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,7 +13,7 @@ final class DairyCareApp extends ConsumerWidget {
     debugShowCheckedModeBanner: false,
     theme: DairyCareTheme.light,
     darkTheme: DairyCareTheme.dark,
-    themeMode: ThemeMode.system,
+    themeMode: ref.watch(themeModeProvider).value ?? ThemeMode.system,
     routerConfig: ref.watch(routerProvider),
   );
 }

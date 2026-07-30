@@ -1,52 +1,57 @@
-# Phase 2 UX and Web Stabilization Task Record
+# Inventory Core and Glass Appearance Task Record
 
-Status: Complete on `codex/phase-2-ux-stabilization`.
+Status: Complete on `codex/inventory-glass-theme`.
 
-## Approved intent
+## Approved behavior
 
-Make the completed Phase 1 and Phase 2A–2C workflows reliable and professional
-before beginning another dairy domain. This is a stabilization phase, not Phase
-2D and not a full-specification code dump.
-
-## Current scope
-
-- [x] Read the complete master specification and current completion records.
-- [x] Audit the repository, implemented modules, Flutter UI, runtime targets,
-  and current validation evidence.
-- [x] Reproduce and identify the Chrome crash caused by missing Drift web
-  options and runtime assets.
-- [x] Add version-matched Drift web configuration and official runtime assets.
-- [x] Introduce a responsive DairyCare design system and reusable UI surfaces.
-- [x] Redesign login, navigation shell, and the real-data farm dashboard.
-- [x] Prevent internal provider/stack-trace details from being rendered to end
-  users.
-- [x] Run formatting, analysis, unit/widget tests, web build, Android build, and
-  browser smoke tests.
-- [x] Inspect login, dashboard, animal registry, and responsive navigation
-  visually and correct defects found.
-- [x] Update completion and operating documentation with final evidence.
+- [x] Manage inventory opens Medicine, Semen, and Feed choices.
+- [x] Every inventory area shows stock, value, low, expiring, and expired
+  summaries.
+- [x] Users can search and filter by category, supplier, and low-stock state.
+- [x] Authorized managers can add an item with its first batch.
+- [x] Opening stock is recorded as a permanent ledger movement.
+- [x] Later receipts are idempotent and append permanent movements.
+- [x] Ordinary item metadata updates cannot change stock.
+- [x] Inventory is isolated by organization, active farm, and permission.
+- [x] Responsive cards/tables/forms work on browser and mobile layouts.
+- [x] System, White, and Dark glass themes are selectable and persistent.
+- [x] Theme preference survives sign-out without preserving auth credentials.
+- [x] Inventory rows expose edit, receive, PDF receipt, and safe delete/archive
+  actions according to permission.
+- [x] Ordinary item edits remain metadata-only and cannot change stock.
+- [x] Delete archives only a zero-stock item and retains its batch/movement
+  history.
+- [x] One item, a checkbox selection, or all filtered items can be exported as
+  a combined PDF receipt.
+- [x] Selected/all filtered inventory can be downloaded as a two-sheet XLSX
+  workbook with an inclusive stock-movement date range.
+- [x] Purchase, expiry, and export date fields use calendar popup controls.
+- [x] Inventory exports are farm-scoped, separately permissioned, and audited.
 
 ## Explicit exclusions
 
-- QR identification, photos, a combined animal timeline, and offline animal
-  mutations
-- Milk, health, breeding, feed, inventory, purchasing, sales, finance,
-  workforce, equipment, reports, and other later modules
-- Windows desktop runner creation
-- Production deployment, signing, hosting, or secrets
+- Stock issue/consumption, damage, expiry write-off, adjustment, and transfer
+- Purchasing, supplier master data, treatment integration, and ration planning
+- FIFO/weighted-average/accounting valuation
+- Barcode scanning and low-stock notifications
+- Offline inventory cache/outbox/conflict resolution
+- Cursor pagination beyond the current bounded 200-item overview
+- Production deployment, signing, or secrets
 
 ## Validation result
 
-- Dart format: 79 files formatted; the final check is clean.
-- Flutter analyze: no issues.
-- Flutter tests: 64 passed.
-- Release web build: passed, including the WebAssembly dry run.
-- Android debug build: passed.
-- Manual Chrome checks: login, farm selection, dashboard, registry, animal
-  profile, desktop navigation, and phone navigation rendered without browser
-  warnings or errors.
+- MySQL fresh migration/seed: passed on isolated `dairycare_test`.
+- Focused inventory regression: 8 tests, 92 assertions.
+- MySQL full suite: 82 tests, 852 assertions.
+- SQLite: 74 passed, 730 assertions, 8 MySQL-only skipped.
+- Flutter: 80 tests passed; analysis clean.
+- Release web and Android debug builds: passed.
+- OpenAPI: valid and exactly matches all 76 Laravel operations.
+- Composer validation/audit: passed; no advisories.
+- Manual browser QA: all inventory choices, medicine creation, totals/table,
+  and System/White/Dark switching passed with no browser errors.
 
 ## Next action
 
-Stop for owner approval. Begin only one separately approved product phase; do
-not combine QR, photos, timeline, offline mutation, or later dairy domains.
+Stop and obtain approval before implementing inventory issue/adjustment/
+transfer workflows or another dairy product capability.

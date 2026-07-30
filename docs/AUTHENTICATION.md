@@ -2,6 +2,15 @@
 
 Login accepts email/password plus optional device UUID/name. Responses contain a short-lived opaque access token, rotating renewal credential, expiry values, current user, memberships, accessible farms, permissions, and active context.
 
+New farm owners may register through `auth/owner-signup`. That atomic operation
+creates a platform user, one tenant, one farm, a `primary_owner` membership, and
+the single-farm owner role before issuing a session. Owners may create a
+reusable family link. Each accepted link creates a separate user and
+`family_admin` membership in the same tenant/farm. The primary owner can remove
+or restore family access; removal immediately revokes the member's active
+sessions. Invitation secrets are hashed for validation and encrypted for owner
+retrieval. See `docs/OWNER_ONBOARDING_AND_FAMILY_ACCESS.md`.
+
 ## Token storage and expiry
 
 Tokens use a UUIDv7 session lookup identifier plus a 256-bit random secret. `api_sessions` stores only SHA-256 access/current-renewal hashes; `api_session_renewal_tokens` stores only renewal hashes and consumption timestamps. Raw credentials are returned once and belong only in Flutter Secure Storage. Access expires after 15 minutes and renewal after 30 days by default; both are enforced server-side and configurable through the documented environment variables. Comparison uses `hash_equals`.

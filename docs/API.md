@@ -12,4 +12,25 @@ The normal animal edit route rejects farm, shed, and group changes. Initial regi
 
 Phase 2C moves post-registration operational-status changes out of the ordinary animal update route and into a dedicated versioned command. It adds online recording and immutable correction of exact decimal animal weights, latest-weight projection, status history, five granular permissions, and authorized sync snapshots. Weight/status mutation uses the existing idempotency primitive and never enters the mobile outbox.
 
-Identifier, parentage, breed/species, tenant, and farm rules are documented in `docs/ANIMAL_REGISTRY.md`. Movement behavior is documented in `docs/ANIMAL_MOVEMENTS.md`; weight/status behavior is documented in `docs/ANIMAL_WEIGHTS_AND_STATUS.md`. The current inventory is 52 API routes, including six Phase 2C operations.
+Owner onboarding adds public creation of one private farm, reusable family-link
+signup, persistent family membership removal/restoration, and authenticated
+profile/photo management. Only the primary owner can control the invitation or
+family membership. Removal revokes the affected user's active sessions
+immediately.
+
+The inventory core adds farm-scoped medicine, semen, and feed summaries,
+filtered item/batch overviews, versioned metadata changes, idempotent stock
+receipts, and immutable movement history. Stock cannot be changed by an
+ordinary item update. Zero-stock items can be archived without deleting their
+history. Permission-scoped PDF receipts and two-sheet XLSX exports accept
+selected item UUIDs and an inclusive farm-timezone movement date range.
+Inventory behavior is documented in
+`docs/INVENTORY_MANAGEMENT.md`.
+
+Identifier, parentage, breed/species, tenant, and farm rules are documented in
+`docs/ANIMAL_REGISTRY.md`. Movement behavior is documented in
+`docs/ANIMAL_MOVEMENTS.md`; weight/status behavior is documented in
+`docs/ANIMAL_WEIGHTS_AND_STATUS.md`; owner and family behavior is documented in
+`docs/OWNER_ONBOARDING_AND_FAMILY_ACCESS.md`. The current contract contains 76
+API operations, including nine inventory operations and 15 owner-onboarding,
+profile, and family operations.
