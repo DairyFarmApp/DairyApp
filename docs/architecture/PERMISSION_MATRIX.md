@@ -117,6 +117,10 @@ Legend: M = manage/create/update, V = view, A = approve/override, — = none by 
 
 ## Permission naming
 
-Use explicit abilities such as the implemented `animals.view`, `animals.create`, `animals.update`, `animals.move`, `animal_movements.view`, `animal_movements.approve`, `animal_movements.reject`, `animal_movements.cancel`, `animals.record_weight`, `animals.correct_weight`, `animals.view_weight_history`, `animals.change_status`, `animals.view_status_history`, `inventory.view`, `inventory.manage`, and `inventory.export`, plus future abilities such as `animals.record_death`, `milk.create`, `milk.correct.request`, `milk.correct.approve`, `health.manage`, `withdrawals.override`, `inventory.issue`, `inventory.adjust.request`, `inventory.adjust.approve`, `sales.create`, `payments.receive`, `expenses.approve`, `payroll.process`, `reports.export`, `users.manage`, `audit_logs.view`, and `backups.restore`.
+Use explicit abilities such as the implemented `animals.view`, `animals.create`, `animals.update`, `animals.move`, `animal_movements.view`, `animal_movements.approve`, `animal_movements.reject`, `animal_movements.cancel`, `animals.record_weight`, `animals.correct_weight`, `animals.view_weight_history`, `animals.change_status`, `animals.view_status_history`, `inventory.view`, `inventory.manage`, `inventory.export`, `milk.view`, `milk.create`, and `milk.correct`, plus future abilities such as `animals.record_death`, `milk.correct.request`, `milk.correct.approve`, `health.manage`, `withdrawals.override`, `inventory.issue`, `inventory.adjust.request`, `inventory.adjust.approve`, `sales.create`, `payments.receive`, `expenses.approve`, `payroll.process`, `reports.export`, `users.manage`, `audit_logs.view`, and `backups.restore`.
+
+For Phase 3A, owners/family admins and farm managers can view, create, and
+correct milk. Farm workers can view/create. Viewers can only view. Every role
+still requires active organization membership and farm access.
 
 Approval requires a distinct ability and, by default, requester and approver separation. No role implicitly gains financial reporting from general farm access. Veterinarian and worker defaults deliberately exclude customer balances and payroll. Field-level filtering protects employee identity/bank data and confidential finance data even when a broader record is viewable.

@@ -19,6 +19,7 @@ void main() {
     await tester.pump();
     expect(find.text('Farms'), findsNothing);
     expect(find.text('Sheds'), findsNothing);
+    expect(find.text('Milk Production'), findsOneWidget);
     expect(find.text('Sync'), findsOneWidget);
   });
 
@@ -70,6 +71,7 @@ Widget _app() {
           GoRoute(path: '/farms', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/sheds', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/inventory', builder: (_, _) => const SizedBox()),
+          GoRoute(path: '/milk', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/sync', builder: (_, _) => const SizedBox()),
         ],
       ),

@@ -1,13 +1,14 @@
 # DairyCare Mobile
 
 Flutter 3.41.9 / Dart 3.11.5 client for the Phase 1 foundation, Phase 2 animal
-workflows, one-farm owner/family onboarding, and medicine/semen/feed inventory.
+workflows, one-farm owner/family onboarding, medicine/semen/feed inventory, and
+Phase 3A daily milk recording.
 Implemented features include owner signup, reusable family-link signup,
 editable profile/photo, owner-controlled family access,
 authentication/context, responsive navigation, farm/shed data, animal
 registry, movements, weights/status history, online inventory overviews and
-receipts, persistent glass appearance themes, Drift read caches, connectivity,
-sync, and diagnostics.
+receipts, daily milk entry and correction, persistent glass appearance themes,
+Drift read caches, connectivity, sync, and diagnostics.
 
 ## Run
 
@@ -47,11 +48,13 @@ SQLite uses the operating-system native library via `pubspec.yaml` hooks because
 The Phase 1.1 Android debug build passed with Android SDK/build-tools 36.1 and the Android Studio JDK 21. The manifest contains `INTERNET` and Connectivity Plus contributes network-state permission. Production signing is intentionally not configured.
 
 Current analysis, test, and build evidence is recorded in
-[`docs/INVENTORY_GLASS_THEME_COMPLETION.md`](../../docs/INVENTORY_GLASS_THEME_COMPLETION.md).
+[`docs/PHASE_3A_COMPLETION.md`](../../docs/PHASE_3A_COMPLETION.md).
 Manual Chrome checks cover authentication, farm selection, dashboard, animal
 registry/profile, all three inventory areas, stock creation, and live
 System/White/Dark theme switching.
 Animal/breed/group/movement/weight/status writes require connectivity; Drift
-caches only authorized read data. Inventory is also online-only at this
-checkpoint. Offline animal/inventory mutations, QR, photos, generic timeline,
-milk, breeding, health, finance, and all later-phase screens remain excluded.
+caches only authorized read data. Inventory and milk corrections are also
+online-only at this checkpoint. New milk entries can be queued atomically for
+retry while offline. Offline animal/inventory mutations, QR, animal photos,
+generic timeline, breeding, health, finance, payroll, employee loans, and all
+later-phase screens remain excluded.

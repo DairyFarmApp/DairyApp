@@ -36,4 +36,23 @@ void main() {
       'local_animal_status_changes',
     });
   });
+
+  test('schema 4 upgrade creates the offline milk-entry cache', () async {
+    final executor = NativeDatabase.memory(
+      setup: (database) {
+        database.execute('PRAGMA user_version = 4');
+      },
+    );
+    final database = AppDatabase(executor);
+    addTearDown(database.close);
+
+    final tables = await database
+        .customSelect(
+          "SELECT name FROM sqlite_master WHERE type = 'table' "
+          "AND name = 'local_milk_entries'",
+        )
+        .get();
+
+    expect(tables.single.read<String>('name'), 'local_milk_entries');
+  });
 }

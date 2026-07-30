@@ -1,6 +1,12 @@
 # DairyCare
 
-DairyCare is an offline-capable dairy farm management system under controlled phased development. The repository contains the Phase 1 foundation/hardening/MySQL gate, Phase 2 animal registry workflows, self-service one-farm owner/family onboarding, and the controlled medicine, semen, and feed inventory core. Milk, breeding, health, finance, and other later modules remain intentionally excluded.
+DairyCare is an offline-capable dairy farm management system under controlled
+phased development. The repository contains the Phase 1
+foundation/hardening/MySQL gate, Phase 2 animal registry workflows,
+self-service one-farm owner/family onboarding, the controlled medicine, semen,
+and feed inventory core, and Phase 3A daily milk recording. Breeding, health,
+finance, payroll, employee loans, and other later modules remain intentionally
+excluded.
 
 ## Repository layout
 
@@ -41,14 +47,17 @@ now lets a new owner name one private farm, invite multiple persistent family
 accounts with a reusable link, and remove or restore their access. The inventory
 core adds batch-backed opening stock and idempotent receipts, searchable
 medicine/semen/feed overviews, expiry and low-stock indicators, and persistent
-glass `System`, `White`, and `Dark` themes. See the
+glass `System`, `White`, and `Dark` themes. Phase 3A adds morning, afternoon,
+and evening milk entry, real daily summaries, immutable corrections, and
+retryable offline creation. See the
 [owner/family guide](docs/OWNER_ONBOARDING_AND_FAMILY_ACCESS.md) and
-[inventory guide](docs/INVENTORY_MANAGEMENT.md).
+[inventory guide](docs/INVENTORY_MANAGEMENT.md), plus the
+[daily milk guide](docs/DAILY_MILK_PRODUCTION.md).
 
 ## Phase controls
 
 Read `AGENTS.md`, the master specification, and `docs/IMPLEMENTATION_PLAN.md`
-before changes. Phase 2C, UX/web stabilization, owner/family onboarding, and the
-inventory core are implemented; do not combine remaining animal capabilities
-or begin another dairy domain without explicit project-owner approval for one
-controlled scope.
+before changes. Phase 2C, UX/web stabilization, owner/family onboarding,
+inventory core, and Phase 3A daily milk are implemented; do not combine
+remaining capabilities or begin another domain without explicit project-owner
+approval for one controlled scope.

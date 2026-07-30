@@ -46,7 +46,21 @@ Drift or the outbox. Offline inventory requires a separately approved cache,
 cursor/tombstone, command-dependency, conflict, and reconciliation design
 because a disconnected device must not assume its cached stock is current.
 
-Drift schema version 4 caches authorized `animal_weights` and `animal_status_changes` and the current animal latest-weight projection. Bootstrap/incremental payloads carry separate history authorization flags. Upserts are UUID-based; correction rows update supersession links, and latest selection excludes superseded rows with `observed_at`, `created_at`, then UUID ordering. Farm or permission revocation makes stale cached rows inaccessible. None of these reads creates an outbox item.
+Phase 3A milk creation is the first offline transactional farm workflow.
+Flutter writes pending milk rows and the bulk command into Drift in one
+transaction. UUIDv7 identifiers and the original idempotency key survive every
+retry. Server synchronization revalidates membership, farm, eligible animal,
+unique animal/date/session slot, and quantities. Current revisions are pulled
+into the local cache; revoked permission or farm access marks rows
+inaccessible. Milk correction remains online-only until a correction-conflict
+review workflow is approved.
+
+Drift schema version 5 caches authorized `animal_weights`,
+`animal_status_changes`, current milk revisions, and the current animal
+latest-weight projection. Bootstrap/incremental payloads carry separate
+authorization flags. Upserts are UUID-based; correction rows update
+supersession links, and latest selection excludes superseded rows. Farm or
+permission revocation makes stale cached rows inaccessible.
 
 ## Conflict policy
 

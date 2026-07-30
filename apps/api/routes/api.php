@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\FamilyAccountController;
 use App\Http\Controllers\Api\V1\FarmController;
 use App\Http\Controllers\Api\V1\InventoryController;
+use App\Http\Controllers\Api\V1\MilkProductionController;
 use App\Http\Controllers\Api\V1\OrganizationController;
 use App\Http\Controllers\Api\V1\OwnerAccountController;
 use App\Http\Controllers\Api\V1\ProfileController;
@@ -97,6 +98,9 @@ Route::prefix('v1')->group(function (): void {
             Route::delete('inventory/{kind}/items/{item}', [InventoryController::class, 'archive'])->middleware('permission:inventory.manage');
             Route::post('inventory/{kind}/items/{item}/receipts', [InventoryController::class, 'receipt'])->middleware('permission:inventory.manage');
             Route::get('inventory/{kind}/items/{item}/movements', [InventoryController::class, 'movements'])->middleware('permission:inventory.view');
+            Route::get('milk/daily', [MilkProductionController::class, 'daily'])->middleware('permission:milk.view');
+            Route::post('milk/entries/bulk', [MilkProductionController::class, 'storeBulk'])->middleware('permission:milk.create');
+            Route::post('milk/entries/{entry}/correct', [MilkProductionController::class, 'correct'])->middleware('permission:milk.correct');
             Route::get('sync/bootstrap', [SyncController::class, 'bootstrap']);
             Route::get('sync/changes', [SyncController::class, 'changes']);
         });

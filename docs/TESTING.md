@@ -11,8 +11,8 @@ C:\flutter\bin\flutter.bat test --concurrency=1
 C:\flutter\bin\flutter.bat build apk --debug --dart-define=APP_ENV=development --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
 ```
 
-Owner onboarding, inventory, theme, and Phase 2C/UX stabilization have 80
-passing Flutter tests. In addition to
+Owner onboarding, inventory, daily milk, theme, and Phase 2C/UX stabilization
+have automated Flutter coverage. In addition to
 foundation/registry/movement coverage, they test weight/status serialization,
 decimal-string payloads, online idempotent commands, offline cached histories,
 immutable correction projections, status changes without outbox writes,
@@ -24,6 +24,9 @@ System/White/Dark appearance selection, and safe user-facing provider errors.
 Inventory coverage also exercises metadata edits, versioned archive requests,
 single/combined binary exports, selected UUID/date serialization, calendar
 pickers, and responsive row actions.
+Daily milk coverage exercises real summary parsing, idempotent bulk payloads,
+atomic offline row/outbox storage, Drift schema migration, calendar selection,
+responsive quick entry, and overflow protection.
 
 The Android debug APK and release web client were built successfully. The APK
 contains the expected application ID, `INTERNET`, and network-state permissions.
@@ -53,23 +56,23 @@ npx --yes @redocly/cli@1.34.17 bundle openapi.yaml | Out-Null
 
 On PowerShell, use `Out-Null` to discard command output. Do not use `--output NUL`: Redocly appends a YAML extension and creates the invalid Windows reserved-name artifact `NUL.yaml`.
 
-The MySQL suite has 82 passing tests with 852 assertions. The SQLite portability
-run discovers the same 82 tests, passes 74 with 730 assertions, and skips eight
-MySQL process-concurrency tests. In addition to owner/family coverage, the
-inventory regression proves authentication and permissions, cross-farm
-concealment, ledger-backed opening stock, idempotent receipts, protected stock
-fields, row-locked stale-version rejection, low/expiry summaries, safe archival,
-binary export authorization/isolation, date filtering, and audit events.
+The MySQL suite has 89 passing tests with 913 assertions. The SQLite
+portability run discovers the same 89 tests, passes 81 with 791 assertions, and
+skips eight MySQL process-concurrency tests. In addition to owner/family and
+inventory coverage, daily milk regression proves authentication and
+permissions, cross-organization/farm concealment, animal eligibility, exact
+decimal/rejection validation, idempotent bulk creation, immutable correction
+revisions, audit events, real daily summaries, sync output, atomic offline
+outbox writes, and authorized sync pull upserts.
 
 ## Database validation status
 
 SQLite remains a portability/fast-test gate, not a substitute for MySQL.
 
-Official MySQL 8.4.9 passed the inventory-core fresh migration/seed, full suite,
+Official MySQL 8.4.9 passed the Phase 3A fresh migration/seed, full suite,
 schema/foreign-key assertions, and separate-process
 renewal/idempotency/animal-number/movement-approval/weight-correction/status
-races. Current inventory/theme evidence is in
-`docs/INVENTORY_GLASS_THEME_COMPLETION.md`.
+races. Current Phase 3A evidence is in `docs/PHASE_3A_COMPLETION.md`.
 
 ## Continuous integration
 

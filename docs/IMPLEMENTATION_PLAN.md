@@ -100,13 +100,14 @@ notifications, and offline inventory sync. Completion evidence is in
 ## Later phases
 
 1. **Remaining Phase 2 Animals:** only separately approved QR, photos, search-scale, lifecycle/death, or combined-timeline work; offline animal mutation remains a separate explicit decision.
-2. **Phase 3 Milk:** sessions/entry, batches, tanks/movement ledger, quality/balance, basic reports and alerts.
-3. **Phase 4 Health and breeding:** cases/treatments/withdrawals, vaccination/deworming, heat/service/pregnancy/calving/offspring.
-4. **Phase 5 Feed and inventory expansion:** issue/consumption, transfer/adjustment, ration/feed workflows, purchasing integration, warehouse support, costing, and notifications on the implemented item/batch/movement core.
-5. **Phase 6 Purchasing, customers, sales:** procure-to-receipt, supplier/customer ledgers, milk sales/delivery/returns/payments.
-6. **Phase 7 Finance and workforce:** double-entry core, expenses/income/P&L, employees/attendance/payroll/tasks.
-7. **Phase 8 Equipment, reports, advanced offline:** assets/maintenance, cross-domain/financial reports and exports, broader offline operations and conflict resolution, backup monitoring.
-8. **Phase 9 Hardening/release:** security/performance/data integrity/accessibility/localization, restore drill, production deployment and manuals.
+2. **Phase 3A Daily Milk (implemented 2026-07-30):** morning/afternoon/evening quick entry, real daily totals, duplicate prevention, immutable correction revisions, permissions/audit, Drift cache, and idempotent offline outbox.
+3. **Remaining Phase 3 Milk:** custom sessions, lactations, supervisor approval, collection batches, tanks/movement ledger, withdrawal, quality/balance, production reports and alerts.
+4. **Phase 4 Health and breeding:** cases/treatments/withdrawals, vaccination/deworming, heat/service/pregnancy/calving/offspring.
+5. **Phase 5 Feed and inventory expansion:** issue/consumption, transfer/adjustment, ration/feed workflows, purchasing integration, warehouse support, costing, and notifications on the implemented item/batch/movement core.
+6. **Phase 6 Purchasing, customers, sales:** procure-to-receipt, supplier/customer ledgers, milk sales/delivery/returns/payments.
+7. **Phase 7 Finance and workforce:** PKR-only income/expense double-entry using an internal Farm Funds balancing account with no user-facing cash/bank/wallet setup; monthly employees/payroll; and employee loans with payroll installment recovery and immutable financial posting.
+8. **Phase 8 Equipment, reports, advanced offline:** assets/maintenance, cross-domain/financial reports and exports, broader offline operations and conflict resolution, backup monitoring.
+9. **Phase 9 Hardening/release:** security/performance/data integrity/accessibility/localization, restore drill, production deployment and manuals.
 
 ## Approval gates
 

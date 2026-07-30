@@ -81,6 +81,26 @@ composite foreign keys can reject cross-tenant or cross-farm links. The batch
 quantity is a current projection; the append-only movement is the stock-event
 history. Creating opening stock or receiving stock changes both atomically.
 
+## Implemented Phase 3A daily milk production
+
+```mermaid
+erDiagram
+  ORGANIZATION ||--o{ MILK_PRODUCTION_SLOT : owns
+  FARM ||--o{ MILK_PRODUCTION_SLOT : scopes
+  SHED ||--o{ MILK_PRODUCTION_SLOT : snapshots
+  ANIMAL ||--o{ MILK_PRODUCTION_SLOT : produces
+  MILK_PRODUCTION_SLOT ||--|{ MILK_ENTRY : revisions
+  MILK_ENTRY o|--o| MILK_ENTRY : supersedes
+  USER ||--o{ MILK_PRODUCTION_SLOT : creates
+  USER ||--o{ MILK_ENTRY : records
+  ORGANIZATION ||--o{ AUDIT_LOG : records
+```
+
+One slot uniquely identifies an animal, production date, and standard milking
+session. Corrections append linked entry revisions; quantities on superseded
+rows remain unchanged. Repeated organization, farm, shed, and animal scope is
+protected by composite foreign keys.
+
 ## Product-wide preliminary ERD
 
 This remaining module-level ERD is intentionally preliminary and does not imply that later tables exist.

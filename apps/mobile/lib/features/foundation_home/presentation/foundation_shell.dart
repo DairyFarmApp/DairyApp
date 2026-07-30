@@ -52,6 +52,12 @@ final class FoundationShell extends ConsumerWidget {
           '/inventory',
         ),
       const _Destination(
+        'Milk Production',
+        Icons.water_drop_outlined,
+        Icons.water_drop_rounded,
+        '/milk',
+      ),
+      const _Destination(
         'Sync',
         Icons.sync_outlined,
         Icons.sync_rounded,

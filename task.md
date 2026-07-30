@@ -1,3 +1,17 @@
+# Active phase: Phase 3A daily milk production
+
+- [x] Preserve completed owner/inventory/theme work in commit `282de85`.
+- [x] Create `phase/3-milk-management`.
+- [x] Add organization/farm/animal-scoped milk slots and immutable entry revisions.
+- [x] Add daily summary, idempotent bulk entry, correction, permissions, audit, and sync APIs.
+- [x] Add responsive Flutter quick entry, calendar selection, real metrics, corrections, Drift cache, and offline outbox.
+- [x] Add backend and Flutter regression tests.
+- [x] Complete final MySQL, SQLite, OpenAPI, Flutter, build, and repository validation.
+
+Approved later requirements: PKR-only finance without visible cash/bank/wallet
+setup, monthly payroll, and employee loans with automatic installment recovery.
+They must be implemented in controlled Phase 7 subphases after the milk phase.
+
 # Inventory Core and Glass Appearance Task Record
 
 Status: Complete on `codex/inventory-glass-theme`.

@@ -9,6 +9,7 @@ use App\Domain\AnimalRegistry\Models\AnimalGroup;
 use App\Domain\AnimalRegistry\Models\AnimalSpecies;
 use App\Domain\AnimalStatuses\Models\AnimalStatusChange;
 use App\Domain\AnimalWeights\Models\AnimalWeight;
+use App\Domain\MilkProduction\Models\MilkEntry;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AnimalBreedResource;
 use App\Http\Resources\Api\V1\AnimalGroupResource;
@@ -18,6 +19,7 @@ use App\Http\Resources\Api\V1\AnimalSpeciesResource;
 use App\Http\Resources\Api\V1\AnimalStatusChangeResource;
 use App\Http\Resources\Api\V1\AnimalWeightResource;
 use App\Http\Resources\Api\V1\FarmResource;
+use App\Http\Resources\Api\V1\MilkEntryResource;
 use App\Http\Resources\Api\V1\OrganizationResource;
 use App\Http\Resources\Api\V1\ShedResource;
 use App\Models\Farm;
@@ -132,6 +134,15 @@ class SyncController extends Controller
                 ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
                 ->get()
             : collect();
+        $milkEntries = $membership->can('milk.view')
+            ? MilkEntry::query()
+                ->with(['slot.shed', 'animal', 'recorder'])
+                ->where('organization_id', $organizationId)
+                ->whereIn('farm_id', $accessibleFarmIds)
+                ->where('is_current', true)
+                ->when($since, fn ($query) => $query->where('updated_at', '>=', $since))
+                ->get()
+            : collect();
 
         return ApiResponse::success($request, [
             'organizations' => OrganizationResource::collection($organizations)->resolve($request),
@@ -147,6 +158,8 @@ class SyncController extends Controller
             'animal_weights_authorized' => $membership->can('animals.view_weight_history'),
             'animal_status_changes' => AnimalStatusChangeResource::collection($statusChanges)->resolve($request),
             'animal_status_changes_authorized' => $membership->can('animals.view_status_history'),
+            'milk_entries' => MilkEntryResource::collection($milkEntries)->resolve($request),
+            'milk_entries_authorized' => $membership->can('milk.view'),
             'authorized_farm_ids' => $accessibleFarmIds->values(),
             'next_cursor' => $this->encodeCursor($now->copy()->subSeconds(2)),
         ]);

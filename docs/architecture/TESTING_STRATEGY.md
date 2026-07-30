@@ -88,3 +88,21 @@ Full evidence is in `docs/OWNER_ONBOARDING_COMPLETION.md`.
   analysis, Android debug, release web, and manual browser QA passed.
 
 Full evidence is in `docs/INVENTORY_GLASS_THEME_COMPLETION.md`.
+
+## Phase 3A daily milk executed evidence
+
+- MySQL 8.4.9: 89 tests and 913 assertions, including eligible-animal
+  enforcement, scoped authorization/concealment, exact quantity validation,
+  idempotent bulk recording, immutable correction revisions, audit, sync, and
+  all existing separate-process concurrency regressions.
+- SQLite portability: 89 discovered, 81 passed, 791 assertions, with the eight
+  MySQL-only process-concurrency tests skipped.
+- Flutter: 86 unit/repository/Drift/sync/widget tests, including daily-summary
+  transport, online idempotency, atomic offline row/outbox persistence,
+  authorized sync pull, schema-4-to-5 migration, responsive quick entry,
+  calendar selection, and overflow protection.
+- PHP syntax for 210 files, Pint, Composer validation/audit, exact 79-operation
+  OpenAPI parity, Redocly lint/bundle, Dart format, Flutter analysis, Android
+  debug, and release web builds passed.
+
+Full evidence and limitations are in `docs/PHASE_3A_COMPLETION.md`.

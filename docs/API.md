@@ -27,6 +27,13 @@ selected item UUIDs and an inclusive farm-timezone movement date range.
 Inventory behavior is documented in
 `docs/INVENTORY_MANAGEMENT.md`.
 
+Daily milk production adds three authenticated operations under `/milk`:
+`GET /milk/daily`, idempotent `POST /milk/entries/bulk`, and idempotent
+`POST /milk/entries/{entry}/correct`. They use the standard success/error
+envelopes, organization/farm scope, decimal strings, UUIDv7 identifiers,
+permission middleware, and append-only audit events. See
+`docs/DAILY_MILK_PRODUCTION.md`.
+
 Identifier, parentage, breed/species, tenant, and farm rules are documented in
 `docs/ANIMAL_REGISTRY.md`. Movement behavior is documented in
 `docs/ANIMAL_MOVEMENTS.md`; weight/status behavior is documented in

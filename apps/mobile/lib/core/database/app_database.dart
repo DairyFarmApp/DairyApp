@@ -238,6 +238,42 @@ class LocalAnimalStatusChanges extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+class LocalMilkEntries extends Table {
+  TextColumn get slotId => text()();
+  TextColumn get entryId => text()();
+  TextColumn get organizationId => text()();
+  TextColumn get farmId => text()();
+  TextColumn get shedId => text()();
+  TextColumn get shedName => text().nullable()();
+  TextColumn get animalId => text()();
+  TextColumn get animalNumber => text()();
+  TextColumn get animalName => text().nullable()();
+  DateTimeColumn get productionDate => dateTime()();
+  TextColumn get session => text()();
+  TextColumn get quantityLitres => text()();
+  TextColumn get rejectedQuantityLitres =>
+      text().withDefault(const Constant('0.000'))();
+  TextColumn get rejectionReason => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  TextColumn get entrySource => text().withDefault(const Constant('manual'))();
+  IntColumn get revision => integer().withDefault(const Constant(1))();
+  TextColumn get correctionReason => text().nullable()();
+  TextColumn get recordedBy => text().nullable()();
+  TextColumn get recordedByName => text().nullable()();
+  TextColumn get syncState => text().withDefault(const Constant('synced'))();
+  DateTimeColumn get serverUpdatedAt => dateTime()();
+  DateTimeColumn get cachedAt => dateTime()();
+  BoolColumn get isAccessible => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {slotId};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {entryId},
+  ];
+}
+
 class SyncDevices extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
@@ -326,6 +362,7 @@ class LocalApplicationSettings extends Table {
     LocalAnimalMovements,
     LocalAnimalWeights,
     LocalAnimalStatusChanges,
+    LocalMilkEntries,
     SyncDevices,
     SyncCursors,
     SyncOutbox,
@@ -347,7 +384,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -371,6 +408,9 @@ class AppDatabase extends _$AppDatabase {
         );
         await migrator.createTable(localAnimalWeights);
         await migrator.createTable(localAnimalStatusChanges);
+      }
+      if (from < 5) {
+        await migrator.createTable(localMilkEntries);
       }
     },
   );
@@ -546,4 +586,42 @@ class AppDatabase extends _$AppDatabase {
 
     return query.watch();
   }
+
+  Stream<List<LocalMilkEntry>> watchMilkEntries({
+    required String organizationId,
+    required String farmId,
+    required DateTime fromDate,
+    required DateTime toDate,
+    String? session,
+  }) {
+    final query = select(localMilkEntries)
+      ..where(
+        (row) =>
+            row.organizationId.equals(organizationId) &
+            row.farmId.equals(farmId) &
+            row.productionDate.isBiggerOrEqualValue(fromDate) &
+            row.productionDate.isSmallerOrEqualValue(toDate) &
+            row.isAccessible.equals(true),
+      );
+    if (session != null) {
+      query.where((row) => row.session.equals(session));
+    }
+    query.orderBy([
+      (row) => OrderingTerm.desc(row.productionDate),
+      (row) => OrderingTerm.asc(row.session),
+      (row) => OrderingTerm.asc(row.animalNumber),
+    ]);
+
+    return query.watch();
+  }
+
+  Future<void> upsertMilkEntriesAndEnqueue(
+    List<LocalMilkEntriesCompanion> entries,
+    SyncOutboxCompanion operation,
+  ) => transaction(() async {
+    for (final entry in entries) {
+      await into(localMilkEntries).insertOnConflictUpdate(entry);
+    }
+    await into(syncOutbox).insert(operation);
+  });
 }

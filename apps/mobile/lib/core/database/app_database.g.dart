@@ -10062,6 +10062,1363 @@ class LocalAnimalStatusChangesCompanion
   }
 }
 
+class $LocalMilkEntriesTable extends LocalMilkEntries
+    with TableInfo<$LocalMilkEntriesTable, LocalMilkEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalMilkEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _slotIdMeta = const VerificationMeta('slotId');
+  @override
+  late final GeneratedColumn<String> slotId = GeneratedColumn<String>(
+    'slot_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entryIdMeta = const VerificationMeta(
+    'entryId',
+  );
+  @override
+  late final GeneratedColumn<String> entryId = GeneratedColumn<String>(
+    'entry_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _organizationIdMeta = const VerificationMeta(
+    'organizationId',
+  );
+  @override
+  late final GeneratedColumn<String> organizationId = GeneratedColumn<String>(
+    'organization_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _farmIdMeta = const VerificationMeta('farmId');
+  @override
+  late final GeneratedColumn<String> farmId = GeneratedColumn<String>(
+    'farm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _shedIdMeta = const VerificationMeta('shedId');
+  @override
+  late final GeneratedColumn<String> shedId = GeneratedColumn<String>(
+    'shed_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _shedNameMeta = const VerificationMeta(
+    'shedName',
+  );
+  @override
+  late final GeneratedColumn<String> shedName = GeneratedColumn<String>(
+    'shed_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _animalIdMeta = const VerificationMeta(
+    'animalId',
+  );
+  @override
+  late final GeneratedColumn<String> animalId = GeneratedColumn<String>(
+    'animal_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _animalNumberMeta = const VerificationMeta(
+    'animalNumber',
+  );
+  @override
+  late final GeneratedColumn<String> animalNumber = GeneratedColumn<String>(
+    'animal_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _animalNameMeta = const VerificationMeta(
+    'animalName',
+  );
+  @override
+  late final GeneratedColumn<String> animalName = GeneratedColumn<String>(
+    'animal_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _productionDateMeta = const VerificationMeta(
+    'productionDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> productionDate =
+      GeneratedColumn<DateTime>(
+        'production_date',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _sessionMeta = const VerificationMeta(
+    'session',
+  );
+  @override
+  late final GeneratedColumn<String> session = GeneratedColumn<String>(
+    'session',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _quantityLitresMeta = const VerificationMeta(
+    'quantityLitres',
+  );
+  @override
+  late final GeneratedColumn<String> quantityLitres = GeneratedColumn<String>(
+    'quantity_litres',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rejectedQuantityLitresMeta =
+      const VerificationMeta('rejectedQuantityLitres');
+  @override
+  late final GeneratedColumn<String> rejectedQuantityLitres =
+      GeneratedColumn<String>(
+        'rejected_quantity_litres',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('0.000'),
+      );
+  static const VerificationMeta _rejectionReasonMeta = const VerificationMeta(
+    'rejectionReason',
+  );
+  @override
+  late final GeneratedColumn<String> rejectionReason = GeneratedColumn<String>(
+    'rejection_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _entrySourceMeta = const VerificationMeta(
+    'entrySource',
+  );
+  @override
+  late final GeneratedColumn<String> entrySource = GeneratedColumn<String>(
+    'entry_source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('manual'),
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _correctionReasonMeta = const VerificationMeta(
+    'correctionReason',
+  );
+  @override
+  late final GeneratedColumn<String> correctionReason = GeneratedColumn<String>(
+    'correction_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordedByMeta = const VerificationMeta(
+    'recordedBy',
+  );
+  @override
+  late final GeneratedColumn<String> recordedBy = GeneratedColumn<String>(
+    'recorded_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordedByNameMeta = const VerificationMeta(
+    'recordedByName',
+  );
+  @override
+  late final GeneratedColumn<String> recordedByName = GeneratedColumn<String>(
+    'recorded_by_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('synced'),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _cachedAtMeta = const VerificationMeta(
+    'cachedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+    'cached_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isAccessibleMeta = const VerificationMeta(
+    'isAccessible',
+  );
+  @override
+  late final GeneratedColumn<bool> isAccessible = GeneratedColumn<bool>(
+    'is_accessible',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_accessible" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    slotId,
+    entryId,
+    organizationId,
+    farmId,
+    shedId,
+    shedName,
+    animalId,
+    animalNumber,
+    animalName,
+    productionDate,
+    session,
+    quantityLitres,
+    rejectedQuantityLitres,
+    rejectionReason,
+    notes,
+    entrySource,
+    revision,
+    correctionReason,
+    recordedBy,
+    recordedByName,
+    syncState,
+    serverUpdatedAt,
+    cachedAt,
+    isAccessible,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_milk_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalMilkEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('slot_id')) {
+      context.handle(
+        _slotIdMeta,
+        slotId.isAcceptableOrUnknown(data['slot_id']!, _slotIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_slotIdMeta);
+    }
+    if (data.containsKey('entry_id')) {
+      context.handle(
+        _entryIdMeta,
+        entryId.isAcceptableOrUnknown(data['entry_id']!, _entryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entryIdMeta);
+    }
+    if (data.containsKey('organization_id')) {
+      context.handle(
+        _organizationIdMeta,
+        organizationId.isAcceptableOrUnknown(
+          data['organization_id']!,
+          _organizationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_organizationIdMeta);
+    }
+    if (data.containsKey('farm_id')) {
+      context.handle(
+        _farmIdMeta,
+        farmId.isAcceptableOrUnknown(data['farm_id']!, _farmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmIdMeta);
+    }
+    if (data.containsKey('shed_id')) {
+      context.handle(
+        _shedIdMeta,
+        shedId.isAcceptableOrUnknown(data['shed_id']!, _shedIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_shedIdMeta);
+    }
+    if (data.containsKey('shed_name')) {
+      context.handle(
+        _shedNameMeta,
+        shedName.isAcceptableOrUnknown(data['shed_name']!, _shedNameMeta),
+      );
+    }
+    if (data.containsKey('animal_id')) {
+      context.handle(
+        _animalIdMeta,
+        animalId.isAcceptableOrUnknown(data['animal_id']!, _animalIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_animalIdMeta);
+    }
+    if (data.containsKey('animal_number')) {
+      context.handle(
+        _animalNumberMeta,
+        animalNumber.isAcceptableOrUnknown(
+          data['animal_number']!,
+          _animalNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_animalNumberMeta);
+    }
+    if (data.containsKey('animal_name')) {
+      context.handle(
+        _animalNameMeta,
+        animalName.isAcceptableOrUnknown(data['animal_name']!, _animalNameMeta),
+      );
+    }
+    if (data.containsKey('production_date')) {
+      context.handle(
+        _productionDateMeta,
+        productionDate.isAcceptableOrUnknown(
+          data['production_date']!,
+          _productionDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productionDateMeta);
+    }
+    if (data.containsKey('session')) {
+      context.handle(
+        _sessionMeta,
+        session.isAcceptableOrUnknown(data['session']!, _sessionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionMeta);
+    }
+    if (data.containsKey('quantity_litres')) {
+      context.handle(
+        _quantityLitresMeta,
+        quantityLitres.isAcceptableOrUnknown(
+          data['quantity_litres']!,
+          _quantityLitresMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_quantityLitresMeta);
+    }
+    if (data.containsKey('rejected_quantity_litres')) {
+      context.handle(
+        _rejectedQuantityLitresMeta,
+        rejectedQuantityLitres.isAcceptableOrUnknown(
+          data['rejected_quantity_litres']!,
+          _rejectedQuantityLitresMeta,
+        ),
+      );
+    }
+    if (data.containsKey('rejection_reason')) {
+      context.handle(
+        _rejectionReasonMeta,
+        rejectionReason.isAcceptableOrUnknown(
+          data['rejection_reason']!,
+          _rejectionReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('entry_source')) {
+      context.handle(
+        _entrySourceMeta,
+        entrySource.isAcceptableOrUnknown(
+          data['entry_source']!,
+          _entrySourceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    }
+    if (data.containsKey('correction_reason')) {
+      context.handle(
+        _correctionReasonMeta,
+        correctionReason.isAcceptableOrUnknown(
+          data['correction_reason']!,
+          _correctionReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('recorded_by')) {
+      context.handle(
+        _recordedByMeta,
+        recordedBy.isAcceptableOrUnknown(data['recorded_by']!, _recordedByMeta),
+      );
+    }
+    if (data.containsKey('recorded_by_name')) {
+      context.handle(
+        _recordedByNameMeta,
+        recordedByName.isAcceptableOrUnknown(
+          data['recorded_by_name']!,
+          _recordedByNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_serverUpdatedAtMeta);
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(
+        _cachedAtMeta,
+        cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    if (data.containsKey('is_accessible')) {
+      context.handle(
+        _isAccessibleMeta,
+        isAccessible.isAcceptableOrUnknown(
+          data['is_accessible']!,
+          _isAccessibleMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {slotId};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {entryId},
+  ];
+  @override
+  LocalMilkEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalMilkEntry(
+      slotId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}slot_id'],
+      )!,
+      entryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entry_id'],
+      )!,
+      organizationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}organization_id'],
+      )!,
+      farmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farm_id'],
+      )!,
+      shedId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}shed_id'],
+      )!,
+      shedName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}shed_name'],
+      ),
+      animalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_id'],
+      )!,
+      animalNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_number'],
+      )!,
+      animalName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}animal_name'],
+      ),
+      productionDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}production_date'],
+      )!,
+      session: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session'],
+      )!,
+      quantityLitres: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}quantity_litres'],
+      )!,
+      rejectedQuantityLitres: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rejected_quantity_litres'],
+      )!,
+      rejectionReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rejection_reason'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      entrySource: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entry_source'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      correctionReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}correction_reason'],
+      ),
+      recordedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_by'],
+      ),
+      recordedByName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_by_name'],
+      ),
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      )!,
+      cachedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}cached_at'],
+      )!,
+      isAccessible: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_accessible'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalMilkEntriesTable createAlias(String alias) {
+    return $LocalMilkEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class LocalMilkEntry extends DataClass implements Insertable<LocalMilkEntry> {
+  final String slotId;
+  final String entryId;
+  final String organizationId;
+  final String farmId;
+  final String shedId;
+  final String? shedName;
+  final String animalId;
+  final String animalNumber;
+  final String? animalName;
+  final DateTime productionDate;
+  final String session;
+  final String quantityLitres;
+  final String rejectedQuantityLitres;
+  final String? rejectionReason;
+  final String? notes;
+  final String entrySource;
+  final int revision;
+  final String? correctionReason;
+  final String? recordedBy;
+  final String? recordedByName;
+  final String syncState;
+  final DateTime serverUpdatedAt;
+  final DateTime cachedAt;
+  final bool isAccessible;
+  const LocalMilkEntry({
+    required this.slotId,
+    required this.entryId,
+    required this.organizationId,
+    required this.farmId,
+    required this.shedId,
+    this.shedName,
+    required this.animalId,
+    required this.animalNumber,
+    this.animalName,
+    required this.productionDate,
+    required this.session,
+    required this.quantityLitres,
+    required this.rejectedQuantityLitres,
+    this.rejectionReason,
+    this.notes,
+    required this.entrySource,
+    required this.revision,
+    this.correctionReason,
+    this.recordedBy,
+    this.recordedByName,
+    required this.syncState,
+    required this.serverUpdatedAt,
+    required this.cachedAt,
+    required this.isAccessible,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['slot_id'] = Variable<String>(slotId);
+    map['entry_id'] = Variable<String>(entryId);
+    map['organization_id'] = Variable<String>(organizationId);
+    map['farm_id'] = Variable<String>(farmId);
+    map['shed_id'] = Variable<String>(shedId);
+    if (!nullToAbsent || shedName != null) {
+      map['shed_name'] = Variable<String>(shedName);
+    }
+    map['animal_id'] = Variable<String>(animalId);
+    map['animal_number'] = Variable<String>(animalNumber);
+    if (!nullToAbsent || animalName != null) {
+      map['animal_name'] = Variable<String>(animalName);
+    }
+    map['production_date'] = Variable<DateTime>(productionDate);
+    map['session'] = Variable<String>(session);
+    map['quantity_litres'] = Variable<String>(quantityLitres);
+    map['rejected_quantity_litres'] = Variable<String>(rejectedQuantityLitres);
+    if (!nullToAbsent || rejectionReason != null) {
+      map['rejection_reason'] = Variable<String>(rejectionReason);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['entry_source'] = Variable<String>(entrySource);
+    map['revision'] = Variable<int>(revision);
+    if (!nullToAbsent || correctionReason != null) {
+      map['correction_reason'] = Variable<String>(correctionReason);
+    }
+    if (!nullToAbsent || recordedBy != null) {
+      map['recorded_by'] = Variable<String>(recordedBy);
+    }
+    if (!nullToAbsent || recordedByName != null) {
+      map['recorded_by_name'] = Variable<String>(recordedByName);
+    }
+    map['sync_state'] = Variable<String>(syncState);
+    map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    map['is_accessible'] = Variable<bool>(isAccessible);
+    return map;
+  }
+
+  LocalMilkEntriesCompanion toCompanion(bool nullToAbsent) {
+    return LocalMilkEntriesCompanion(
+      slotId: Value(slotId),
+      entryId: Value(entryId),
+      organizationId: Value(organizationId),
+      farmId: Value(farmId),
+      shedId: Value(shedId),
+      shedName: shedName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shedName),
+      animalId: Value(animalId),
+      animalNumber: Value(animalNumber),
+      animalName: animalName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(animalName),
+      productionDate: Value(productionDate),
+      session: Value(session),
+      quantityLitres: Value(quantityLitres),
+      rejectedQuantityLitres: Value(rejectedQuantityLitres),
+      rejectionReason: rejectionReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rejectionReason),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      entrySource: Value(entrySource),
+      revision: Value(revision),
+      correctionReason: correctionReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(correctionReason),
+      recordedBy: recordedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recordedBy),
+      recordedByName: recordedByName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recordedByName),
+      syncState: Value(syncState),
+      serverUpdatedAt: Value(serverUpdatedAt),
+      cachedAt: Value(cachedAt),
+      isAccessible: Value(isAccessible),
+    );
+  }
+
+  factory LocalMilkEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalMilkEntry(
+      slotId: serializer.fromJson<String>(json['slotId']),
+      entryId: serializer.fromJson<String>(json['entryId']),
+      organizationId: serializer.fromJson<String>(json['organizationId']),
+      farmId: serializer.fromJson<String>(json['farmId']),
+      shedId: serializer.fromJson<String>(json['shedId']),
+      shedName: serializer.fromJson<String?>(json['shedName']),
+      animalId: serializer.fromJson<String>(json['animalId']),
+      animalNumber: serializer.fromJson<String>(json['animalNumber']),
+      animalName: serializer.fromJson<String?>(json['animalName']),
+      productionDate: serializer.fromJson<DateTime>(json['productionDate']),
+      session: serializer.fromJson<String>(json['session']),
+      quantityLitres: serializer.fromJson<String>(json['quantityLitres']),
+      rejectedQuantityLitres: serializer.fromJson<String>(
+        json['rejectedQuantityLitres'],
+      ),
+      rejectionReason: serializer.fromJson<String?>(json['rejectionReason']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      entrySource: serializer.fromJson<String>(json['entrySource']),
+      revision: serializer.fromJson<int>(json['revision']),
+      correctionReason: serializer.fromJson<String?>(json['correctionReason']),
+      recordedBy: serializer.fromJson<String?>(json['recordedBy']),
+      recordedByName: serializer.fromJson<String?>(json['recordedByName']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      serverUpdatedAt: serializer.fromJson<DateTime>(json['serverUpdatedAt']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+      isAccessible: serializer.fromJson<bool>(json['isAccessible']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'slotId': serializer.toJson<String>(slotId),
+      'entryId': serializer.toJson<String>(entryId),
+      'organizationId': serializer.toJson<String>(organizationId),
+      'farmId': serializer.toJson<String>(farmId),
+      'shedId': serializer.toJson<String>(shedId),
+      'shedName': serializer.toJson<String?>(shedName),
+      'animalId': serializer.toJson<String>(animalId),
+      'animalNumber': serializer.toJson<String>(animalNumber),
+      'animalName': serializer.toJson<String?>(animalName),
+      'productionDate': serializer.toJson<DateTime>(productionDate),
+      'session': serializer.toJson<String>(session),
+      'quantityLitres': serializer.toJson<String>(quantityLitres),
+      'rejectedQuantityLitres': serializer.toJson<String>(
+        rejectedQuantityLitres,
+      ),
+      'rejectionReason': serializer.toJson<String?>(rejectionReason),
+      'notes': serializer.toJson<String?>(notes),
+      'entrySource': serializer.toJson<String>(entrySource),
+      'revision': serializer.toJson<int>(revision),
+      'correctionReason': serializer.toJson<String?>(correctionReason),
+      'recordedBy': serializer.toJson<String?>(recordedBy),
+      'recordedByName': serializer.toJson<String?>(recordedByName),
+      'syncState': serializer.toJson<String>(syncState),
+      'serverUpdatedAt': serializer.toJson<DateTime>(serverUpdatedAt),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+      'isAccessible': serializer.toJson<bool>(isAccessible),
+    };
+  }
+
+  LocalMilkEntry copyWith({
+    String? slotId,
+    String? entryId,
+    String? organizationId,
+    String? farmId,
+    String? shedId,
+    Value<String?> shedName = const Value.absent(),
+    String? animalId,
+    String? animalNumber,
+    Value<String?> animalName = const Value.absent(),
+    DateTime? productionDate,
+    String? session,
+    String? quantityLitres,
+    String? rejectedQuantityLitres,
+    Value<String?> rejectionReason = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    String? entrySource,
+    int? revision,
+    Value<String?> correctionReason = const Value.absent(),
+    Value<String?> recordedBy = const Value.absent(),
+    Value<String?> recordedByName = const Value.absent(),
+    String? syncState,
+    DateTime? serverUpdatedAt,
+    DateTime? cachedAt,
+    bool? isAccessible,
+  }) => LocalMilkEntry(
+    slotId: slotId ?? this.slotId,
+    entryId: entryId ?? this.entryId,
+    organizationId: organizationId ?? this.organizationId,
+    farmId: farmId ?? this.farmId,
+    shedId: shedId ?? this.shedId,
+    shedName: shedName.present ? shedName.value : this.shedName,
+    animalId: animalId ?? this.animalId,
+    animalNumber: animalNumber ?? this.animalNumber,
+    animalName: animalName.present ? animalName.value : this.animalName,
+    productionDate: productionDate ?? this.productionDate,
+    session: session ?? this.session,
+    quantityLitres: quantityLitres ?? this.quantityLitres,
+    rejectedQuantityLitres:
+        rejectedQuantityLitres ?? this.rejectedQuantityLitres,
+    rejectionReason: rejectionReason.present
+        ? rejectionReason.value
+        : this.rejectionReason,
+    notes: notes.present ? notes.value : this.notes,
+    entrySource: entrySource ?? this.entrySource,
+    revision: revision ?? this.revision,
+    correctionReason: correctionReason.present
+        ? correctionReason.value
+        : this.correctionReason,
+    recordedBy: recordedBy.present ? recordedBy.value : this.recordedBy,
+    recordedByName: recordedByName.present
+        ? recordedByName.value
+        : this.recordedByName,
+    syncState: syncState ?? this.syncState,
+    serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+    cachedAt: cachedAt ?? this.cachedAt,
+    isAccessible: isAccessible ?? this.isAccessible,
+  );
+  LocalMilkEntry copyWithCompanion(LocalMilkEntriesCompanion data) {
+    return LocalMilkEntry(
+      slotId: data.slotId.present ? data.slotId.value : this.slotId,
+      entryId: data.entryId.present ? data.entryId.value : this.entryId,
+      organizationId: data.organizationId.present
+          ? data.organizationId.value
+          : this.organizationId,
+      farmId: data.farmId.present ? data.farmId.value : this.farmId,
+      shedId: data.shedId.present ? data.shedId.value : this.shedId,
+      shedName: data.shedName.present ? data.shedName.value : this.shedName,
+      animalId: data.animalId.present ? data.animalId.value : this.animalId,
+      animalNumber: data.animalNumber.present
+          ? data.animalNumber.value
+          : this.animalNumber,
+      animalName: data.animalName.present
+          ? data.animalName.value
+          : this.animalName,
+      productionDate: data.productionDate.present
+          ? data.productionDate.value
+          : this.productionDate,
+      session: data.session.present ? data.session.value : this.session,
+      quantityLitres: data.quantityLitres.present
+          ? data.quantityLitres.value
+          : this.quantityLitres,
+      rejectedQuantityLitres: data.rejectedQuantityLitres.present
+          ? data.rejectedQuantityLitres.value
+          : this.rejectedQuantityLitres,
+      rejectionReason: data.rejectionReason.present
+          ? data.rejectionReason.value
+          : this.rejectionReason,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      entrySource: data.entrySource.present
+          ? data.entrySource.value
+          : this.entrySource,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      correctionReason: data.correctionReason.present
+          ? data.correctionReason.value
+          : this.correctionReason,
+      recordedBy: data.recordedBy.present
+          ? data.recordedBy.value
+          : this.recordedBy,
+      recordedByName: data.recordedByName.present
+          ? data.recordedByName.value
+          : this.recordedByName,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      cachedAt: data.cachedAt.present ? data.cachedAt.value : this.cachedAt,
+      isAccessible: data.isAccessible.present
+          ? data.isAccessible.value
+          : this.isAccessible,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalMilkEntry(')
+          ..write('slotId: $slotId, ')
+          ..write('entryId: $entryId, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('farmId: $farmId, ')
+          ..write('shedId: $shedId, ')
+          ..write('shedName: $shedName, ')
+          ..write('animalId: $animalId, ')
+          ..write('animalNumber: $animalNumber, ')
+          ..write('animalName: $animalName, ')
+          ..write('productionDate: $productionDate, ')
+          ..write('session: $session, ')
+          ..write('quantityLitres: $quantityLitres, ')
+          ..write('rejectedQuantityLitres: $rejectedQuantityLitres, ')
+          ..write('rejectionReason: $rejectionReason, ')
+          ..write('notes: $notes, ')
+          ..write('entrySource: $entrySource, ')
+          ..write('revision: $revision, ')
+          ..write('correctionReason: $correctionReason, ')
+          ..write('recordedBy: $recordedBy, ')
+          ..write('recordedByName: $recordedByName, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('isAccessible: $isAccessible')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    slotId,
+    entryId,
+    organizationId,
+    farmId,
+    shedId,
+    shedName,
+    animalId,
+    animalNumber,
+    animalName,
+    productionDate,
+    session,
+    quantityLitres,
+    rejectedQuantityLitres,
+    rejectionReason,
+    notes,
+    entrySource,
+    revision,
+    correctionReason,
+    recordedBy,
+    recordedByName,
+    syncState,
+    serverUpdatedAt,
+    cachedAt,
+    isAccessible,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalMilkEntry &&
+          other.slotId == this.slotId &&
+          other.entryId == this.entryId &&
+          other.organizationId == this.organizationId &&
+          other.farmId == this.farmId &&
+          other.shedId == this.shedId &&
+          other.shedName == this.shedName &&
+          other.animalId == this.animalId &&
+          other.animalNumber == this.animalNumber &&
+          other.animalName == this.animalName &&
+          other.productionDate == this.productionDate &&
+          other.session == this.session &&
+          other.quantityLitres == this.quantityLitres &&
+          other.rejectedQuantityLitres == this.rejectedQuantityLitres &&
+          other.rejectionReason == this.rejectionReason &&
+          other.notes == this.notes &&
+          other.entrySource == this.entrySource &&
+          other.revision == this.revision &&
+          other.correctionReason == this.correctionReason &&
+          other.recordedBy == this.recordedBy &&
+          other.recordedByName == this.recordedByName &&
+          other.syncState == this.syncState &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.cachedAt == this.cachedAt &&
+          other.isAccessible == this.isAccessible);
+}
+
+class LocalMilkEntriesCompanion extends UpdateCompanion<LocalMilkEntry> {
+  final Value<String> slotId;
+  final Value<String> entryId;
+  final Value<String> organizationId;
+  final Value<String> farmId;
+  final Value<String> shedId;
+  final Value<String?> shedName;
+  final Value<String> animalId;
+  final Value<String> animalNumber;
+  final Value<String?> animalName;
+  final Value<DateTime> productionDate;
+  final Value<String> session;
+  final Value<String> quantityLitres;
+  final Value<String> rejectedQuantityLitres;
+  final Value<String?> rejectionReason;
+  final Value<String?> notes;
+  final Value<String> entrySource;
+  final Value<int> revision;
+  final Value<String?> correctionReason;
+  final Value<String?> recordedBy;
+  final Value<String?> recordedByName;
+  final Value<String> syncState;
+  final Value<DateTime> serverUpdatedAt;
+  final Value<DateTime> cachedAt;
+  final Value<bool> isAccessible;
+  final Value<int> rowid;
+  const LocalMilkEntriesCompanion({
+    this.slotId = const Value.absent(),
+    this.entryId = const Value.absent(),
+    this.organizationId = const Value.absent(),
+    this.farmId = const Value.absent(),
+    this.shedId = const Value.absent(),
+    this.shedName = const Value.absent(),
+    this.animalId = const Value.absent(),
+    this.animalNumber = const Value.absent(),
+    this.animalName = const Value.absent(),
+    this.productionDate = const Value.absent(),
+    this.session = const Value.absent(),
+    this.quantityLitres = const Value.absent(),
+    this.rejectedQuantityLitres = const Value.absent(),
+    this.rejectionReason = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.entrySource = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.correctionReason = const Value.absent(),
+    this.recordedBy = const Value.absent(),
+    this.recordedByName = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.isAccessible = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalMilkEntriesCompanion.insert({
+    required String slotId,
+    required String entryId,
+    required String organizationId,
+    required String farmId,
+    required String shedId,
+    this.shedName = const Value.absent(),
+    required String animalId,
+    required String animalNumber,
+    this.animalName = const Value.absent(),
+    required DateTime productionDate,
+    required String session,
+    required String quantityLitres,
+    this.rejectedQuantityLitres = const Value.absent(),
+    this.rejectionReason = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.entrySource = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.correctionReason = const Value.absent(),
+    this.recordedBy = const Value.absent(),
+    this.recordedByName = const Value.absent(),
+    this.syncState = const Value.absent(),
+    required DateTime serverUpdatedAt,
+    required DateTime cachedAt,
+    this.isAccessible = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : slotId = Value(slotId),
+       entryId = Value(entryId),
+       organizationId = Value(organizationId),
+       farmId = Value(farmId),
+       shedId = Value(shedId),
+       animalId = Value(animalId),
+       animalNumber = Value(animalNumber),
+       productionDate = Value(productionDate),
+       session = Value(session),
+       quantityLitres = Value(quantityLitres),
+       serverUpdatedAt = Value(serverUpdatedAt),
+       cachedAt = Value(cachedAt);
+  static Insertable<LocalMilkEntry> custom({
+    Expression<String>? slotId,
+    Expression<String>? entryId,
+    Expression<String>? organizationId,
+    Expression<String>? farmId,
+    Expression<String>? shedId,
+    Expression<String>? shedName,
+    Expression<String>? animalId,
+    Expression<String>? animalNumber,
+    Expression<String>? animalName,
+    Expression<DateTime>? productionDate,
+    Expression<String>? session,
+    Expression<String>? quantityLitres,
+    Expression<String>? rejectedQuantityLitres,
+    Expression<String>? rejectionReason,
+    Expression<String>? notes,
+    Expression<String>? entrySource,
+    Expression<int>? revision,
+    Expression<String>? correctionReason,
+    Expression<String>? recordedBy,
+    Expression<String>? recordedByName,
+    Expression<String>? syncState,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<DateTime>? cachedAt,
+    Expression<bool>? isAccessible,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (slotId != null) 'slot_id': slotId,
+      if (entryId != null) 'entry_id': entryId,
+      if (organizationId != null) 'organization_id': organizationId,
+      if (farmId != null) 'farm_id': farmId,
+      if (shedId != null) 'shed_id': shedId,
+      if (shedName != null) 'shed_name': shedName,
+      if (animalId != null) 'animal_id': animalId,
+      if (animalNumber != null) 'animal_number': animalNumber,
+      if (animalName != null) 'animal_name': animalName,
+      if (productionDate != null) 'production_date': productionDate,
+      if (session != null) 'session': session,
+      if (quantityLitres != null) 'quantity_litres': quantityLitres,
+      if (rejectedQuantityLitres != null)
+        'rejected_quantity_litres': rejectedQuantityLitres,
+      if (rejectionReason != null) 'rejection_reason': rejectionReason,
+      if (notes != null) 'notes': notes,
+      if (entrySource != null) 'entry_source': entrySource,
+      if (revision != null) 'revision': revision,
+      if (correctionReason != null) 'correction_reason': correctionReason,
+      if (recordedBy != null) 'recorded_by': recordedBy,
+      if (recordedByName != null) 'recorded_by_name': recordedByName,
+      if (syncState != null) 'sync_state': syncState,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (isAccessible != null) 'is_accessible': isAccessible,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalMilkEntriesCompanion copyWith({
+    Value<String>? slotId,
+    Value<String>? entryId,
+    Value<String>? organizationId,
+    Value<String>? farmId,
+    Value<String>? shedId,
+    Value<String?>? shedName,
+    Value<String>? animalId,
+    Value<String>? animalNumber,
+    Value<String?>? animalName,
+    Value<DateTime>? productionDate,
+    Value<String>? session,
+    Value<String>? quantityLitres,
+    Value<String>? rejectedQuantityLitres,
+    Value<String?>? rejectionReason,
+    Value<String?>? notes,
+    Value<String>? entrySource,
+    Value<int>? revision,
+    Value<String?>? correctionReason,
+    Value<String?>? recordedBy,
+    Value<String?>? recordedByName,
+    Value<String>? syncState,
+    Value<DateTime>? serverUpdatedAt,
+    Value<DateTime>? cachedAt,
+    Value<bool>? isAccessible,
+    Value<int>? rowid,
+  }) {
+    return LocalMilkEntriesCompanion(
+      slotId: slotId ?? this.slotId,
+      entryId: entryId ?? this.entryId,
+      organizationId: organizationId ?? this.organizationId,
+      farmId: farmId ?? this.farmId,
+      shedId: shedId ?? this.shedId,
+      shedName: shedName ?? this.shedName,
+      animalId: animalId ?? this.animalId,
+      animalNumber: animalNumber ?? this.animalNumber,
+      animalName: animalName ?? this.animalName,
+      productionDate: productionDate ?? this.productionDate,
+      session: session ?? this.session,
+      quantityLitres: quantityLitres ?? this.quantityLitres,
+      rejectedQuantityLitres:
+          rejectedQuantityLitres ?? this.rejectedQuantityLitres,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
+      notes: notes ?? this.notes,
+      entrySource: entrySource ?? this.entrySource,
+      revision: revision ?? this.revision,
+      correctionReason: correctionReason ?? this.correctionReason,
+      recordedBy: recordedBy ?? this.recordedBy,
+      recordedByName: recordedByName ?? this.recordedByName,
+      syncState: syncState ?? this.syncState,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      cachedAt: cachedAt ?? this.cachedAt,
+      isAccessible: isAccessible ?? this.isAccessible,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (slotId.present) {
+      map['slot_id'] = Variable<String>(slotId.value);
+    }
+    if (entryId.present) {
+      map['entry_id'] = Variable<String>(entryId.value);
+    }
+    if (organizationId.present) {
+      map['organization_id'] = Variable<String>(organizationId.value);
+    }
+    if (farmId.present) {
+      map['farm_id'] = Variable<String>(farmId.value);
+    }
+    if (shedId.present) {
+      map['shed_id'] = Variable<String>(shedId.value);
+    }
+    if (shedName.present) {
+      map['shed_name'] = Variable<String>(shedName.value);
+    }
+    if (animalId.present) {
+      map['animal_id'] = Variable<String>(animalId.value);
+    }
+    if (animalNumber.present) {
+      map['animal_number'] = Variable<String>(animalNumber.value);
+    }
+    if (animalName.present) {
+      map['animal_name'] = Variable<String>(animalName.value);
+    }
+    if (productionDate.present) {
+      map['production_date'] = Variable<DateTime>(productionDate.value);
+    }
+    if (session.present) {
+      map['session'] = Variable<String>(session.value);
+    }
+    if (quantityLitres.present) {
+      map['quantity_litres'] = Variable<String>(quantityLitres.value);
+    }
+    if (rejectedQuantityLitres.present) {
+      map['rejected_quantity_litres'] = Variable<String>(
+        rejectedQuantityLitres.value,
+      );
+    }
+    if (rejectionReason.present) {
+      map['rejection_reason'] = Variable<String>(rejectionReason.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (entrySource.present) {
+      map['entry_source'] = Variable<String>(entrySource.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (correctionReason.present) {
+      map['correction_reason'] = Variable<String>(correctionReason.value);
+    }
+    if (recordedBy.present) {
+      map['recorded_by'] = Variable<String>(recordedBy.value);
+    }
+    if (recordedByName.present) {
+      map['recorded_by_name'] = Variable<String>(recordedByName.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (isAccessible.present) {
+      map['is_accessible'] = Variable<bool>(isAccessible.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalMilkEntriesCompanion(')
+          ..write('slotId: $slotId, ')
+          ..write('entryId: $entryId, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('farmId: $farmId, ')
+          ..write('shedId: $shedId, ')
+          ..write('shedName: $shedName, ')
+          ..write('animalId: $animalId, ')
+          ..write('animalNumber: $animalNumber, ')
+          ..write('animalName: $animalName, ')
+          ..write('productionDate: $productionDate, ')
+          ..write('session: $session, ')
+          ..write('quantityLitres: $quantityLitres, ')
+          ..write('rejectedQuantityLitres: $rejectedQuantityLitres, ')
+          ..write('rejectionReason: $rejectionReason, ')
+          ..write('notes: $notes, ')
+          ..write('entrySource: $entrySource, ')
+          ..write('revision: $revision, ')
+          ..write('correctionReason: $correctionReason, ')
+          ..write('recordedBy: $recordedBy, ')
+          ..write('recordedByName: $recordedByName, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('isAccessible: $isAccessible, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncDevicesTable extends SyncDevices
     with TableInfo<$SyncDevicesTable, SyncDevice> {
   @override
@@ -12634,6 +13991,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $LocalAnimalWeightsTable(this);
   late final $LocalAnimalStatusChangesTable localAnimalStatusChanges =
       $LocalAnimalStatusChangesTable(this);
+  late final $LocalMilkEntriesTable localMilkEntries = $LocalMilkEntriesTable(
+    this,
+  );
   late final $SyncDevicesTable syncDevices = $SyncDevicesTable(this);
   late final $SyncCursorsTable syncCursors = $SyncCursorsTable(this);
   late final $SyncOutboxTable syncOutbox = $SyncOutboxTable(this);
@@ -12656,6 +14016,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     localAnimalMovements,
     localAnimalWeights,
     localAnimalStatusChanges,
+    localMilkEntries,
     syncDevices,
     syncCursors,
     syncOutbox,
@@ -17292,6 +18653,599 @@ typedef $$LocalAnimalStatusChangesTableProcessedTableManager =
       LocalAnimalStatusChange,
       PrefetchHooks Function()
     >;
+typedef $$LocalMilkEntriesTableCreateCompanionBuilder =
+    LocalMilkEntriesCompanion Function({
+      required String slotId,
+      required String entryId,
+      required String organizationId,
+      required String farmId,
+      required String shedId,
+      Value<String?> shedName,
+      required String animalId,
+      required String animalNumber,
+      Value<String?> animalName,
+      required DateTime productionDate,
+      required String session,
+      required String quantityLitres,
+      Value<String> rejectedQuantityLitres,
+      Value<String?> rejectionReason,
+      Value<String?> notes,
+      Value<String> entrySource,
+      Value<int> revision,
+      Value<String?> correctionReason,
+      Value<String?> recordedBy,
+      Value<String?> recordedByName,
+      Value<String> syncState,
+      required DateTime serverUpdatedAt,
+      required DateTime cachedAt,
+      Value<bool> isAccessible,
+      Value<int> rowid,
+    });
+typedef $$LocalMilkEntriesTableUpdateCompanionBuilder =
+    LocalMilkEntriesCompanion Function({
+      Value<String> slotId,
+      Value<String> entryId,
+      Value<String> organizationId,
+      Value<String> farmId,
+      Value<String> shedId,
+      Value<String?> shedName,
+      Value<String> animalId,
+      Value<String> animalNumber,
+      Value<String?> animalName,
+      Value<DateTime> productionDate,
+      Value<String> session,
+      Value<String> quantityLitres,
+      Value<String> rejectedQuantityLitres,
+      Value<String?> rejectionReason,
+      Value<String?> notes,
+      Value<String> entrySource,
+      Value<int> revision,
+      Value<String?> correctionReason,
+      Value<String?> recordedBy,
+      Value<String?> recordedByName,
+      Value<String> syncState,
+      Value<DateTime> serverUpdatedAt,
+      Value<DateTime> cachedAt,
+      Value<bool> isAccessible,
+      Value<int> rowid,
+    });
+
+class $$LocalMilkEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalMilkEntriesTable> {
+  $$LocalMilkEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get slotId => $composableBuilder(
+    column: $table.slotId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entryId => $composableBuilder(
+    column: $table.entryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmId => $composableBuilder(
+    column: $table.farmId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get shedId => $composableBuilder(
+    column: $table.shedId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get shedName => $composableBuilder(
+    column: $table.shedName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalId => $composableBuilder(
+    column: $table.animalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get animalName => $composableBuilder(
+    column: $table.animalName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get productionDate => $composableBuilder(
+    column: $table.productionDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get session => $composableBuilder(
+    column: $table.session,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get quantityLitres => $composableBuilder(
+    column: $table.quantityLitres,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rejectedQuantityLitres => $composableBuilder(
+    column: $table.rejectedQuantityLitres,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entrySource => $composableBuilder(
+    column: $table.entrySource,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get correctionReason => $composableBuilder(
+    column: $table.correctionReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedByName => $composableBuilder(
+    column: $table.recordedByName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalMilkEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalMilkEntriesTable> {
+  $$LocalMilkEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get slotId => $composableBuilder(
+    column: $table.slotId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entryId => $composableBuilder(
+    column: $table.entryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmId => $composableBuilder(
+    column: $table.farmId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get shedId => $composableBuilder(
+    column: $table.shedId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get shedName => $composableBuilder(
+    column: $table.shedName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalId => $composableBuilder(
+    column: $table.animalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get animalName => $composableBuilder(
+    column: $table.animalName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get productionDate => $composableBuilder(
+    column: $table.productionDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get session => $composableBuilder(
+    column: $table.session,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get quantityLitres => $composableBuilder(
+    column: $table.quantityLitres,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rejectedQuantityLitres => $composableBuilder(
+    column: $table.rejectedQuantityLitres,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entrySource => $composableBuilder(
+    column: $table.entrySource,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get correctionReason => $composableBuilder(
+    column: $table.correctionReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedByName => $composableBuilder(
+    column: $table.recordedByName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalMilkEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalMilkEntriesTable> {
+  $$LocalMilkEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get slotId =>
+      $composableBuilder(column: $table.slotId, builder: (column) => column);
+
+  GeneratedColumn<String> get entryId =>
+      $composableBuilder(column: $table.entryId, builder: (column) => column);
+
+  GeneratedColumn<String> get organizationId => $composableBuilder(
+    column: $table.organizationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get farmId =>
+      $composableBuilder(column: $table.farmId, builder: (column) => column);
+
+  GeneratedColumn<String> get shedId =>
+      $composableBuilder(column: $table.shedId, builder: (column) => column);
+
+  GeneratedColumn<String> get shedName =>
+      $composableBuilder(column: $table.shedName, builder: (column) => column);
+
+  GeneratedColumn<String> get animalId =>
+      $composableBuilder(column: $table.animalId, builder: (column) => column);
+
+  GeneratedColumn<String> get animalNumber => $composableBuilder(
+    column: $table.animalNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get animalName => $composableBuilder(
+    column: $table.animalName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get productionDate => $composableBuilder(
+    column: $table.productionDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get session =>
+      $composableBuilder(column: $table.session, builder: (column) => column);
+
+  GeneratedColumn<String> get quantityLitres => $composableBuilder(
+    column: $table.quantityLitres,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get rejectedQuantityLitres => $composableBuilder(
+    column: $table.rejectedQuantityLitres,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get rejectionReason => $composableBuilder(
+    column: $table.rejectionReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get entrySource => $composableBuilder(
+    column: $table.entrySource,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumn<String> get correctionReason => $composableBuilder(
+    column: $table.correctionReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordedByName => $composableBuilder(
+    column: $table.recordedByName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get cachedAt =>
+      $composableBuilder(column: $table.cachedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isAccessible => $composableBuilder(
+    column: $table.isAccessible,
+    builder: (column) => column,
+  );
+}
+
+class $$LocalMilkEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalMilkEntriesTable,
+          LocalMilkEntry,
+          $$LocalMilkEntriesTableFilterComposer,
+          $$LocalMilkEntriesTableOrderingComposer,
+          $$LocalMilkEntriesTableAnnotationComposer,
+          $$LocalMilkEntriesTableCreateCompanionBuilder,
+          $$LocalMilkEntriesTableUpdateCompanionBuilder,
+          (
+            LocalMilkEntry,
+            BaseReferences<
+              _$AppDatabase,
+              $LocalMilkEntriesTable,
+              LocalMilkEntry
+            >,
+          ),
+          LocalMilkEntry,
+          PrefetchHooks Function()
+        > {
+  $$LocalMilkEntriesTableTableManager(
+    _$AppDatabase db,
+    $LocalMilkEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalMilkEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalMilkEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalMilkEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> slotId = const Value.absent(),
+                Value<String> entryId = const Value.absent(),
+                Value<String> organizationId = const Value.absent(),
+                Value<String> farmId = const Value.absent(),
+                Value<String> shedId = const Value.absent(),
+                Value<String?> shedName = const Value.absent(),
+                Value<String> animalId = const Value.absent(),
+                Value<String> animalNumber = const Value.absent(),
+                Value<String?> animalName = const Value.absent(),
+                Value<DateTime> productionDate = const Value.absent(),
+                Value<String> session = const Value.absent(),
+                Value<String> quantityLitres = const Value.absent(),
+                Value<String> rejectedQuantityLitres = const Value.absent(),
+                Value<String?> rejectionReason = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String> entrySource = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<String?> correctionReason = const Value.absent(),
+                Value<String?> recordedBy = const Value.absent(),
+                Value<String?> recordedByName = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime> serverUpdatedAt = const Value.absent(),
+                Value<DateTime> cachedAt = const Value.absent(),
+                Value<bool> isAccessible = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalMilkEntriesCompanion(
+                slotId: slotId,
+                entryId: entryId,
+                organizationId: organizationId,
+                farmId: farmId,
+                shedId: shedId,
+                shedName: shedName,
+                animalId: animalId,
+                animalNumber: animalNumber,
+                animalName: animalName,
+                productionDate: productionDate,
+                session: session,
+                quantityLitres: quantityLitres,
+                rejectedQuantityLitres: rejectedQuantityLitres,
+                rejectionReason: rejectionReason,
+                notes: notes,
+                entrySource: entrySource,
+                revision: revision,
+                correctionReason: correctionReason,
+                recordedBy: recordedBy,
+                recordedByName: recordedByName,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                cachedAt: cachedAt,
+                isAccessible: isAccessible,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String slotId,
+                required String entryId,
+                required String organizationId,
+                required String farmId,
+                required String shedId,
+                Value<String?> shedName = const Value.absent(),
+                required String animalId,
+                required String animalNumber,
+                Value<String?> animalName = const Value.absent(),
+                required DateTime productionDate,
+                required String session,
+                required String quantityLitres,
+                Value<String> rejectedQuantityLitres = const Value.absent(),
+                Value<String?> rejectionReason = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String> entrySource = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<String?> correctionReason = const Value.absent(),
+                Value<String?> recordedBy = const Value.absent(),
+                Value<String?> recordedByName = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                required DateTime serverUpdatedAt,
+                required DateTime cachedAt,
+                Value<bool> isAccessible = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalMilkEntriesCompanion.insert(
+                slotId: slotId,
+                entryId: entryId,
+                organizationId: organizationId,
+                farmId: farmId,
+                shedId: shedId,
+                shedName: shedName,
+                animalId: animalId,
+                animalNumber: animalNumber,
+                animalName: animalName,
+                productionDate: productionDate,
+                session: session,
+                quantityLitres: quantityLitres,
+                rejectedQuantityLitres: rejectedQuantityLitres,
+                rejectionReason: rejectionReason,
+                notes: notes,
+                entrySource: entrySource,
+                revision: revision,
+                correctionReason: correctionReason,
+                recordedBy: recordedBy,
+                recordedByName: recordedByName,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                cachedAt: cachedAt,
+                isAccessible: isAccessible,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalMilkEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalMilkEntriesTable,
+      LocalMilkEntry,
+      $$LocalMilkEntriesTableFilterComposer,
+      $$LocalMilkEntriesTableOrderingComposer,
+      $$LocalMilkEntriesTableAnnotationComposer,
+      $$LocalMilkEntriesTableCreateCompanionBuilder,
+      $$LocalMilkEntriesTableUpdateCompanionBuilder,
+      (
+        LocalMilkEntry,
+        BaseReferences<_$AppDatabase, $LocalMilkEntriesTable, LocalMilkEntry>,
+      ),
+      LocalMilkEntry,
+      PrefetchHooks Function()
+    >;
 typedef $$SyncDevicesTableCreateCompanionBuilder =
     SyncDevicesCompanion Function({
       required String id,
@@ -18627,6 +20581,8 @@ class $AppDatabaseManager {
         _db,
         _db.localAnimalStatusChanges,
       );
+  $$LocalMilkEntriesTableTableManager get localMilkEntries =>
+      $$LocalMilkEntriesTableTableManager(_db, _db.localMilkEntries);
   $$SyncDevicesTableTableManager get syncDevices =>
       $$SyncDevicesTableTableManager(_db, _db.syncDevices);
   $$SyncCursorsTableTableManager get syncCursors =>

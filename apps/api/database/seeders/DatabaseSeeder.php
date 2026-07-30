@@ -78,6 +78,7 @@ class DatabaseSeeder extends Seeder
                     'animals.view_weight_history', 'animals.change_status',
                     'animals.view_status_history',
                     'inventory.view', 'inventory.manage', 'inventory.export',
+                    'milk.view', 'milk.create', 'milk.correct',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'farm-worker' => ['Farm Worker', [
@@ -87,6 +88,7 @@ class DatabaseSeeder extends Seeder
                     'animals.record_weight', 'animals.view_weight_history',
                     'animals.view_status_history',
                     'inventory.view',
+                    'milk.view', 'milk.create',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'viewer' => ['Viewer', [
@@ -95,6 +97,7 @@ class DatabaseSeeder extends Seeder
                     'animal_movements.view',
                     'animals.view_weight_history', 'animals.view_status_history',
                     'inventory.view',
+                    'milk.view',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
             ];
@@ -131,5 +134,6 @@ class DatabaseSeeder extends Seeder
         });
 
         $this->call(AnimalRegistrySeeder::class);
+        $this->call(MilkProductionSeeder::class);
     }
 }

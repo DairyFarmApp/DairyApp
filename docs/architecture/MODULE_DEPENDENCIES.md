@@ -62,6 +62,19 @@ Phase 2A implements the Animal Registry portion of `Animals`: species, breeds, f
 - Future health, feed, purchasing, sales, and equipment integrations must use
   stable inventory commands rather than importing inventory persistence.
 
+## Phase 3A milk dependency detail
+
+- `MilkProduction` depends on active organization/farm context, adult female
+  animal identity/current shed, permission middleware, audit, idempotency, and
+  transactional duplicate protection.
+- Production slots own animal/date/session uniqueness. Immutable entry
+  revisions own measurements and corrections.
+- Flutter quick entry depends on the milk repository/provider, Drift schema 5,
+  and the existing outbox. The server remains authoritative when queued
+  commands synchronize.
+- Collection, tank, withdrawal, quality, sales, and finance modules may consume
+  committed milk production later; none may rewrite the production history.
+
 Foundation -> animal registry -> online animal movements/measurements -> owner
 onboarding -> inventory core -> remaining approved animal capabilities -> milk
 -> health/breeding -> inventory expansion/feed -> purchase/sales ->

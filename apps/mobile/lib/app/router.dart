@@ -21,6 +21,7 @@ import 'package:dairycare_mobile/features/inventory/domain/inventory_models.dart
 import 'package:dairycare_mobile/features/inventory/presentation/inventory_dashboard_screen.dart';
 import 'package:dairycare_mobile/features/inventory/presentation/inventory_item_form_screen.dart';
 import 'package:dairycare_mobile/features/inventory/presentation/inventory_overview_screen.dart';
+import 'package:dairycare_mobile/features/milk/presentation/milk_production_screen.dart';
 import 'package:dairycare_mobile/features/organizations/presentation/organization_selection_screen.dart';
 import 'package:dairycare_mobile/features/sheds/presentation/shed_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -138,6 +139,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (_, state) => InventoryItemFormScreen(
               kind: InventoryKind.fromPath(state.pathParameters['kind']!)!,
             ),
+          ),
+          GoRoute(
+            path: '/milk',
+            builder: (_, _) => const MilkProductionScreen(),
           ),
         ],
       ),

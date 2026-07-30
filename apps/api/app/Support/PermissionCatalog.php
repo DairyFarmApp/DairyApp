@@ -50,6 +50,9 @@ final class PermissionCatalog
             'inventory.view',
             'inventory.manage',
             'inventory.export',
+            'milk.view',
+            'milk.create',
+            'milk.correct',
         ];
     }
 }

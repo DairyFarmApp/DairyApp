@@ -180,6 +180,8 @@ final class SyncService {
         data['animal_weights_authorized'] as bool? ?? false;
     final animalStatusChangesAuthorized =
         data['animal_status_changes_authorized'] as bool? ?? false;
+    final milkEntriesAuthorized =
+        data['milk_entries_authorized'] as bool? ?? false;
     final nextCursor = data['next_cursor'] as String?;
     final synchronizedAt = DateTime.now().toUtc();
     await _database.transaction(() async {
@@ -257,6 +259,18 @@ final class SyncService {
                 isAccessible: Value(false),
               ),
             );
+      }
+      if (!milkEntriesAuthorized) {
+        await (_database.update(_database.localMilkEntries)
+              ..where((row) => row.organizationId.equals(organizationId)))
+            .write(const LocalMilkEntriesCompanion(isAccessible: Value(false)));
+      } else {
+        await (_database.update(_database.localMilkEntries)..where(
+              (row) =>
+                  row.organizationId.equals(organizationId) &
+                  row.farmId.isNotIn(authorizedFarmIds),
+            ))
+            .write(const LocalMilkEntriesCompanion(isAccessible: Value(false)));
       }
       for (final raw in _maps(data['organizations'])) {
         await _database
@@ -381,6 +395,11 @@ final class SyncService {
             .insertOnConflictUpdate(
               _animalStatusChangeCompanion(raw, synchronizedAt),
             );
+      }
+      for (final raw in _maps(data['milk_entries'])) {
+        await _database
+            .into(_database.localMilkEntries)
+            .insertOnConflictUpdate(_milkEntryCompanion(raw, synchronizedAt));
       }
       await _database
           .into(_database.syncCursors)
@@ -553,6 +572,38 @@ final class SyncService {
     changedBy: raw['changed_by'] as String,
     changedByName: raw['changed_by_name'] as String? ?? '',
     sequence: raw['sequence'] as int,
+    serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
+    cachedAt: synchronizedAt,
+    isAccessible: const Value(true),
+  );
+
+  LocalMilkEntriesCompanion _milkEntryCompanion(
+    Map<String, dynamic> raw,
+    DateTime synchronizedAt,
+  ) => LocalMilkEntriesCompanion.insert(
+    slotId: raw['slot_id'] as String,
+    entryId: raw['id'] as String,
+    organizationId: raw['organization_id'] as String,
+    farmId: raw['farm_id'] as String,
+    shedId: raw['shed_id'] as String,
+    shedName: Value(raw['shed_name'] as String?),
+    animalId: raw['animal_id'] as String,
+    animalNumber: raw['animal_number'] as String? ?? '',
+    animalName: Value(raw['animal_name'] as String?),
+    productionDate: _nullableDate(raw['production_date']) ?? synchronizedAt,
+    session: raw['session'] as String,
+    quantityLitres: raw['quantity_litres'] as String,
+    rejectedQuantityLitres: Value(
+      raw['rejected_quantity_litres'] as String? ?? '0.000',
+    ),
+    rejectionReason: Value(raw['rejection_reason'] as String?),
+    notes: Value(raw['notes'] as String?),
+    entrySource: Value(raw['entry_source'] as String? ?? 'manual'),
+    revision: Value(raw['revision'] as int? ?? 1),
+    correctionReason: Value(raw['correction_reason'] as String?),
+    recordedBy: Value(raw['recorded_by'] as String?),
+    recordedByName: Value(raw['recorded_by_name'] as String?),
+    syncState: const Value('synced'),
     serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
     cachedAt: synchronizedAt,
     isAccessible: const Value(true),
