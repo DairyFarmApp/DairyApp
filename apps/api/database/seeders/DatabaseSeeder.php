@@ -79,6 +79,10 @@ class DatabaseSeeder extends Seeder
                     'animals.view_status_history',
                     'inventory.view', 'inventory.manage', 'inventory.export',
                     'milk.view', 'milk.create', 'milk.correct',
+                    'employees.view', 'employees.manage',
+                    'employee_loans.view', 'employee_loans.manage',
+                    'payroll.view', 'payroll.process',
+                    'finance.view', 'finance.manage',
                     'sessions.view_own', 'sessions.revoke_own',
                 ]],
                 'farm-worker' => ['Farm Worker', [

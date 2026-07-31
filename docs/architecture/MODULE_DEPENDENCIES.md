@@ -75,6 +75,21 @@ Phase 2A implements the Animal Registry portion of `Animals`: species, breeds, f
 - Collection, tank, withdrawal, quality, sales, and finance modules may consume
   committed milk production later; none may rewrite the production history.
 
+## Phase 7A workforce and finance dependency detail
+
+- `Workforce` depends on tenancy, active-farm access, role permissions,
+  organization sequencing, idempotency, audit, and MySQL transactions.
+- Employee loans and paid payroll request postings through the Finance posting
+  service; Workforce never edits journal lines or system-account balances.
+- `Finance` owns exact PKR income/expense source records, hidden system
+  accounts, immutable journal entries, and balanced journal lines.
+- Flutter presentation depends on workforce and finance repositories/providers.
+  These sensitive workflows are online-only and do not depend on Drift or the
+  sync outbox in Phase 7A.
+- Attendance, statutory payroll, purchasing, sales, and inventory valuation are
+  not dependencies of the implemented core and require separately approved
+  integrations.
+
 Foundation -> animal registry -> online animal movements/measurements -> owner
 onboarding -> inventory core -> remaining approved animal capabilities -> milk
 -> health/breeding -> inventory expansion/feed -> purchase/sales ->

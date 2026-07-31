@@ -11,7 +11,7 @@
 | R7 | Local device loss exposes farm/employee data | M / High | Secure tokens, minimized cache, device revocation, optional encrypted SQLite, remote session control | Phase 1+ |
 | R8 | Unbounded sync/cache performs poorly on years of data | H / High | Cursor deltas, farm/feature windows, page limits, indexes, eviction and scale tests | Phase 1/8 |
 | R9 | Backup exists but restore fails or files mismatch | M / Critical | Checksums, coordinated DB/files, immutable offsite copy, quarterly isolated restore drills | Ops/Phase 9 |
-| R10 | Ambiguous local accounting/tax/payroll requirements cause redesign | H / High | Confirm jurisdiction and accounting policy before financial schema/posting | Before Phase 7 |
+| R10 | Ambiguous local accounting/tax/payroll requirements cause redesign | H / High | Phase 7A is deliberately PKR-only with bounded internal accounts and no statutory calculation; confirm jurisdiction, tax, fiscal locking, approval separation, and accountant review before expanding it | Before Phase 7B/production |
 | R11 | Inconsistent units/timezones corrupt comparisons and business dates | M / High | Canonical units, explicit conversions, UTC instants, farm timezone/day service, boundary tests | Foundation+ |
 | R12 | Permissions become broad and unreviewable | M / High | Capability catalog, conservative roles, separation of duties, permission diff/audit tests | Phase 1+ |
 | R13 | Attachment malware, path traversal, or data leakage | M / High | Private storage, signature validation, safe names, scanning, authorized streams | First attachment phase |
@@ -25,5 +25,8 @@
 | R21 | Revoked farm/permission access leaves sensitive weight/status data visible offline | M / High | Independent authorization flags, authorized farm reconciliation, inaccessible cache state, repository filtering and sync tests | Phase 2C onward |
 | R22 | Batch projection diverges from permanent stock movements | M / High | Same-transaction projection/ledger writes, idempotent commands, reconciliation before issue/adjustment expansion, invariant tests | Inventory core onward |
 | R23 | Concurrent inventory updates silently overwrite configuration or duplicate stock | M / High | Row locks, optimistic versions, idempotency keys, composite tenant keys, MySQL regression tests | Inventory core onward |
+| R24 | Payroll or loan retries duplicate deductions or journal effects | M / Critical | Locked state transitions, immutable installments, unique source journals, durable idempotency, exact-balance tests | Phase 7A onward |
+| R25 | Broad workforce/finance access exposes confidential salary or loan data | M / Critical | Dedicated permissions, active farm scope, cross-tenant concealment tests, minimal client cache, audit events | Phase 7A onward |
+| R26 | One user can generate, approve, and pay payroll | H / High | Phase 7A audits every transition; implement configurable separation of duties and approval policy before production financial use | Phase 7B/production |
 
 Risk status is reviewed at each phase gate. Critical residual risks require owner acceptance before production deployment.

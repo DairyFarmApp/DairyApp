@@ -62,6 +62,13 @@ authorization flags. Upserts are UUID-based; correction rows update
 supersession links, and latest selection excludes superseded rows. Farm or
 permission revocation makes stale cached rows inaccessible.
 
+Phase 7A workforce and finance are online-only. Employee profile changes, loan
+disbursement, payroll generation/approval/payment, and income/expense posting
+must revalidate permission, active-farm scope, open payroll state, outstanding
+loan balance, and balanced journal lines inside the authoritative MySQL
+transaction. No sensitive employee or financial table was added to Drift, and
+no financial command enters the outbox in this phase.
+
 ## Conflict policy
 
 - Creates with new UUIDs are naturally mergeable/idempotent.

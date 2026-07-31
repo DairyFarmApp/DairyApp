@@ -53,6 +53,14 @@ final class PermissionCatalog
             'milk.view',
             'milk.create',
             'milk.correct',
+            'employees.view',
+            'employees.manage',
+            'employee_loans.view',
+            'employee_loans.manage',
+            'payroll.view',
+            'payroll.process',
+            'finance.view',
+            'finance.manage',
         ];
     }
 }

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-07-30 — Phase 7A workforce and PKR finance core
+
+- Added permanent Employees, Salary, Loans, and Finance menu modules with
+  responsive glass-theme screens.
+- Added farm-scoped employees, monthly PKR salary, immutable employee loans,
+  automatic payroll installment recovery, and draft/approved/paid payroll.
+- Added exact-PKR income and expense records backed by hidden system accounts
+  and balanced immutable double-entry journals, without cash/bank/wallet setup.
+- Added eight permissions, 18 API operations, OpenAPI coverage, audit,
+  idempotency, tenant/farm concealment, and focused regression tests.
+- Passed 95 MySQL tests/1,021 assertions, SQLite portability with 899
+  assertions, 92 Flutter tests, exact 97-operation contract parity, Android
+  debug, release web, and WebAssembly dry-run builds.
+
+Attendance, statutory payroll, payslip/export, approval separation, financial
+reversals, fiscal locking, and offline workforce/finance remain excluded.
+
 ## 2026-07-23 — Phase 2C animal weights and operational-status history
 
 - Added exact decimal kg/lb animal-weight history, configured maximums, latest projection, and immutable single-replacement corrections.

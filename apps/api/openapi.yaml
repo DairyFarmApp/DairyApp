@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: DairyCare API
-  version: 3.1.0-daily-milk-production
-  description: Foundation, animal management, owner/family access, ledger-backed inventory, and tenant-safe daily milk production with offline idempotency and immutable corrections.
+  version: 7.1.0-workforce-finance
+  description: Foundation, animal management, owner/family access, inventory, daily milk, and PKR workforce/finance workflows with immutable balanced posting.
 servers:
   - url: http://127.0.0.1:8000/api/v1
 security:
@@ -1036,6 +1036,243 @@ paths:
         '404': { $ref: '#/components/responses/ErrorResponse' }
         '409': { $ref: '#/components/responses/ErrorResponse' }
         '422': { $ref: '#/components/responses/ErrorResponse' }
+  /employees:
+    get:
+      summary: List active-farm employees and monthly salary totals
+      operationId: listEmployees
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string, maxLength: 180 }
+        - name: include_inactive
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '401': { $ref: '#/components/responses/ErrorResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+    post:
+      summary: Add an employee with a monthly PKR salary
+      operationId: createEmployee
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmployeeCreate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '401': { $ref: '#/components/responses/ErrorResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /employees/{employee}:
+    parameters:
+      - name: employee
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/Uuid' }
+    patch:
+      summary: Update permitted employee profile and monthly salary fields
+      operationId: updateEmployee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmployeeUpdate' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '412': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+    delete:
+      summary: Deactivate an employee without deleting salary history
+      operationId: deactivateEmployee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VersionRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '412': { $ref: '#/components/responses/ErrorResponse' }
+  /employees/{employee}/restore:
+    parameters:
+      - name: employee
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/Uuid' }
+    post:
+      summary: Restore a deactivated active-farm employee
+      operationId: restoreEmployee
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+  /employee-loans:
+    get:
+      summary: List immutable employee loan balances and payroll recoveries
+      operationId: listEmployeeLoans
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '401': { $ref: '#/components/responses/ErrorResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+    post:
+      summary: Disburse an employee loan and post its balanced journal
+      operationId: createEmployeeLoan
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmployeeLoanCreate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /payroll:
+    get:
+      summary: List monthly payroll periods and employee salary lines
+      operationId: listPayroll
+      parameters:
+        - name: period_month
+          in: query
+          schema: { type: string, pattern: '^\d{4}-\d{2}$' }
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '401': { $ref: '#/components/responses/ErrorResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+  /payroll/generate:
+    post:
+      summary: Generate draft monthly payroll and scheduled loan deductions
+      operationId: generatePayroll
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PayrollGenerate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /payroll/{period}/approve:
+    parameters:
+      - name: period
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/Uuid' }
+    post:
+      summary: Approve a draft payroll period before payment
+      operationId: approvePayroll
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+  /payroll/{period}/pay:
+    parameters:
+      - name: period
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/Uuid' }
+    post:
+      summary: Pay approved payroll, recover loans, and post one balanced journal
+      operationId: payPayroll
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '404': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+  /finance/overview:
+    get:
+      summary: Read monthly PKR income, expense, profit, payroll, and employee-loan totals
+      operationId: financeOverview
+      parameters:
+        - $ref: '#/components/parameters/FinanceMonth'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /finance/income:
+    get:
+      summary: List posted active-farm income records
+      operationId: listIncome
+      parameters:
+        - $ref: '#/components/parameters/FinanceMonth'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+    post:
+      summary: Post PKR income through the hidden balanced journal
+      operationId: createIncome
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FinanceRecordCreate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /finance/expenses:
+    get:
+      summary: List posted active-farm expense records
+      operationId: listExpenses
+      parameters:
+        - $ref: '#/components/parameters/FinanceMonth'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+    post:
+      summary: Post a PKR expense through the hidden balanced journal
+      operationId: createExpense
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FinanceRecordCreate' }
+      responses:
+        '201': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+        '409': { $ref: '#/components/responses/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ErrorResponse' }
+  /finance/ledger:
+    get:
+      summary: List immutable balanced journal entries without exposing system accounts
+      operationId: financeLedger
+      parameters:
+        - $ref: '#/components/parameters/FinanceMonth'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
+  /finance/profit-loss:
+    get:
+      summary: Calculate monthly profit and loss from posted journal lines
+      operationId: financeProfitLoss
+      parameters:
+        - $ref: '#/components/parameters/FinanceMonth'
+      responses:
+        '200': { $ref: '#/components/responses/SuccessResponse' }
+        '403': { $ref: '#/components/responses/ErrorResponse' }
   /sync/bootstrap:
     get:
       summary: Bootstrap authorized reference data
@@ -1100,8 +1337,18 @@ components:
       required: false
       description: Inclusive stock-movement date in the active farm timezone.
       schema: { type: string, format: date }
+    FinanceMonth:
+      name: month
+      in: query
+      required: false
+      description: Calendar month in the active farm timezone.
+      schema: { type: string, pattern: '^\d{4}-\d{2}$' }
   schemas:
     Uuid: { type: string, format: uuid }
+    PkrMoney:
+      type: string
+      pattern: '^\d{1,16}(?:\.\d{1,2})?$'
+      description: Positive PKR amount serialized as an exact decimal string.
     AnimalSex: { type: string, enum: [female, male] }
     AnimalLifeStage: { type: string, enum: [calf, juvenile, adult] }
     AnimalOperationalStatus: { type: string, enum: [active, inactive, missing] }
@@ -1116,6 +1363,85 @@ components:
       required: [version]
       properties:
         version: { type: integer, minimum: 1 }
+    EmployeeCreate:
+      type: object
+      required: [name, designation, joining_date, employment_type, monthly_salary]
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        employee_number: { type: [string, 'null'], maxLength: 60 }
+        shed_id:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        name: { type: string, maxLength: 180 }
+        phone: { type: [string, 'null'], maxLength: 40 }
+        email: { type: [string, 'null'], format: email, maxLength: 254 }
+        designation: { type: string, maxLength: 120 }
+        department: { type: [string, 'null'], maxLength: 120 }
+        joining_date: { type: string, format: date }
+        employment_type:
+          type: string
+          enum: [full_time, part_time, contract, casual]
+        monthly_salary: { $ref: '#/components/schemas/PkrMoney' }
+        address: { type: [string, 'null'], maxLength: 2000 }
+        emergency_contact: { type: [string, 'null'], maxLength: 180 }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+    EmployeeUpdate:
+      type: object
+      required: [version]
+      properties:
+        version: { type: integer, minimum: 1 }
+        shed_id:
+          oneOf:
+            - $ref: '#/components/schemas/Uuid'
+            - type: 'null'
+        name: { type: string, maxLength: 180 }
+        phone: { type: [string, 'null'], maxLength: 40 }
+        email: { type: [string, 'null'], format: email, maxLength: 254 }
+        designation: { type: string, maxLength: 120 }
+        department: { type: [string, 'null'], maxLength: 120 }
+        joining_date: { type: string, format: date }
+        employment_type:
+          type: string
+          enum: [full_time, part_time, contract, casual]
+        monthly_salary: { $ref: '#/components/schemas/PkrMoney' }
+        address: { type: [string, 'null'], maxLength: 2000 }
+        emergency_contact: { type: [string, 'null'], maxLength: 180 }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+    EmployeeLoanCreate:
+      type: object
+      required:
+        - employee_id
+        - disbursement_date
+        - principal_amount
+        - monthly_installment
+        - first_recovery_month
+        - reason
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        employee_id: { $ref: '#/components/schemas/Uuid' }
+        disbursement_date: { type: string, format: date }
+        principal_amount: { $ref: '#/components/schemas/PkrMoney' }
+        monthly_installment: { $ref: '#/components/schemas/PkrMoney' }
+        first_recovery_month: { type: string, pattern: '^\d{4}-\d{2}$' }
+        reason: { type: string, maxLength: 500 }
+        notes: { type: [string, 'null'], maxLength: 5000 }
+    PayrollGenerate:
+      type: object
+      required: [period_month]
+      properties:
+        period_month: { type: string, pattern: '^\d{4}-\d{2}$' }
+    FinanceRecordCreate:
+      type: object
+      required: [recorded_on, category, amount]
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        recorded_on: { type: string, format: date }
+        category: { type: string, maxLength: 100 }
+        party: { type: [string, 'null'], maxLength: 180 }
+        amount: { $ref: '#/components/schemas/PkrMoney' }
+        reference: { type: [string, 'null'], maxLength: 160 }
+        description: { type: [string, 'null'], maxLength: 5000 }
     InventoryItemCreate:
       type: object
       required: [farm_id, name, category, unit, minimum_stock, batch_number, opening_quantity, unit_cost]

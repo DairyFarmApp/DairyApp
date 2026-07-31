@@ -38,6 +38,15 @@ updates recheck optimistic version under a row lock. Opening stock and
 idempotent receipts update the batch projection and append the permanent
 movement in one transaction; an ordinary item update cannot submit stock.
 
+Phase 7A workforce and finance policies use separate view/manage/process
+permissions plus active organization membership and active-farm access.
+Employee, loan, payroll, income, expense, and journal identifiers are resolved
+inside that scope so foreign UUIDs remain concealed. Loan disbursement and
+payroll payment use locked, idempotent transactions and immutable financial
+records. Every journal must balance exactly in PKR. System accounts remain
+hidden from the client. Workforce/finance data and mutations are not written
+to Drift in this phase, reducing exposure of salary and loan data on devices.
+
 ## Tenant and data protection
 
 - Resolve active organization from authenticated membership. Ignore/reject mismatched payload tenant IDs.

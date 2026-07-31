@@ -34,10 +34,15 @@ envelopes, organization/farm scope, decimal strings, UUIDv7 identifiers,
 permission middleware, and append-only audit events. See
 `docs/DAILY_MILK_PRODUCTION.md`.
 
+Phase 7A adds active-farm employee CRUD, immutable employee-loan disbursement,
+monthly payroll generation/approval/payment, and PKR finance
+income/expense/overview/ledger/profit-loss operations. Financial write and
+state-transition operations are idempotent and post balanced immutable journal
+entries through hidden system accounts. See `docs/WORKFORCE_FINANCE.md`.
+
 Identifier, parentage, breed/species, tenant, and farm rules are documented in
 `docs/ANIMAL_REGISTRY.md`. Movement behavior is documented in
 `docs/ANIMAL_MOVEMENTS.md`; weight/status behavior is documented in
 `docs/ANIMAL_WEIGHTS_AND_STATUS.md`; owner and family behavior is documented in
-`docs/OWNER_ONBOARDING_AND_FAMILY_ACCESS.md`. The current contract contains 76
-API operations, including nine inventory operations and 15 owner-onboarding,
-profile, and family operations.
+`docs/OWNER_ONBOARDING_AND_FAMILY_ACCESS.md`. The current contract contains 97
+API operations, including 18 Phase 7A workforce/finance operations.

@@ -1,8 +1,9 @@
 # Project Architecture
 
 Status: Phase 0 proposal updated through owner/family onboarding, inventory
-core/glass appearance, and implemented Phase 3A daily milk, 2026-07-30.
-Later-domain sections remain guidance unless explicitly marked implemented.
+core/glass appearance, Phase 3A daily milk, and implemented Phase 7A
+workforce/PKR finance, 2026-07-30. Later-domain sections remain guidance unless
+explicitly marked implemented.
 
 ## Repository baseline
 
@@ -16,14 +17,17 @@ tests, documentation, and CI.
 The modular monolith keeps `app/Domain/AnimalRegistry`,
 `app/Domain/AnimalMovements`, `app/Domain/AnimalWeights`,
 `app/Domain/AnimalStatuses`, `app/Domain/OwnerAccounts`, and
-`app/Domain/Inventory` separate, with `app/Domain/MilkProduction` now owning
-daily milk slots and immutable entry revisions. Registry owns identity/current
+`app/Domain/Inventory` separate, with `app/Domain/MilkProduction` owning daily
+milk slots and immutable entry revisions, `app/Domain/Workforce` owning
+employees/loans/payroll, and `app/Domain/Finance` owning journal posting.
+Registry owns identity/current
 projections; movement and measurement actions own append
 histories/projection updates; Inventory owns item/batch/movement stock rules.
 Flutter separates account, animal, inventory, and milk features. Milk creation
-supports an atomic Drift/outbox offline path; milk correction, inventory, and
-animal mutations remain online-only. No health, breeding, finance, payroll,
-employee-loan, or purchasing domain has been initialized.
+supports an atomic Drift/outbox offline path; milk correction, inventory,
+workforce, finance, and animal mutations remain online-only. No health,
+breeding, attendance, statutory-payroll, or purchasing domain has been
+initialized.
 
 ## Recommended topology
 

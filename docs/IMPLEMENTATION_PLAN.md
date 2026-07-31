@@ -105,9 +105,10 @@ notifications, and offline inventory sync. Completion evidence is in
 4. **Phase 4 Health and breeding:** cases/treatments/withdrawals, vaccination/deworming, heat/service/pregnancy/calving/offspring.
 5. **Phase 5 Feed and inventory expansion:** issue/consumption, transfer/adjustment, ration/feed workflows, purchasing integration, warehouse support, costing, and notifications on the implemented item/batch/movement core.
 6. **Phase 6 Purchasing, customers, sales:** procure-to-receipt, supplier/customer ledgers, milk sales/delivery/returns/payments.
-7. **Phase 7 Finance and workforce:** PKR-only income/expense double-entry using an internal Farm Funds balancing account with no user-facing cash/bank/wallet setup; monthly employees/payroll; and employee loans with payroll installment recovery and immutable financial posting.
-8. **Phase 8 Equipment, reports, advanced offline:** assets/maintenance, cross-domain/financial reports and exports, broader offline operations and conflict resolution, backup monitoring.
-9. **Phase 9 Hardening/release:** security/performance/data integrity/accessibility/localization, restore drill, production deployment and manuals.
+7. **Phase 7A Finance and workforce core (implemented 2026-07-30):** PKR-only income/expense double-entry using an internal Farm Funds balancing account with no user-facing cash/bank/wallet setup; employees with monthly salary; draft/approved/paid payroll; and immutable employee loans with automatic payroll installment recovery.
+8. **Remaining Phase 7:** attendance/leave/overtime, bonuses/allowances/deductions, statutory payroll, payslips, employee files, expense approval, reversals/fiscal locking, cost-centre/cash-flow reports, exports, and separately approved offline drafts.
+9. **Phase 8 Equipment, reports, advanced offline:** assets/maintenance, cross-domain/financial reports and exports, broader offline operations and conflict resolution, backup monitoring.
+10. **Phase 9 Hardening/release:** security/performance/data integrity/accessibility/localization, restore drill, production deployment and manuals.
 
 ## Approval gates
 
@@ -117,7 +118,7 @@ Each phase or subphase begins only after explicit approval of its exact scope, i
 
 None block Phase 1 foundation if its assumptions are accepted. These block later specialized work or production readiness:
 
-1. Before Phase 7: country/jurisdiction, tax method, chart-of-accounts expectations, fiscal locking, payroll/statutory rules, and base/multi-currency policy.
+1. Before statutory payroll or production financial release: country/jurisdiction, tax method, fiscal locking, approval separation, accountant review, and retention requirements. Phase 7A deliberately fixes base currency to PKR and hides its bounded system accounts.
 2. Before production planning: hosting provider/topology, data residency, target RPO/RTO, retention periods, expected organization/farm/user/device/data volumes, and availability target.
 3. Before organization membership UX is finalized: can one human belong to multiple customer organizations, and can a single device be shared by workers?
 4. Before restricted-milk workflow finalization: applicable regulatory rules and whether any override is legally permitted.

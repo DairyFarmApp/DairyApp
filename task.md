@@ -1,16 +1,21 @@
-# Active phase: Phase 3A daily milk production
+# Active phase: Phase 7A workforce and PKR finance core
 
-- [x] Preserve completed owner/inventory/theme work in commit `282de85`.
-- [x] Create `phase/3-milk-management`.
-- [x] Add organization/farm/animal-scoped milk slots and immutable entry revisions.
-- [x] Add daily summary, idempotent bulk entry, correction, permissions, audit, and sync APIs.
-- [x] Add responsive Flutter quick entry, calendar selection, real metrics, corrections, Drift cache, and offline outbox.
-- [x] Add backend and Flutter regression tests.
-- [x] Complete final MySQL, SQLite, OpenAPI, Flutter, build, and repository validation.
+- [x] Preserve completed Phase 3A work in commit `6677d2a`.
+- [x] Create `phase/7-workforce-finance`.
+- [x] Add Employees, Salary, Loans, and Finance to wide and compact navigation.
+- [x] Add farm-scoped employee profiles with monthly PKR salaries.
+- [x] Add immutable employee loans with automatic payroll installment recovery.
+- [x] Add draft, approved, and paid monthly payroll workflow.
+- [x] Add hidden-account, exact-PKR, balanced double-entry finance posting.
+- [x] Add monthly income, expense, profit/loss, payroll, loan, and ledger views.
+- [x] Add permissions, tenant/farm concealment, idempotency, and audit.
+- [x] Keep workforce and finance online-only; do not add sensitive Drift storage.
+- [x] Add backend, Flutter, OpenAPI, and architecture documentation.
+- [x] Complete MySQL, SQLite, Flutter, OpenAPI, and build validation.
 
-Approved later requirements: PKR-only finance without visible cash/bank/wallet
-setup, monthly payroll, and employee loans with automatic installment recovery.
-They must be implemented in controlled Phase 7 subphases after the milk phase.
+Phase 7A is complete. Stop before attendance, tasks, statutory payroll,
+payslip/export, expense approval, financial reversal, fiscal locking, offline
+finance, or other Phase 7B expansion.
 
 # Inventory Core and Glass Appearance Task Record
 

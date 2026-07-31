@@ -101,6 +101,38 @@ session. Corrections append linked entry revisions; quantities on superseded
 rows remain unchanged. Repeated organization, farm, shed, and animal scope is
 protected by composite foreign keys.
 
+## Implemented Phase 7A workforce and PKR finance
+
+```mermaid
+erDiagram
+  ORGANIZATION ||--o{ EMPLOYEE : employs
+  FARM ||--o{ EMPLOYEE : scopes
+  EMPLOYEE ||--o{ EMPLOYEE_LOAN : receives
+  ORGANIZATION ||--o{ PAYROLL_PERIOD : owns
+  FARM ||--o{ PAYROLL_PERIOD : scopes
+  PAYROLL_PERIOD ||--|{ PAYROLL_ENTRY : contains
+  EMPLOYEE ||--o{ PAYROLL_ENTRY : earns
+  EMPLOYEE_LOAN ||--o{ EMPLOYEE_LOAN_INSTALLMENT : recovers
+  PAYROLL_ENTRY ||--o{ EMPLOYEE_LOAN_INSTALLMENT : deducts
+  ORGANIZATION ||--o{ SYSTEM_ACCOUNT : defines
+  ORGANIZATION ||--o{ FINANCE_JOURNAL_ENTRY : owns
+  FARM ||--o{ FINANCE_JOURNAL_ENTRY : scopes
+  FINANCE_JOURNAL_ENTRY ||--|{ FINANCE_JOURNAL_LINE : contains
+  SYSTEM_ACCOUNT ||--o{ FINANCE_JOURNAL_LINE : classifies
+  FINANCE_JOURNAL_ENTRY ||--o| INCOME_RECORD : posts
+  FINANCE_JOURNAL_ENTRY ||--o| EXPENSE_RECORD : posts
+  FINANCE_JOURNAL_ENTRY ||--o| EMPLOYEE_LOAN : disburses
+  FINANCE_JOURNAL_ENTRY ||--o| PAYROLL_PERIOD : pays
+  USER ||--o{ FINANCE_JOURNAL_ENTRY : posts
+  ORGANIZATION ||--o{ AUDIT_LOG : records
+```
+
+Employee loans and payroll entries snapshot exact PKR values. Payroll payment
+creates loan installments and one balanced journal in the same transaction.
+System accounts are internal; the application exposes business records and
+ledger summaries without cash, bank, or wallet setup. All operational rows are
+scoped by organization and active farm.
+
 ## Product-wide preliminary ERD
 
 This remaining module-level ERD is intentionally preliminary and does not imply that later tables exist.

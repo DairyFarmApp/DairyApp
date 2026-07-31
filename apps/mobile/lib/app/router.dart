@@ -24,6 +24,10 @@ import 'package:dairycare_mobile/features/inventory/presentation/inventory_overv
 import 'package:dairycare_mobile/features/milk/presentation/milk_production_screen.dart';
 import 'package:dairycare_mobile/features/organizations/presentation/organization_selection_screen.dart';
 import 'package:dairycare_mobile/features/sheds/presentation/shed_list_screen.dart';
+import 'package:dairycare_mobile/features/workforce/presentation/employee_loans_screen.dart';
+import 'package:dairycare_mobile/features/workforce/presentation/employees_screen.dart';
+import 'package:dairycare_mobile/features/workforce/presentation/finance_screen.dart';
+import 'package:dairycare_mobile/features/workforce/presentation/payroll_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -144,6 +148,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/milk',
             builder: (_, _) => const MilkProductionScreen(),
           ),
+          GoRoute(
+            path: '/employees',
+            builder: (_, _) => const EmployeesScreen(),
+          ),
+          GoRoute(path: '/payroll', builder: (_, _) => const PayrollScreen()),
+          GoRoute(
+            path: '/employee-loans',
+            builder: (_, _) => const EmployeeLoansScreen(),
+          ),
+          GoRoute(path: '/finance', builder: (_, _) => const FinanceScreen()),
         ],
       ),
     ],

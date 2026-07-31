@@ -93,6 +93,25 @@ controls PDF receipts and Excel downloads. Family admins inherit the
 organization-owner work permissions while their membership is active, but
 cannot manage the reusable family invitation.
 
+## Implemented Phase 7A workforce and finance permissions
+
+| Permission | Organization Owner / Family Admin | Farm Manager | Farm Worker | Viewer |
+|---|---:|---:|---:|---:|
+| `employees.view` | Yes | Yes, authorized farm | No | No |
+| `employees.manage` | Yes | Yes, authorized farm | No | No |
+| `employee_loans.view` | Yes | Yes, authorized farm | No | No |
+| `employee_loans.manage` | Yes | Yes, authorized farm | No | No |
+| `payroll.view` | Yes | Yes, authorized farm | No | No |
+| `payroll.process` | Yes | Yes, authorized farm | No | No |
+| `finance.view` | Yes | Yes, authorized farm | No | No |
+| `finance.manage` | Yes | Yes, authorized farm | No | No |
+
+These permissions never expand membership or farm grants. Employee, loan,
+payroll, and finance queries always use the active organization and farm from
+the opaque session. System-account setup is internal and not an end-user
+permission. Phase 7A does not yet separate payroll generation, approval, and
+payment between different users; every transition is audited.
+
 ## Product-wide proposed baseline
 
 This is a conservative baseline. Organization owners can customize roles but cannot bypass platform boundaries. `Scope` is additionally restricted by membership and farm grants.
@@ -117,7 +136,22 @@ Legend: M = manage/create/update, V = view, A = approve/override, — = none by 
 
 ## Permission naming
 
-Use explicit abilities such as the implemented `animals.view`, `animals.create`, `animals.update`, `animals.move`, `animal_movements.view`, `animal_movements.approve`, `animal_movements.reject`, `animal_movements.cancel`, `animals.record_weight`, `animals.correct_weight`, `animals.view_weight_history`, `animals.change_status`, `animals.view_status_history`, `inventory.view`, `inventory.manage`, `inventory.export`, `milk.view`, `milk.create`, and `milk.correct`, plus future abilities such as `animals.record_death`, `milk.correct.request`, `milk.correct.approve`, `health.manage`, `withdrawals.override`, `inventory.issue`, `inventory.adjust.request`, `inventory.adjust.approve`, `sales.create`, `payments.receive`, `expenses.approve`, `payroll.process`, `reports.export`, `users.manage`, `audit_logs.view`, and `backups.restore`.
+Use explicit abilities such as the implemented `animals.view`,
+`animals.create`, `animals.update`, `animals.move`,
+`animal_movements.view`, `animal_movements.approve`,
+`animal_movements.reject`, `animal_movements.cancel`,
+`animals.record_weight`, `animals.correct_weight`,
+`animals.view_weight_history`, `animals.change_status`,
+`animals.view_status_history`, `inventory.view`, `inventory.manage`,
+`inventory.export`, `milk.view`, `milk.create`, `milk.correct`,
+`employees.view`, `employees.manage`, `employee_loans.view`,
+`employee_loans.manage`, `payroll.view`, `payroll.process`, `finance.view`,
+and `finance.manage`, plus future abilities such as `animals.record_death`,
+`milk.correct.request`, `milk.correct.approve`, `health.manage`,
+`withdrawals.override`, `inventory.issue`, `inventory.adjust.request`,
+`inventory.adjust.approve`, `sales.create`, `payments.receive`,
+`expenses.approve`, `reports.export`, `users.manage`, `audit_logs.view`, and
+`backups.restore`.
 
 For Phase 3A, owners/family admins and farm managers can view, create, and
 correct milk. Farm workers can view/create. Viewers can only view. Every role

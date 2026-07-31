@@ -106,3 +106,23 @@ Full evidence is in `docs/INVENTORY_GLASS_THEME_COMPLETION.md`.
   debug, and release web builds passed.
 
 Full evidence and limitations are in `docs/PHASE_3A_COMPLETION.md`.
+
+## Phase 7A workforce and PKR finance executed evidence
+
+- MySQL 8.4.9: 95 tests and 1,021 assertions, including exact PKR amounts,
+  employee optimistic versions, immutable loans, payroll state transitions,
+  automatic loan recovery, balanced double-entry journals, idempotency, audit,
+  permissions, and tenant/farm concealment.
+- SQLite portability: 95 discovered, 87 passed, 899 assertions, with the eight
+  MySQL-only process-concurrency tests skipped.
+- Focused workforce/finance suite: 6 tests and 108 assertions on both MySQL and
+  SQLite.
+- Flutter: 92 tests, including repository transport, responsive Employees,
+  Salary, Loans, and Finance screens, calendar selection, PKR presentation,
+  permission-aware actions, and permanent navigation at wide and compact
+  widths.
+- PHP syntax for 237 files, Pint, Composer validation/audit, exact
+  97-operation OpenAPI parity, Redocly lint/bundle, Dart format, Flutter
+  analysis, Android debug, release web, and WebAssembly dry-run builds passed.
+
+Full evidence and limitations are in `docs/PHASE_7A_COMPLETION.md`.

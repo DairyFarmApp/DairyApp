@@ -4,9 +4,9 @@ DairyCare is an offline-capable dairy farm management system under controlled
 phased development. The repository contains the Phase 1
 foundation/hardening/MySQL gate, Phase 2 animal registry workflows,
 self-service one-farm owner/family onboarding, the controlled medicine, semen,
-and feed inventory core, and Phase 3A daily milk recording. Breeding, health,
-finance, payroll, employee loans, and other later modules remain intentionally
-excluded.
+and feed inventory core, Phase 3A daily milk recording, and Phase 7A employees,
+monthly payroll, employee loans, and PKR finance. Breeding, health, attendance,
+statutory payroll, and other later modules remain intentionally excluded.
 
 ## Repository layout
 
@@ -52,12 +52,13 @@ and evening milk entry, real daily summaries, immutable corrections, and
 retryable offline creation. See the
 [owner/family guide](docs/OWNER_ONBOARDING_AND_FAMILY_ACCESS.md) and
 [inventory guide](docs/INVENTORY_MANAGEMENT.md), plus the
-[daily milk guide](docs/DAILY_MILK_PRODUCTION.md).
+[daily milk guide](docs/DAILY_MILK_PRODUCTION.md) and
+[workforce/finance guide](docs/WORKFORCE_FINANCE.md).
 
 ## Phase controls
 
 Read `AGENTS.md`, the master specification, and `docs/IMPLEMENTATION_PLAN.md`
 before changes. Phase 2C, UX/web stabilization, owner/family onboarding,
-inventory core, and Phase 3A daily milk are implemented; do not combine
-remaining capabilities or begin another domain without explicit project-owner
-approval for one controlled scope.
+inventory core, Phase 3A daily milk, and Phase 7A workforce/finance core are
+implemented; do not combine remaining capabilities or begin another domain
+without explicit project-owner approval for one controlled scope.

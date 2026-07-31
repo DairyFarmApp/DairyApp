@@ -58,6 +58,30 @@ final class FoundationShell extends ConsumerWidget {
         '/milk',
       ),
       const _Destination(
+        'Employees',
+        Icons.groups_2_outlined,
+        Icons.groups_2_rounded,
+        '/employees',
+      ),
+      const _Destination(
+        'Salary',
+        Icons.payments_outlined,
+        Icons.payments_rounded,
+        '/payroll',
+      ),
+      const _Destination(
+        'Loans',
+        Icons.account_balance_wallet_outlined,
+        Icons.account_balance_wallet_rounded,
+        '/employee-loans',
+      ),
+      const _Destination(
+        'Finance',
+        Icons.query_stats_outlined,
+        Icons.query_stats_rounded,
+        '/finance',
+      ),
+      const _Destination(
         'Sync',
         Icons.sync_outlined,
         Icons.sync_rounded,
@@ -275,18 +299,10 @@ final class FoundationShell extends ConsumerWidget {
       body: child,
       bottomNavigationBar: wide
           ? null
-          : NavigationBar(
+          : _CompactNavigation(
+              destinations: destinations,
               selectedIndex: index,
-              onDestinationSelected: (value) =>
-                  context.go(destinations[value].path),
-              destinations: [
-                for (final item in destinations)
-                  NavigationDestination(
-                    icon: Icon(item.icon),
-                    selectedIcon: Icon(item.selectedIcon),
-                    label: item.label,
-                  ),
-              ],
+              onSelected: (value) => context.go(destinations[value].path),
             ),
     );
 
@@ -353,6 +369,74 @@ final class FoundationShell extends ConsumerWidget {
       ),
     );
   }
+}
+
+final class _CompactNavigation extends StatelessWidget {
+  const _CompactNavigation({
+    required this.destinations,
+    required this.selectedIndex,
+    required this.onSelected,
+  });
+
+  final List<_Destination> destinations;
+  final int selectedIndex;
+  final ValueChanged<int> onSelected;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.96),
+    elevation: 8,
+    child: SafeArea(
+      top: false,
+      child: SizedBox(
+        height: 72,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              for (var index = 0; index < destinations.length; index++)
+                SizedBox(
+                  width: 92,
+                  child: InkWell(
+                    onTap: () => onSelected(index),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          index == selectedIndex
+                              ? destinations[index].selectedIcon
+                              : destinations[index].icon,
+                          color: index == selectedIndex
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          destinations[index].label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: index == selectedIndex
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                fontWeight: index == selectedIndex
+                                    ? FontWeight.w800
+                                    : FontWeight.w500,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 final class _Destination {

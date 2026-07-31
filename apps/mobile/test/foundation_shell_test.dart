@@ -20,6 +20,10 @@ void main() {
     expect(find.text('Farms'), findsNothing);
     expect(find.text('Sheds'), findsNothing);
     expect(find.text('Milk Production'), findsOneWidget);
+    expect(find.text('Employees'), findsOneWidget);
+    expect(find.text('Salary'), findsOneWidget);
+    expect(find.text('Loans'), findsOneWidget);
+    expect(find.text('Finance'), findsOneWidget);
     expect(find.text('Sync'), findsOneWidget);
   });
 
@@ -72,6 +76,10 @@ Widget _app() {
           GoRoute(path: '/sheds', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/inventory', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/milk', builder: (_, _) => const SizedBox()),
+          GoRoute(path: '/employees', builder: (_, _) => const SizedBox()),
+          GoRoute(path: '/payroll', builder: (_, _) => const SizedBox()),
+          GoRoute(path: '/employee-loans', builder: (_, _) => const SizedBox()),
+          GoRoute(path: '/finance', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/sync', builder: (_, _) => const SizedBox()),
         ],
       ),

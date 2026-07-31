@@ -2,9 +2,9 @@
 
 Laravel 13.21.1 / PHP 8.5 REST API for the Phase 1 foundation, Phase 2 animal
 workflows, one-farm owner/family onboarding, and the medicine/semen/feed
-inventory core, plus Phase 3A daily milk production. MySQL 8.4 is the
-authoritative integration database; the fast portability suite also uses
-isolated in-memory SQLite.
+inventory core, Phase 3A daily milk production, and Phase 7A workforce/PKR
+finance. MySQL 8.4 is the authoritative integration database; the fast
+portability suite also uses isolated in-memory SQLite.
 
 ## Setup
 
@@ -32,12 +32,15 @@ php vendor/bin/pint --test
 ```
 
 Current test counts are recorded in
-[`docs/PHASE_3A_COMPLETION.md`](../../docs/PHASE_3A_COMPLETION.md).
+[`docs/PHASE_7A_COMPLETION.md`](../../docs/PHASE_7A_COMPLETION.md).
 Composer validation and audit remain release gates.
 
 Animal-registry behavior is documented in [`docs/ANIMAL_REGISTRY.md`](../../docs/ANIMAL_REGISTRY.md). Movement behavior is documented in [`docs/ANIMAL_MOVEMENTS.md`](../../docs/ANIMAL_MOVEMENTS.md). Exact weight storage/correction, status history, permissions, audit, and read caching are documented in [`docs/ANIMAL_WEIGHTS_AND_STATUS.md`](../../docs/ANIMAL_WEIGHTS_AND_STATUS.md). Inventory behavior is documented in [`docs/INVENTORY_MANAGEMENT.md`](../../docs/INVENTORY_MANAGEMENT.md).
 
 Daily milk rules are documented in
 [`docs/DAILY_MILK_PRODUCTION.md`](../../docs/DAILY_MILK_PRODUCTION.md).
+Workforce, monthly payroll, employee-loan recovery, and finance rules are
+documented in
+[`docs/WORKFORCE_FINANCE.md`](../../docs/WORKFORCE_FINANCE.md).
 
 API contract: [`openapi.yaml`](openapi.yaml).
