@@ -12,6 +12,12 @@ void main() {
     expect(authRedirect(auth: const AsyncData(null), path: '/signup'), isNull);
   });
 
+  test('router keeps public authentication forms mounted while submitting', () {
+    expect(authRedirect(auth: const AsyncLoading(), path: '/login'), isNull);
+    expect(authRedirect(auth: const AsyncLoading(), path: '/signup'), isNull);
+    expect(authRedirect(auth: const AsyncLoading(), path: '/home'), '/loading');
+  });
+
   test('router sends a complete authenticated context home', () {
     expect(
       authRedirect(auth: AsyncData(foundationSession()), path: '/login'),

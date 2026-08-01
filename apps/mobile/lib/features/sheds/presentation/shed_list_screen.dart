@@ -1,6 +1,7 @@
 import 'package:dairycare_mobile/core/auth/auth_controller.dart';
 import 'package:dairycare_mobile/core/database/app_database.dart';
-import 'package:dairycare_mobile/core/providers.dart';
+import 'package:dairycare_mobile/core/errors/app_exception.dart';
+import 'package:dairycare_mobile/core/widgets/app_surface.dart';
 import 'package:dairycare_mobile/core/widgets/async_state_view.dart';
 import 'package:dairycare_mobile/features/farms/application/foundation_providers.dart';
 import 'package:flutter/material.dart';
@@ -15,101 +16,229 @@ final class ShedListScreen extends ConsumerWidget {
     final organizationId = session?.activeOrganizationId;
     final farmId = session?.activeFarmId;
     if (organizationId == null || farmId == null) {
-      return const EmptyStateView(message: 'Select a farm.');
+      return const Scaffold(
+        body: EmptyStateView(message: 'Sign in to your farm account first.'),
+      );
     }
-    final stream = ref
-        .watch(foundationRepositoryProvider)
-        .watchSheds(organizationId, farmId);
+    final query = (organizationId: organizationId, farmId: farmId);
+    final sheds = ref.watch(shedListProvider(query));
+    final canCreate = session?.can('sheds.create') ?? false;
+    final canUpdate = session?.can('sheds.update') ?? false;
+
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('Sheds', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 12),
-            Expanded(
-              child: StreamBuilder<List<LocalShed>>(
-                stream: stream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return const LoadingStateView();
-                  final sheds = snapshot.data!;
-                  if (sheds.isEmpty) {
-                    return const EmptyStateView(
-                      message:
-                          'No synchronized sheds are cached for this farm.',
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: sheds.length,
-                    itemBuilder: (_, index) =>
-                        Card(child: ListTile(title: Text(sheds[index].name))),
-                  );
-                },
-              ),
+      body: RefreshIndicator(
+        onRefresh: () => ref.refresh(shedListProvider(query).future),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ResponsiveContent(
+            maxWidth: 980,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                PageHeader(
+                  eyebrow: session?.activeFarm?.name ?? 'Current farm',
+                  title: 'Sheds',
+                  subtitle:
+                      'Sheds are physical animal locations inside your farm. Every active animal is assigned to one current shed.',
+                  actions: [
+                    if (canCreate)
+                      FilledButton.icon(
+                        key: const Key('add_shed_action'),
+                        onPressed: () => _create(context, ref, query),
+                        icon: const Icon(Icons.add_rounded),
+                        label: const Text('Add shed'),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                sheds.when(
+                  loading: () =>
+                      const LoadingStateView(label: 'Loading sheds...'),
+                  error: (error, _) => ErrorStateView(
+                    message: error.toString(),
+                    onRetry: () => ref.invalidate(shedListProvider(query)),
+                  ),
+                  data: (items) => items.isEmpty
+                      ? EmptyStateView(
+                          title: 'Create your first shed',
+                          message:
+                              'Examples include Main Cow Shed, Buffalo Shed, Calf Shed, or Isolation Shed.',
+                          icon: Icons.warehouse_outlined,
+                          action: canCreate
+                              ? FilledButton.icon(
+                                  onPressed: () => _create(context, ref, query),
+                                  icon: const Icon(Icons.add_rounded),
+                                  label: const Text('Add first shed'),
+                                )
+                              : null,
+                        )
+                      : _ShedList(
+                          items: items,
+                          canUpdate: canUpdate,
+                          onEdit: (shed) => _edit(context, ref, query, shed),
+                        ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-      floatingActionButton: session?.can('sheds.create') ?? false
-          ? FloatingActionButton.extended(
-              onPressed: () => _create(
-                context,
-                ref,
-                organizationId: organizationId,
-                farmId: farmId,
-              ),
-              icon: const Icon(Icons.add),
-              label: const Text('Add shed'),
-            )
-          : null,
     );
   }
 
   Future<void> _create(
     BuildContext context,
-    WidgetRef ref, {
-    required String organizationId,
-    required String farmId,
-  }) async {
-    final controller = TextEditingController();
-    final name = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('New shed'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(labelText: 'Shed name'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final value = controller.text.trim();
-              if (value.isNotEmpty) Navigator.pop(context, value);
-            },
-            child: const Text('Save offline'),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
+    WidgetRef ref,
+    FarmProfileQuery query,
+  ) async {
+    final name = await _shedNameDialog(context, title: 'Add shed');
     if (name == null) return;
-    final database = ref.read(appDatabaseProvider);
-    final device = await database
-        .select(database.syncDevices)
-        .getSingleOrNull();
-    if (device == null) return;
-    await ref
-        .read(foundationRepositoryProvider)
-        .createShedOffline(
-          organizationId: organizationId,
-          farmId: farmId,
-          deviceId: device.id,
-          name: name,
+    try {
+      final result = await ref
+          .read(foundationRepositoryProvider)
+          .createShed(
+            organizationId: query.organizationId,
+            farmId: query.farmId,
+            name: name,
+          );
+      ref.invalidate(shedListProvider(query));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              result.queuedOffline
+                  ? '$name added and waiting to synchronize.'
+                  : '$name added to your farm.',
+            ),
+          ),
         );
+      }
+    } on AppException catch (error) {
+      if (context.mounted) _showError(context, error.message);
+    }
   }
+
+  Future<void> _edit(
+    BuildContext context,
+    WidgetRef ref,
+    FarmProfileQuery query,
+    LocalShed shed,
+  ) async {
+    final name = await _shedNameDialog(
+      context,
+      title: 'Rename shed',
+      initialValue: shed.name,
+    );
+    if (name == null || name == shed.name) return;
+    try {
+      await ref
+          .read(foundationRepositoryProvider)
+          .updateShed(shed: shed, name: name);
+      ref.invalidate(shedListProvider(query));
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Shed updated.')));
+      }
+    } on AppException catch (error) {
+      if (context.mounted) _showError(context, error.message);
+    }
+  }
+
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+final class _ShedList extends StatelessWidget {
+  const _ShedList({
+    required this.items,
+    required this.canUpdate,
+    required this.onEdit,
+  });
+
+  final List<LocalShed> items;
+  final bool canUpdate;
+  final ValueChanged<LocalShed> onEdit;
+
+  @override
+  Widget build(BuildContext context) => SectionCard(
+    title: '${items.length} ${items.length == 1 ? 'shed' : 'sheds'}',
+    subtitle: 'All sheds belong to the current farm.',
+    child: Column(
+      children: [
+        for (final shed in items) ...[
+          ListTile(
+            key: ValueKey('shed-${shed.id}'),
+            contentPadding: EdgeInsets.zero,
+            leading: CircleAvatar(
+              child: Icon(
+                Icons.warehouse_rounded,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            title: Text(shed.name),
+            subtitle: const Text('Animal location inside this farm'),
+            trailing: canUpdate
+                ? IconButton(
+                    tooltip: 'Rename shed',
+                    onPressed: () => onEdit(shed),
+                    icon: const Icon(Icons.edit_outlined),
+                  )
+                : null,
+          ),
+          if (shed != items.last) const Divider(height: 20),
+        ],
+      ],
+    ),
+  );
+}
+
+Future<String?> _shedNameDialog(
+  BuildContext context, {
+  required String title,
+  String? initialValue,
+}) async {
+  final formKey = GlobalKey<FormState>();
+  var name = initialValue ?? '';
+  return showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title),
+      content: SizedBox(
+        width: 420,
+        child: Form(
+          key: formKey,
+          child: TextFormField(
+            key: const Key('shed_name_field'),
+            initialValue: initialValue,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Shed name *',
+              hintText: 'Example: Main Cow Shed',
+            ),
+            validator: (value) =>
+                (value ?? '').trim().isEmpty ? 'Shed name is required.' : null,
+            onChanged: (value) => name = value,
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          key: const Key('save_shed_button'),
+          onPressed: () {
+            if (!(formKey.currentState?.validate() ?? false)) return;
+            Navigator.pop(context, name.trim());
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    ),
+  );
 }

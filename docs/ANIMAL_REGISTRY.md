@@ -6,6 +6,9 @@ Phase 2A implements the online animal-registry core. It is deliberately limited 
 
 - Species are controlled system records. Phase 2A seeds `CATTLE` and `BUFFALO`.
 - Breed is organization-scoped and belongs to one species.
+- New owner accounts receive maintained cattle and buffalo breed choices,
+  including common Pakistani dairy breeds. Authorized owners can add custom
+  organization breeds without changing the controlled species list.
 - Sex is `female` or `male`.
 - Life stage is `calf`, `juvenile`, or `adult`.
 - Operational status is `active`, `inactive`, or `missing`.
@@ -152,6 +155,14 @@ Implemented screens:
 - breed management;
 - animal-group management.
 
+The authenticated menu exposes **Breeds** when the membership has
+`animal_breeds.view`. The animal form lists active presets for the selected
+species and links authorized users to **Add custom breed**. For the
+self-service account model, the farm is fixed to the currently selected farm
+and the user selects the animal's shed. This prevents accidental creation
+under another farm while retaining explicit multi-farm switching and the
+server's farm-scoping architecture.
+
 Controls are permission-aware. Mobile uses cards; wider layouts use a horizontally safe data table. Loading, empty, error, retry, cached-data, offline, and sync indicators use the existing foundation components.
 
 Drift schema version 2 adds local species, breeds, groups, and animals with tenant/farm scope, server UUID/version/timestamp, cache timestamp, archive state, search fields, and accessibility state. Bootstrap and incremental sync upsert repeated rows and archive tombstones transactionally. Removed farm access marks cached groups/animals inaccessible, and offline reads query only accessible records. Phase 2A never queues animal, breed, or group mutations in the outbox.
@@ -170,6 +181,13 @@ The repeatable seeder creates:
 - organization animal sequence `next_value = 21`.
 
 It does not seed movement history, milk, breeding events, pregnancy, health, treatment, sales, death, feed, inventory, or finance data.
+
+Owner signup and the `2026_08_01_000800_backfill_default_animal_breeds`
+migration maintain a separate starter catalog for self-service organizations:
+Holstein Friesian, Jersey, Sahiwal, Red Sindhi, Tharparkar, Cholistani,
+Dhanni, cattle crossbred, Nili-Ravi, Kundi, Azi Kheli, and buffalo crossbred.
+The migration deliberately does not delete these rows on rollback because an
+animal profile may already reference them.
 
 ## Known limitations
 

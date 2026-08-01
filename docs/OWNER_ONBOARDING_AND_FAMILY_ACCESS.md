@@ -2,20 +2,35 @@
 
 ## Account model
 
-DairyCare now has one simple self-service account model:
+DairyCare uses one simple self-service account model:
 
 1. A farm owner creates an account with their name, farm name, email, optional
    phone number, and password.
-2. The API creates one private organization and one farm with that name.
+2. The API creates one private organization and its first farm with that name.
 3. The owner is signed in directly to that farm as its `primary_owner`.
 4. The owner can create a reusable family invitation link.
 5. Any trusted relative who receives the link can create a separate
-   `family_admin` login that is attached directly to the same farm.
+   `family_admin` login in the same organization, initially opened on the
+   invited farm.
 
 The organization remains the server-side tenant boundary, but it is not an
-extra concept the owner has to configure. New self-service accounts are
-single-farm accounts. Their owner role deliberately excludes `farms.create`
-and `farms.archive`.
+extra concept the owner has to configure. The owner and trusted family admins
+may add more farms inside that same organization. Their owner role includes
+`farms.create` but deliberately excludes `farms.archive` so a farm cannot be
+removed through the ordinary self-service workflow.
+
+The Flutter **Farm** menu shows the selected farm profile and provides **Add
+farm** when the account has permission. Creating a farm saves it through the
+API, refreshes the session, and selects the new farm. Once an organization has
+more than one farm, **Switch farm** is available from the account menu. The
+hierarchy is:
+
+`Farm -> Sheds -> Animals -> Milk production`
+
+Sheds are created from the **Sheds** menu and belong to the selected farm.
+Every newly registered animal must be assigned to one farm and one of its
+sheds. Post-registration location changes continue to use the audited
+animal-movement workflow.
 
 ## Primary owner
 
@@ -23,6 +38,7 @@ The person who creates the farm is its permanent primary owner. The primary
 owner can:
 
 - use every implemented farm-management workflow;
+- create and switch between farms inside their organization;
 - edit their own name, email, phone number, and profile picture;
 - create, copy, disable, or regenerate the family invitation link;
 - see active and removed family accounts;
@@ -39,7 +55,8 @@ The invitation behaves like a private WhatsApp group link:
 
 - it is reusable and can create more than one family account;
 - it does not expire automatically;
-- it joins every accepted account to the correct farm;
+- it joins every accepted account to the correct organization and opens the
+  linked farm first;
 - the owner can disable it at any time;
 - regenerating it invalidates the previous link immediately;
 - disabling the link does not remove family accounts that already joined.
@@ -47,7 +64,7 @@ The invitation behaves like a private WhatsApp group link:
 The server stores a SHA-256 hash for verification and an application-encrypted
 copy for the owner to retrieve. The raw secret is never stored in plaintext.
 Signup is rate-limited, and the configured default maximum is 25 active family
-accounts per farm (`AUTH_MAXIMUM_FAMILY_ACCOUNTS`).
+accounts per organization (`AUTH_MAXIMUM_FAMILY_ACCOUNTS`).
 
 The current Flutter client copies a web signup URL when running in a browser.
 Native mobile production builds will need an approved public web/universal-link
@@ -110,11 +127,19 @@ Primary-owner family management:
 - `DELETE /api/v1/family-members/{membership}`
 - `POST /api/v1/family-members/{membership}/restore`
 
+Farm management:
+
+- `GET /api/v1/farms`
+- `POST /api/v1/farms`
+- `GET /api/v1/farms/{farm}`
+- `PATCH /api/v1/farms/{farm}`
+- `POST /api/v1/auth/switch-farm`
+
 The complete request and response contract is in `apps/api/openapi.yaml`.
 
 ## Explicit limitations
 
-This controlled phase does not add employee accounts, custom role editing,
-email delivery, password reset, email verification, MFA, ownership transfer,
-multiple farms per self-service owner, or production universal/deep links.
-Those require separately approved security and product work.
+This controlled phase does not add employee login accounts, custom role
+editing, email delivery, password reset, email verification, MFA, ownership
+transfer, farm archival, or production universal/deep links. Those require
+separately approved security and product work.

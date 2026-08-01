@@ -1,4 +1,5 @@
 import 'package:dairycare_mobile/core/auth/auth_controller.dart';
+import 'package:dairycare_mobile/core/errors/app_exception.dart';
 import 'package:dairycare_mobile/core/widgets/async_state_view.dart';
 import 'package:dairycare_mobile/core/widgets/app_surface.dart';
 import 'package:dairycare_mobile/features/authentication/presentation/auth_page_scaffold.dart';
@@ -156,7 +157,7 @@ final class _LoginForm extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          safeErrorMessage(auth.error.toString()),
+                          loginErrorMessage(auth.error),
                           style: TextStyle(
                             color: Theme.of(
                               context,
@@ -206,4 +207,11 @@ String? validateEmail(String? value) {
 String? validatePassword(String? value) {
   if (value == null || value.isEmpty) return 'Password is required.';
   return null;
+}
+
+String loginErrorMessage(Object? error) {
+  if (error is AuthenticationException && error.code == 'INVALID_CREDENTIALS') {
+    return 'Email or password is incorrect.';
+  }
+  return safeErrorMessage(error?.toString() ?? '');
 }

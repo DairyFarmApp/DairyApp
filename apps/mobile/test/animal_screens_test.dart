@@ -26,6 +26,7 @@ void main() {
         'animal_breeds.manage',
         'animal_groups.view',
         'animal_groups.manage',
+        'sheds.create',
       },
     );
     FakeAnimalListController.value = AnimalListState(
@@ -112,6 +113,26 @@ void main() {
     expect(find.byKey(const Key('farm_field')), findsNothing);
   });
 
+  testWidgets(
+    'new animal stays in the active farm and offers preset or custom breeds',
+    (tester) async {
+      await tester.pumpWidget(
+        _app(const AnimalFormScreen(), references: referenceFixture()),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byKey(const Key('farm_field')), findsNothing);
+      expect(find.text('North Farm'), findsOneWidget);
+      expect(find.text('Sahiwal'), findsOneWidget);
+      expect(find.byKey(const Key('add_custom_breed_action')), findsOneWidget);
+      expect(
+        find.byKey(const Key('animal_manage_sheds_action')),
+        findsOneWidget,
+      );
+    },
+  );
+
   testWidgets('profile exposes archive but not restore for active animal', (
     tester,
   ) async {
@@ -138,6 +159,18 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(find.byKey(const Key('add_breed_action')), findsOneWidget);
+    expect(find.text('Add custom breed'), findsOneWidget);
+
+    tester
+        .widget<FloatingActionButton>(find.byKey(const Key('add_breed_action')))
+        .onPressed!();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('breed_code_field')), findsOneWidget);
+    expect(find.byKey(const Key('breed_name_field')), findsOneWidget);
+    expect(find.text('Description'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
 
     await tester.pumpWidget(
       _app(const AnimalGroupManagementScreen(), references: referenceFixture()),

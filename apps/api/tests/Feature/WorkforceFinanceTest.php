@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Domain\Workforce\Models\Employee;
 use App\Models\Farm;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -198,6 +199,7 @@ class WorkforceFinanceTest extends TestCase
 
     public function test_income_expenses_ledger_and_profit_loss_are_real_balanced_rows(): void
     {
+        $this->travelTo(CarbonImmutable::parse('2026-08-01 10:00:00'));
         $context = $this->context();
         $income = [
             'recorded_on' => now()->toDateString(),

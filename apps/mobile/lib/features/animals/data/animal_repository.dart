@@ -145,6 +145,7 @@ final class AnimalRepository {
         '/animals',
         query: {'filter[archive_state]': 'all', 'page[size]': 100},
       ),
+      _api.getJson('/farms', query: {'page[size]': 100}),
     ]);
     final species = _maps(
       responses[0]['data'],
@@ -156,8 +157,46 @@ final class AnimalRepository {
       responses[2]['data'],
     ).map(AnimalGroup.fromJson).toList();
     final animals = _maps(responses[3]['data']).map(Animal.fromJson).toList();
+    final farmRows = _maps(responses[4]['data']);
+    final shedResponses = await Future.wait([
+      for (final farm in farmRows)
+        _api.getJson('/farms/${farm['id']}/sheds', query: {'page[size]': 100}),
+    ]);
+    final shedRows = [
+      for (final response in shedResponses) ..._maps(response['data']),
+    ];
     final now = DateTime.now().toUtc();
     await _database.transaction(() async {
+      for (final raw in farmRows) {
+        await _database
+            .into(_database.localFarms)
+            .insertOnConflictUpdate(
+              LocalFarmsCompanion.insert(
+                id: raw['id'] as String,
+                organizationId: raw['organization_id'] as String,
+                name: raw['name'] as String,
+                timezone: Value(raw['timezone'] as String? ?? 'UTC'),
+                version: Value(raw['version'] as int? ?? 1),
+                serverUpdatedAt: _date(raw['updated_at'], now),
+                isDeleted: Value(raw['is_deleted'] as bool? ?? false),
+              ),
+            );
+      }
+      for (final raw in shedRows) {
+        await _database
+            .into(_database.localSheds)
+            .insertOnConflictUpdate(
+              LocalShedsCompanion.insert(
+                id: raw['id'] as String,
+                organizationId: raw['organization_id'] as String,
+                farmId: raw['farm_id'] as String,
+                name: raw['name'] as String,
+                version: Value(raw['version'] as int? ?? 1),
+                serverUpdatedAt: _date(raw['updated_at'], now),
+                isDeleted: Value(raw['is_deleted'] as bool? ?? false),
+              ),
+            );
+      }
       for (final item in species) {
         await _database
             .into(_database.localAnimalSpecies)
@@ -255,7 +294,9 @@ final class AnimalRepository {
       },
       idempotencyKey: _uuid.v7(),
     );
-    return AnimalBreed.fromJson(body['data'] as Map<String, dynamic>);
+    final breed = AnimalBreed.fromJson(body['data'] as Map<String, dynamic>);
+    await _upsertBreed(breed);
+    return breed;
   }
 
   Future<AnimalBreed> updateBreed(
@@ -275,7 +316,9 @@ final class AnimalRepository {
         'version': breed.version,
       },
     );
-    return AnimalBreed.fromJson(body['data'] as Map<String, dynamic>);
+    final updated = AnimalBreed.fromJson(body['data'] as Map<String, dynamic>);
+    await _upsertBreed(updated);
+    return updated;
   }
 
   Future<void> archiveBreed(AnimalBreed breed) async {
@@ -348,6 +391,24 @@ final class AnimalRepository {
     }
     return _fromLocal(row);
   }
+
+  Future<void> _upsertBreed(AnimalBreed breed) => _database
+      .into(_database.localAnimalBreeds)
+      .insertOnConflictUpdate(
+        LocalAnimalBreedsCompanion.insert(
+          id: breed.id,
+          organizationId: breed.organizationId,
+          speciesId: breed.speciesId,
+          code: breed.code,
+          name: breed.name,
+          description: Value(breed.description),
+          isActive: Value(breed.isActive),
+          version: Value(breed.version),
+          serverUpdatedAt: DateTime.now().toUtc(),
+          cachedAt: DateTime.now().toUtc(),
+          isArchived: Value(breed.isArchived),
+        ),
+      );
 
   Future<void> _upsertAnimal(Animal animal) => _database
       .into(_database.localAnimals)
@@ -460,4 +521,7 @@ final class AnimalRepository {
 
   List<Map<String, dynamic>> _maps(Object? value) =>
       (value as List<dynamic>? ?? const []).cast<Map<String, dynamic>>();
+
+  DateTime _date(Object? value, DateTime fallback) =>
+      value is String ? DateTime.parse(value).toUtc() : fallback;
 }

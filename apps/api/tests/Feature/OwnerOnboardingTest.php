@@ -40,13 +40,42 @@ class OwnerOnboardingTest extends TestCase
             'organization_id' => $organizationId,
             'name' => 'Sunrise Dairy Farm',
         ]);
+        $this->assertDatabaseHas('animal_species', [
+            'code' => 'CATTLE',
+            'name' => 'Cattle',
+        ]);
+        $this->assertDatabaseHas('animal_species', [
+            'code' => 'BUFFALO',
+            'name' => 'Buffalo',
+        ]);
+        $this->assertDatabaseHas('animal_breeds', [
+            'organization_id' => $organizationId,
+            'code' => 'SAHIWAL',
+            'name' => 'Sahiwal',
+        ]);
+        $this->assertDatabaseHas('animal_breeds', [
+            'organization_id' => $organizationId,
+            'code' => 'NILI-RAVI',
+            'name' => 'Nili-Ravi',
+        ]);
+        $this->assertDatabaseCount('animal_breeds', 12);
         $this->assertContains('users.manage', $response->json('data.permissions'));
-        $this->assertNotContains('farms.create', $response->json('data.permissions'));
-        $this->postJson('/api/v1/farms', [
+        $this->assertContains('farms.create', $response->json('data.permissions'));
+        $secondFarm = $this->postJson('/api/v1/farms', [
             'name' => 'Second Farm',
             'timezone' => 'Asia/Karachi',
         ], $this->bearer($response->json('data.access_token')))
-            ->assertForbidden();
+            ->assertCreated();
+        $this->assertDatabaseCount('farms', 2);
+        $this->getJson(
+            '/api/v1/auth/me',
+            $this->bearer($response->json('data.access_token')),
+        )->assertOk()->assertJsonCount(2, 'data.farms');
+        $this->postJson('/api/v1/auth/switch-farm', [
+            'farm_id' => $secondFarm->json('data.id'),
+        ], $this->bearer($response->json('data.access_token')))
+            ->assertOk()
+            ->assertJsonPath('data.active_farm_id', $secondFarm->json('data.id'));
         $this->assertDatabaseHas('audit_logs', [
             'organization_id' => $organizationId,
             'action' => 'auth.primary_owner_registered',
@@ -56,7 +85,8 @@ class OwnerOnboardingTest extends TestCase
             'password' => 'Owner-Pass-2026',
         ])->assertOk()
             ->assertJsonPath('data.active_organization_id', $organizationId)
-            ->assertJsonPath('data.active_farm_id', $farmId);
+            ->assertJsonPath('data.active_farm_id', null)
+            ->assertJsonCount(2, 'data.farms');
     }
 
     public function test_owner_signup_validates_password_and_duplicate_email(): void
@@ -102,6 +132,7 @@ class OwnerOnboardingTest extends TestCase
             $second->json('data.active_farm_id'),
         );
         $this->assertContains('animals.create', $first->json('data.permissions'));
+        $this->assertContains('farms.create', $first->json('data.permissions'));
         $this->assertDatabaseCount('farm_invite_links', 1);
         $storedInvite = FarmInviteLink::firstOrFail();
         $this->assertNotSame($token, $storedInvite->token_hash);

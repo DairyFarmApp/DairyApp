@@ -27,6 +27,13 @@ pickers, and responsive row actions.
 Daily milk coverage exercises real summary parsing, idempotent bulk payloads,
 atomic offline row/outbox storage, Drift schema migration, calendar selection,
 responsive quick entry, and overflow protection.
+The farm workflow regression also proves that the selected farm renders as an
+editable profile, authorized accounts can create and immediately select a
+second farm, online Add Shed immediately displays the new shed, offline Add
+Shed initializes a device and durable outbox operation, animal creation fixes
+the currently selected farm while requiring a shed, preset/custom breed
+actions are permission-aware, and an empty milk screen links to its
+prerequisite setup.
 Phase 7A coverage exercises employees, monthly PKR salaries, immutable employee
 loans, automatic payroll recovery, draft/approved/paid payroll transitions,
 balanced double-entry journals, idempotent income/expense posting, tenant/farm
@@ -60,8 +67,8 @@ npx --yes @redocly/cli@1.34.17 bundle openapi.yaml | Out-Null
 
 On PowerShell, use `Out-Null` to discard command output. Do not use `--output NUL`: Redocly appends a YAML extension and creates the invalid Windows reserved-name artifact `NUL.yaml`.
 
-The MySQL suite has 95 passing tests with 1,021 assertions. The SQLite
-portability run discovers the same 95 tests, passes 87 with 899 assertions, and
+The MySQL suite has 95 passing tests with 1,033 assertions. The SQLite
+portability run discovers the same 95 tests, passes 87 with 911 assertions, and
 skips eight MySQL process-concurrency tests. In addition to owner/family and
 inventory coverage, daily milk regression proves authentication and
 permissions, cross-organization/farm concealment, animal eligibility, exact
@@ -72,6 +79,10 @@ Workforce/finance regression additionally proves exact PKR validation, employee
 version protection, loan immutability, payroll state enforcement, automatic
 installments, balanced journals, idempotency, audit events, and confidential
 cross-organization/farm concealment.
+
+The current Flutter suite has 105 passing tests. Android debug and release web
+builds both pass after the farm hierarchy workflow repair; the web build also
+passes Flutter's WebAssembly dry-run compilation check.
 
 ## Database validation status
 

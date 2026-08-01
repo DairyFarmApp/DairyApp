@@ -67,7 +67,7 @@ later dairy feature. Completion evidence is recorded in
 
 ## Owner onboarding and family access (implemented 2026-07-29)
 
-Add self-service creation of one private named farm, direct single-farm login,
+Add self-service creation of one private tenant and initial named farm, direct login,
 editable owner/family profiles and private photos, a reusable primary-owner
 invitation link, multiple persistent family logins, and owner-controlled
 removal/restoration with immediate session revocation. Keep family management
@@ -75,9 +75,11 @@ with the primary owner while granting family accounts the same implemented
 farm-work capabilities.
 
 This controlled phase excludes employee accounts, custom roles, email delivery,
-password reset, email verification, MFA, ownership transfer, multi-farm
-self-service accounts, and production deep links. Completion evidence is in
-`docs/OWNER_ONBOARDING_COMPLETION.md`.
+password reset, email verification, MFA, ownership transfer, and production
+deep links. Multi-farm creation inside the same organization was subsequently
+approved and implemented on 2026-08-01 using the existing permissioned farm
+API and context-switching model. Completion evidence for the original
+onboarding checkpoint is in `docs/OWNER_ONBOARDING_COMPLETION.md`.
 
 ## Inventory core, actions, exports, and glass appearance (implemented 2026-07-29 through 2026-07-30)
 

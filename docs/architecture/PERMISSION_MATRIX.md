@@ -29,11 +29,11 @@ The seeder and this table share the same explicit catalog. API middleware applie
 | Create/disable/regenerate family link | Yes | No |
 | Remove/restore family accounts | Yes | No |
 | Remove or replace primary owner | No | No |
-| Create another farm | No | No |
+| Create another farm | Yes | Yes |
 | Archive the only farm | No | No |
 
-Both membership types receive the single-farm organization-owner permission
-set for ordinary farm work. Membership administration additionally requires
+Both membership types receive the organization-owner permission set for
+ordinary multi-farm work. Membership administration additionally requires
 `membership_type = primary_owner`; `users.manage` alone is insufficient.
 
 ## Implemented Phase 2A permissions

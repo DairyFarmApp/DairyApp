@@ -5,6 +5,7 @@ import 'package:dairycare_mobile/features/milk/application/milk_providers.dart';
 import 'package:dairycare_mobile/features/milk/domain/milk_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 final class MilkProductionScreen extends ConsumerStatefulWidget {
@@ -109,6 +110,9 @@ final class _MilkProductionScreenState
                     reasonController: _reasonController,
                     onSave: () => _save(data, query),
                     onCorrect: (entry) => _correct(entry, query),
+                    onAddAnimal: () => context.push('/animals/new'),
+                    onManageSheds: () => context.push('/sheds'),
+                    onManageBreeds: () => context.push('/animal-breeds'),
                   ),
                 ),
               ],
@@ -266,6 +270,9 @@ final class _DailyContent extends StatelessWidget {
     required this.reasonController,
     required this.onSave,
     required this.onCorrect,
+    required this.onAddAnimal,
+    required this.onManageSheds,
+    required this.onManageBreeds,
   });
 
   final MilkDailyData data;
@@ -277,6 +284,9 @@ final class _DailyContent extends StatelessWidget {
   final TextEditingController Function(String animalId) reasonController;
   final VoidCallback onSave;
   final ValueChanged<MilkEntry> onCorrect;
+  final VoidCallback onAddAnimal;
+  final VoidCallback onManageSheds;
+  final VoidCallback onManageBreeds;
 
   @override
   Widget build(BuildContext context) {
@@ -370,10 +380,10 @@ final class _DailyContent extends StatelessWidget {
                 )
               : null,
           child: data.eligibleAnimals.isEmpty
-              ? const EmptyStateView(
-                  title: 'No eligible animals',
-                  message:
-                      'Add an active adult female animal before recording milk.',
+              ? _MilkSetupEmptyState(
+                  onAddAnimal: onAddAnimal,
+                  onManageSheds: onManageSheds,
+                  onManageBreeds: onManageBreeds,
                 )
               : Column(
                   children: [
@@ -397,6 +407,55 @@ final class _DailyContent extends StatelessWidget {
       ],
     );
   }
+}
+
+final class _MilkSetupEmptyState extends StatelessWidget {
+  const _MilkSetupEmptyState({
+    required this.onAddAnimal,
+    required this.onManageSheds,
+    required this.onManageBreeds,
+  });
+
+  final VoidCallback onAddAnimal;
+  final VoidCallback onManageSheds;
+  final VoidCallback onManageBreeds;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      const EmptyStateView(
+        title: 'No animals ready for milk entry',
+        message:
+            'Milk can be recorded for active adult female animals. First create a shed, choose a breed, and add the animal to that shed.',
+      ),
+      const SizedBox(height: 12),
+      Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 12,
+        runSpacing: 12,
+        children: [
+          FilledButton.icon(
+            key: const Key('milk_add_animal_action'),
+            onPressed: onAddAnimal,
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Add adult female animal'),
+          ),
+          OutlinedButton.icon(
+            key: const Key('milk_manage_sheds_action'),
+            onPressed: onManageSheds,
+            icon: const Icon(Icons.warehouse_outlined),
+            label: const Text('Manage sheds'),
+          ),
+          OutlinedButton.icon(
+            key: const Key('milk_manage_breeds_action'),
+            onPressed: onManageBreeds,
+            icon: const Icon(Icons.category_outlined),
+            label: const Text('Manage breeds'),
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 final class _AnimalMilkRow extends StatelessWidget {

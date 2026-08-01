@@ -5,6 +5,7 @@ import 'package:dairycare_mobile/features/milk/presentation/milk_production_scre
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'helpers/fakes.dart';
 
@@ -65,6 +66,55 @@ void main() {
     await tester.tap(find.byIcon(Icons.calendar_month_rounded));
     await tester.pumpAndSettle();
     expect(find.byType(DatePickerDialog), findsOneWidget);
+  });
+
+  testWidgets('empty milk setup explains and links the required hierarchy', (
+    tester,
+  ) async {
+    FakeAuthController.session = foundationSession(
+      permissions: const {'milk.view', 'milk.create'},
+    );
+    final router = GoRouter(
+      initialLocation: '/milk',
+      routes: [
+        GoRoute(path: '/milk', builder: (_, _) => const MilkProductionScreen()),
+        GoRoute(path: '/animals/new', builder: (_, _) => const SizedBox()),
+        GoRoute(path: '/sheds', builder: (_, _) => const SizedBox()),
+        GoRoute(path: '/animal-breeds', builder: (_, _) => const SizedBox()),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authControllerProvider.overrideWith(FakeAuthController.new),
+          milkDailyProvider.overrideWith(
+            (ref, query) async => MilkDailyData(
+              date: query.date,
+              session: query.session,
+              summary: const MilkDailySummary(
+                totalLitres: '0.000',
+                rejectedLitres: '0.000',
+                sellableLitres: '0.000',
+                entryCount: 0,
+                animalsRecorded: 0,
+                yesterdaySellableLitres: '0.000',
+                sevenDayDailyAverageLitres: '0.000',
+              ),
+              eligibleAnimals: const [],
+              entries: const [],
+              isCached: false,
+            ),
+          ),
+        ],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('No animals ready for milk entry'), findsOneWidget);
+    expect(find.byKey(const Key('milk_add_animal_action')), findsOneWidget);
+    expect(find.byKey(const Key('milk_manage_sheds_action')), findsOneWidget);
+    expect(find.byKey(const Key('milk_manage_breeds_action')), findsOneWidget);
   });
 }
 

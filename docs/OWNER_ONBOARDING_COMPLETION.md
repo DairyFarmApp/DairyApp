@@ -3,6 +3,10 @@
 Date: 2026-07-29
 Branch: `codex/owner-onboarding`
 
+> Historical checkpoint: multi-farm creation was approved and implemented on
+> 2026-08-01. The single-farm limitations below describe this original
+> completion checkpoint, not the current application behavior.
+
 ## Implemented
 
 - Public owner signup that creates one private tenant and one named farm.

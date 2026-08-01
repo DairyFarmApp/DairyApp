@@ -4,9 +4,12 @@ Login accepts email/password plus optional device UUID/name. Responses contain a
 
 New farm owners may register through `auth/owner-signup`. That atomic operation
 creates a platform user, one tenant, one farm, a `primary_owner` membership, and
-the single-farm owner role before issuing a session. Owners may create a
+the organization-owner role before issuing a session. Owners and trusted
+family admins may create additional farms in the same organization and switch
+their active farm. Owners may create a
 reusable family link. Each accepted link creates a separate user and
-`family_admin` membership in the same tenant/farm. The primary owner can remove
+`family_admin` membership in the same tenant, initially opened on the invited
+farm. The primary owner can remove
 or restore family access; removal immediately revokes the member's active
 sessions. Invitation secrets are hashed for validation and encrypted for owner
 retrieval. See `docs/OWNER_ONBOARDING_AND_FAMILY_ACCESS.md`.

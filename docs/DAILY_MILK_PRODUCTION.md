@@ -19,6 +19,13 @@ The dashboard values are calculated from saved milk records:
 
 No dashboard value is hard-coded.
 
+If no animal is eligible, the screen now explains the required setup rather
+than showing a dead end. It links directly to shed management, breed
+management, and adding an adult female animal. Once that active adult female
+animal belongs to the current farm and shed, it appears in Morning,
+Afternoon, and Evening quick entry and its saved values immediately contribute
+to the calculated totals.
+
 ## Data integrity
 
 `milk_production_slots` owns the unique business identity of one animal, one

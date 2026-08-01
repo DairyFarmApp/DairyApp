@@ -22,7 +22,21 @@ final class BreedManagementScreen extends ConsumerWidget {
     final references = ref.watch(animalReferencesProvider(organizationId));
     final canManage = session?.can('animal_breeds.manage') ?? false;
     return Scaffold(
-      appBar: AppBar(title: const Text('Breeds')),
+      appBar: AppBar(
+        title: const Text('Breeds'),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(58),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(24, 2, 24, 16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Choose a built-in cattle or buffalo breed, or add a custom breed for your farm.',
+              ),
+            ),
+          ),
+        ),
+      ),
       body: references.when(
         loading: () => const LoadingStateView(label: 'Loading breeds...'),
         error: (error, _) => ErrorStateView(
@@ -36,42 +50,97 @@ final class BreedManagementScreen extends ConsumerWidget {
               message: 'No breeds are configured for this organization.',
             );
           }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
+          return ListView.separated(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
             itemCount: data.breeds.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 14),
             itemBuilder: (context, index) {
               final breed = data.breeds[index];
               final species = data.species
                   .where((item) => item.id == breed.speciesId)
                   .firstOrNull;
-              return Card(
-                child: ListTile(
-                  title: Text('${breed.code} - ${breed.name}'),
-                  subtitle: Text(
-                    [
-                      species?.name ?? 'Unknown species',
-                      if (!breed.isActive) 'Inactive',
-                      if (breed.isArchived) 'Archived',
-                    ].join(' - '),
-                  ),
-                  trailing: canManage && !breed.isArchived
-                      ? PopupMenuButton<String>(
-                          onSelected: (value) {
-                            if (value == 'edit') {
-                              _edit(context, ref, data, breed);
-                            } else {
-                              _archive(context, ref, organizationId, breed);
-                            }
-                          },
-                          itemBuilder: (_) => const [
-                            PopupMenuItem(value: 'edit', child: Text('Edit')),
-                            PopupMenuItem(
-                              value: 'archive',
-                              child: Text('Archive'),
-                            ),
+              return Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1120),
+                  child: Card(
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      minVerticalPadding: 12,
+                      leading: Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          Icons.pets_rounded,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                      title: Wrap(
+                        spacing: 10,
+                        runSpacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            breed.name,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          _BreedBadge(label: breed.code),
+                        ],
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 9),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(species?.name ?? 'Unknown species'),
+                            if (!breed.isActive)
+                              const _BreedBadge(
+                                label: 'Inactive',
+                                highlighted: true,
+                              ),
+                            if (breed.isArchived)
+                              const _BreedBadge(
+                                label: 'Archived',
+                                highlighted: true,
+                              ),
                           ],
-                        )
-                      : null,
+                        ),
+                      ),
+                      trailing: canManage && !breed.isArchived
+                          ? PopupMenuButton<String>(
+                              tooltip: 'Breed actions',
+                              onSelected: (value) {
+                                if (value == 'edit') {
+                                  _edit(context, ref, data, breed);
+                                } else {
+                                  _archive(context, ref, organizationId, breed);
+                                }
+                              },
+                              itemBuilder: (_) => const [
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text('Edit'),
+                                ),
+                                PopupMenuItem(
+                                  value: 'archive',
+                                  child: Text('Archive'),
+                                ),
+                              ],
+                            )
+                          : null,
+                    ),
+                  ),
                 ),
               );
             },
@@ -88,7 +157,7 @@ final class BreedManagementScreen extends ConsumerWidget {
                 references.requireValue,
               ),
               icon: const Icon(Icons.add),
-              label: const Text('Add breed'),
+              label: const Text('Add custom breed'),
             )
           : null,
     );
@@ -168,26 +237,42 @@ Future<_BreedInput?> _breedDialog(
   AnimalBreed? breed,
 }) async {
   final formKey = GlobalKey<FormState>();
-  final code = TextEditingController(text: breed?.code);
-  final name = TextEditingController(text: breed?.name);
-  final description = TextEditingController(text: breed?.description);
+  var code = breed?.code ?? '';
+  var name = breed?.name ?? '';
+  var description = breed?.description ?? '';
   var speciesId = breed?.speciesId ?? species.firstOrNull?.id;
   var isActive = breed?.isActive ?? true;
   final result = await showDialog<_BreedInput>(
     context: context,
     builder: (context) => StatefulBuilder(
       builder: (context, setState) => AlertDialog(
-        title: Text(breed == null ? 'Add breed' : 'Edit breed'),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+        actionsPadding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        actionsAlignment: MainAxisAlignment.end,
+        title: Text(breed == null ? 'Add custom breed' : 'Edit breed'),
         content: SizedBox(
-          width: 440,
+          width: 520,
           child: Form(
             key: formKey,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text(
+                    breed == null
+                        ? 'Add a breed that is specific to your dairy farm.'
+                        : 'Update the breed name, code, description or status.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   DropdownButtonFormField<String>(
                     initialValue: speciesId,
+                    isExpanded: true,
                     decoration: const InputDecoration(labelText: 'Species *'),
                     items: [
                       for (final item in species.where((item) => item.isActive))
@@ -202,30 +287,62 @@ Future<_BreedInput?> _breedDialog(
                     validator: (value) =>
                         value == null ? 'Species is required.' : null,
                   ),
+                  const SizedBox(height: 16),
                   TextFormField(
                     key: const Key('breed_code_field'),
-                    controller: code,
-                    decoration: const InputDecoration(labelText: 'Code *'),
+                    initialValue: code,
+                    decoration: const InputDecoration(
+                      labelText: 'Code (optional)',
+                      helperText: 'Leave blank to create it from the name.',
+                    ),
                     textCapitalization: TextCapitalization.characters,
-                    validator: requiredRegistryText,
+                    textInputAction: TextInputAction.next,
+                    onChanged: (value) => code = value,
                   ),
+                  const SizedBox(height: 16),
                   TextFormField(
                     key: const Key('breed_name_field'),
-                    controller: name,
+                    initialValue: name,
                     decoration: const InputDecoration(labelText: 'Name *'),
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
                     validator: requiredRegistryText,
+                    onChanged: (value) => name = value,
                   ),
+                  const SizedBox(height: 16),
                   TextFormField(
-                    controller: description,
+                    initialValue: description,
                     decoration: const InputDecoration(labelText: 'Description'),
                     maxLines: 3,
+                    minLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
+                    onChanged: (value) => description = value,
                   ),
                   if (breed != null)
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Active'),
-                      value: isActive,
-                      onChanged: (value) => setState(() => isActive = value),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest
+                              .withValues(alpha: 0.45),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: SwitchListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          title: const Text('Active breed'),
+                          subtitle: const Text(
+                            'Inactive breeds cannot be selected for new animals.',
+                          ),
+                          value: isActive,
+                          onChanged: (value) =>
+                              setState(() => isActive = value),
+                        ),
+                      ),
                     ),
                 ],
               ),
@@ -248,9 +365,11 @@ Future<_BreedInput?> _breedDialog(
                 context,
                 _BreedInput(
                   speciesId: speciesId!,
-                  code: code.text.trim(),
-                  name: name.text.trim(),
-                  description: optionalRegistryText(description.text),
+                  code: code.trim().isEmpty
+                      ? _breedCode(name)
+                      : code.trim().toUpperCase(),
+                  name: name.trim(),
+                  description: optionalRegistryText(description),
                   isActive: isActive,
                 ),
               );
@@ -261,10 +380,44 @@ Future<_BreedInput?> _breedDialog(
       ),
     ),
   );
-  code.dispose();
-  name.dispose();
-  description.dispose();
   return result;
+}
+
+final class _BreedBadge extends StatelessWidget {
+  const _BreedBadge({required this.label, this.highlighted = false});
+
+  final String label;
+  final bool highlighted;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    decoration: BoxDecoration(
+      color: highlighted
+          ? Theme.of(context).colorScheme.errorContainer
+          : Theme.of(context).colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(999),
+    ),
+    child: Text(
+      label,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: highlighted
+            ? Theme.of(context).colorScheme.onErrorContainer
+            : Theme.of(context).colorScheme.onSurfaceVariant,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
+String _breedCode(String name) {
+  final generated = name
+      .trim()
+      .toUpperCase()
+      .replaceAll(RegExp('[^A-Z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+  if (generated.isEmpty) return 'CUSTOM-BREED';
+  return generated.length <= 40 ? generated : generated.substring(0, 40);
 }
 
 final class _BreedInput {

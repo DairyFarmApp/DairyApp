@@ -58,7 +58,7 @@ class FinanceController extends Controller
         $records = IncomeRecord::query()
             ->where('organization_id', $this->organizationId($request))
             ->where('farm_id', $this->farmId($request))
-            ->whereBetween('recorded_on', [$start, $end])
+            ->whereBetween('recorded_on', $this->dateRange($start, $end))
             ->orderByDesc('recorded_on')
             ->limit(200)
             ->get();
@@ -80,7 +80,7 @@ class FinanceController extends Controller
         $records = ExpenseRecord::query()
             ->where('organization_id', $this->organizationId($request))
             ->where('farm_id', $this->farmId($request))
-            ->whereBetween('recorded_on', [$start, $end])
+            ->whereBetween('recorded_on', $this->dateRange($start, $end))
             ->orderByDesc('recorded_on')
             ->limit(200)
             ->get();
@@ -103,7 +103,7 @@ class FinanceController extends Controller
             ->with('lines')
             ->where('organization_id', $this->organizationId($request))
             ->where('farm_id', $this->farmId($request))
-            ->whereBetween('occurred_on', [$start, $end])
+            ->whereBetween('occurred_on', $this->dateRange($start, $end))
             ->orderByDesc('occurred_on')
             ->orderByDesc('created_at')
             ->limit(200)
@@ -229,7 +229,10 @@ class FinanceController extends Controller
             ->where('finance_journal_lines.organization_id', $this->organizationId($request))
             ->where('finance_journal_lines.farm_id', $this->farmId($request))
             ->where('finance_journal_entries.status', 'posted')
-            ->whereBetween('finance_journal_entries.occurred_on', [$start, $end])
+            ->whereBetween(
+                'finance_journal_entries.occurred_on',
+                $this->dateRange($start, $end),
+            )
             ->whereIn('system_accounts.type', ['income', 'expense'])
             ->selectRaw('system_accounts.type, SUM(finance_journal_lines.debit) AS debits, SUM(finance_journal_lines.credit) AS credits')
             ->groupBy('system_accounts.type')
@@ -249,9 +252,18 @@ class FinanceController extends Controller
     {
         $request->validate(['month' => ['nullable', 'date_format:Y-m']]);
         $value = (string) $request->query('month', now()->format('Y-m'));
-        $start = CarbonImmutable::createFromFormat('Y-m-d', $value.'-01')->startOfMonth();
+        $start = CarbonImmutable::createFromFormat(
+            'Y-m-d H:i:s',
+            $value.'-01 00:00:00',
+        )->startOfMonth();
 
         return [$start, $start->endOfMonth()];
+    }
+
+    /** @return array{0: string, 1: string} */
+    private function dateRange(CarbonImmutable $start, CarbonImmutable $end): array
+    {
+        return [$start->toDateString(), $end->toDateString()];
     }
 
     private function incomeData(IncomeRecord $record): array

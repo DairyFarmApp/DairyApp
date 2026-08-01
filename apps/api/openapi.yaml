@@ -44,7 +44,7 @@ paths:
   /auth/owner-signup:
     post:
       security: []
-      summary: Create a private single-farm account and its primary owner
+      summary: Create a private organization, initial farm, and primary owner
       operationId: signupPrimaryOwner
       requestBody:
         required: true

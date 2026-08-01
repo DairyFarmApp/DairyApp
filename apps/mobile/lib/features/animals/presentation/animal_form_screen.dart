@@ -117,6 +117,8 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
               referenceData,
               existing,
               session?.can('animals.manage_identifiers') ?? false,
+              session?.can('animal_breeds.manage') ?? false,
+              session?.can('sheds.create') ?? false,
             );
           },
         ),
@@ -172,6 +174,8 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
     AnimalReferenceData references,
     Animal? animal,
     bool canManageIdentifiers,
+    bool canManageBreeds,
+    bool canCreateSheds,
   ) {
     final breeds = _activeBreeds(references, preserveId: animal?.breedId);
     final sheds = _farmSheds(references);
@@ -283,6 +287,18 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                     validator: _requiredSelection,
                     onChanged: (value) => setState(() => _breedId = value),
                   ),
+                  if (canManageBreeds)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        key: const Key('add_custom_breed_action'),
+                        onPressed: _speciesId == null
+                            ? null
+                            : () => _openReferenceManager('/animal-breeds'),
+                        icon: const Icon(Icons.add_rounded),
+                        label: const Text('Add custom breed'),
+                      ),
+                    ),
                   _enumDropdown(
                     key: const Key('sex_field'),
                     label: 'Sex *',
@@ -330,23 +346,15 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                       'Location changes are recorded through the animal movement workflow.',
                     ),
                   ] else ...[
-                    DropdownButtonFormField<String>(
-                      key: const Key('farm_field'),
-                      initialValue: _farmId,
-                      decoration: const InputDecoration(labelText: 'Farm *'),
-                      items: [
-                        for (final item in references.farms)
-                          DropdownMenuItem(
-                            value: item.id,
-                            child: Text(item.name),
-                          ),
-                      ],
-                      validator: _requiredSelection,
-                      onChanged: (value) => setState(() {
-                        _farmId = value;
-                        _shedId = null;
-                        _groupId = null;
-                      }),
+                    _readOnlyValue(
+                      'Farm',
+                      references.farms
+                          .where((item) => item.id == _farmId)
+                          .firstOrNull
+                          ?.name,
+                    ),
+                    const Text(
+                      'This animal will belong to your farm. Choose its current shed below.',
                     ),
                     DropdownButtonFormField<String>(
                       key: ValueKey('shed-$_farmId-$_shedId'),
@@ -364,6 +372,20 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                       validator: _requiredSelection,
                       onChanged: (value) => setState(() => _shedId = value),
                     ),
+                    if (canCreateSheds)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          key: const Key('animal_manage_sheds_action'),
+                          onPressed: () => _openReferenceManager('/sheds'),
+                          icon: const Icon(Icons.warehouse_outlined),
+                          label: Text(
+                            sheds.isEmpty
+                                ? 'Create first shed'
+                                : 'Manage sheds',
+                          ),
+                        ),
+                      ),
                     DropdownButtonFormField<String>(
                       key: ValueKey('group-$_farmId-$_groupId'),
                       initialValue: groups.any((item) => item.id == _groupId)
@@ -500,6 +522,17 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
   List<LocalShed> _farmSheds(AnimalReferenceData references) => references.sheds
       .where((item) => item.farmId == _farmId && !item.isDeleted)
       .toList();
+
+  Future<void> _openReferenceManager(String route) async {
+    final organizationId = ref
+        .read(authControllerProvider)
+        .asData
+        ?.value
+        ?.activeOrganizationId;
+    await context.push(route);
+    if (!mounted || organizationId == null) return;
+    ref.invalidate(animalReferencesProvider(organizationId));
+  }
 
   Future<void> _save(Animal? animal, bool canManageIdentifiers) async {
     if (!(_formKey.currentState?.validate() ?? false)) return;

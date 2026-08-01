@@ -2,6 +2,7 @@
 
 namespace App\Domain\OwnerAccounts\Support;
 
+use App\Domain\AnimalRegistry\Support\DefaultAnimalBreedCatalog;
 use App\Models\ApiSession;
 use App\Models\Farm;
 use App\Models\FarmInviteLink;
@@ -19,6 +20,8 @@ use Illuminate\Support\Str;
 
 final class OwnerAccountService
 {
+    public function __construct(private readonly DefaultAnimalBreedCatalog $breeds) {}
+
     /**
      * @return array{user: User, organization: Organization, farm: Farm, membership: OrganizationMembership}
      */
@@ -54,6 +57,7 @@ final class OwnerAccountService
             $membership->roles()->attach($ownerRole->id, [
                 'organization_id' => $organization->id,
             ]);
+            $this->breeds->ensureForOrganization($organization, $user);
             $this->createDefaultSettings($organization);
 
             return compact('user', 'organization', 'farm', 'membership');
@@ -237,12 +241,9 @@ final class OwnerAccountService
 
     public function ownerRole(Organization $organization): Role
     {
-        $singleFarmPermissions = collect(PermissionCatalog::all())
-            ->reject(fn (string $name) => in_array($name, [
-                'farms.create',
-                'farms.archive',
-            ], true));
-        $permissions = $singleFarmPermissions->mapWithKeys(
+        $ownerPermissions = collect(PermissionCatalog::all())
+            ->reject(fn (string $name) => $name === 'farms.archive');
+        $permissions = $ownerPermissions->mapWithKeys(
             fn (string $name) => [
                 $name => Permission::query()->firstOrCreate(['name' => $name]),
             ],

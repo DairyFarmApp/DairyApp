@@ -168,9 +168,11 @@ String? authRedirect({
   required AsyncValue<AuthSession?> auth,
   required String path,
 }) {
-  if (auth.isLoading) return path == '/loading' ? null : '/loading';
-  final session = auth.asData?.value;
   final isPublicAuthPage = path == '/login' || path == '/signup';
+  if (auth.isLoading) {
+    return path == '/loading' || isPublicAuthPage ? null : '/loading';
+  }
+  final session = auth.asData?.value;
   if (session == null) return isPublicAuthPage ? null : '/login';
   if (isPublicAuthPage || path == '/loading') {
     if (session.activeOrganizationId == null) return '/organizations/select';

@@ -1,8 +1,35 @@
-# Active phase: Phase 7A workforce and PKR finance core
+# Current task: organization multi-farm creation
+
+- [x] Keep owner signup atomic with one initial named farm.
+- [x] Allow owner and trusted family-admin accounts to add farms in the same
+  organization.
+- [x] Add a permission-aware **Add farm** form to the selected farm profile.
+- [x] Save new farms through the audited, idempotent API and select the created
+  farm immediately.
+- [x] Preserve farm -> shed -> animal hierarchy and audited animal movements.
+- [x] Load farms and sheds from the API before falling back to Drift.
+- [x] Make Add Shed work before the device has performed its first sync.
+- [x] Keep offline shed creation durable with an automatically initialized
+  device ID and outbox operation.
+- [x] Fix animal setup so the active farm is fixed and a current shed is
+  required.
+- [x] Add maintained cattle/buffalo breed choices for new and existing
+  organizations.
+- [x] Expose Breeds in the menu and provide an Add custom breed workflow.
+- [x] Make an empty milk-production screen link to the required setup steps.
+- [x] Complete full backend, Flutter, Android, web, API-contract, dependency,
+  and repository validation.
+
+This task is limited to multi-farm creation plus the already implemented farm,
+shed, animal registry, and daily milk workflow. Farm archival, later milk
+modules, health, breeding, and other product phases remain excluded.
+
+# Completed phase: Phase 7A workforce and PKR finance core
 
 - [x] Preserve completed Phase 3A work in commit `6677d2a`.
 - [x] Create `phase/7-workforce-finance`.
-- [x] Add Employees, Salary, Loans, and Finance to wide and compact navigation.
+- [x] Add Employees and Finance to wide and compact navigation, with Employee
+  list, Salary, and Loans as indented expandable Employee subheadings.
 - [x] Add farm-scoped employee profiles with monthly PKR salaries.
 - [x] Add immutable employee loans with automatic payroll installment recovery.
 - [x] Add draft, approved, and paid monthly payroll workflow.

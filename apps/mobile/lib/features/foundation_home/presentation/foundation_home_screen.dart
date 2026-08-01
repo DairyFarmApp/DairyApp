@@ -28,11 +28,9 @@ final class FoundationHomeScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             PageHeader(
-              eyebrow: 'Farm overview',
-              title: _greeting(session?.user.name),
-              subtitle:
-                  'A clear view of ${session?.activeFarm?.name ?? 'your active farm'} '
-                  'and the records available on this device.',
+              eyebrow: _greeting(session?.user.name),
+              title: session?.activeFarm?.name ?? 'Your dairy farm',
+              subtitle: 'Farm overview and records available on this device.',
               actions: MediaQuery.sizeOf(context).width < 760
                   ? const [OfflineStatusIndicator(), SyncStatusIndicator()]
                   : const [],
@@ -53,7 +51,7 @@ final class FoundationHomeScreen extends ConsumerWidget {
                   children: [
                     SizedBox(
                       width: width,
-                      height: 176,
+                      height: 190,
                       child: MetricCard(
                         label: 'Active animals',
                         value: animalCount.when(
@@ -67,7 +65,7 @@ final class FoundationHomeScreen extends ConsumerWidget {
                     ),
                     SizedBox(
                       width: width,
-                      height: 176,
+                      height: 190,
                       child: MetricCard(
                         label: 'Authorized farms',
                         value: '${session?.farms.length ?? 0}',
@@ -78,7 +76,7 @@ final class FoundationHomeScreen extends ConsumerWidget {
                     ),
                     SizedBox(
                       width: width,
-                      height: 176,
+                      height: 190,
                       child: MetricCard(
                         label: 'Pending sync',
                         value: '${sync.pendingCount}',
@@ -91,7 +89,7 @@ final class FoundationHomeScreen extends ConsumerWidget {
                     ),
                     SizedBox(
                       width: width,
-                      height: 176,
+                      height: 190,
                       child: MetricCard(
                         label: 'Sync conflicts',
                         value: '${sync.conflictCount}',
