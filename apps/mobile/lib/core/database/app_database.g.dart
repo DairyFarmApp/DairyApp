@@ -1333,6 +1333,17 @@ class $LocalShedsTable extends LocalSheds
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _locationMeta = const VerificationMeta(
+    'location',
+  );
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+    'location',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
   );
@@ -1378,6 +1389,7 @@ class $LocalShedsTable extends LocalSheds
     organizationId,
     farmId,
     name,
+    location,
     version,
     serverUpdatedAt,
     isDeleted,
@@ -1425,6 +1437,12 @@ class $LocalShedsTable extends LocalSheds
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('location')) {
+      context.handle(
+        _locationMeta,
+        location.isAcceptableOrUnknown(data['location']!, _locationMeta),
+      );
     }
     if (data.containsKey('version')) {
       context.handle(
@@ -1474,6 +1492,10 @@ class $LocalShedsTable extends LocalSheds
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      location: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location'],
+      ),
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
@@ -1500,6 +1522,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
   final String organizationId;
   final String farmId;
   final String name;
+  final String? location;
   final int version;
   final DateTime serverUpdatedAt;
   final bool isDeleted;
@@ -1508,6 +1531,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
     required this.organizationId,
     required this.farmId,
     required this.name,
+    this.location,
     required this.version,
     required this.serverUpdatedAt,
     required this.isDeleted,
@@ -1519,6 +1543,9 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
     map['organization_id'] = Variable<String>(organizationId);
     map['farm_id'] = Variable<String>(farmId);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || location != null) {
+      map['location'] = Variable<String>(location);
+    }
     map['version'] = Variable<int>(version);
     map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
     map['is_deleted'] = Variable<bool>(isDeleted);
@@ -1531,6 +1558,9 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
       organizationId: Value(organizationId),
       farmId: Value(farmId),
       name: Value(name),
+      location: location == null && nullToAbsent
+          ? const Value.absent()
+          : Value(location),
       version: Value(version),
       serverUpdatedAt: Value(serverUpdatedAt),
       isDeleted: Value(isDeleted),
@@ -1547,6 +1577,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
       organizationId: serializer.fromJson<String>(json['organizationId']),
       farmId: serializer.fromJson<String>(json['farmId']),
       name: serializer.fromJson<String>(json['name']),
+      location: serializer.fromJson<String?>(json['location']),
       version: serializer.fromJson<int>(json['version']),
       serverUpdatedAt: serializer.fromJson<DateTime>(json['serverUpdatedAt']),
       isDeleted: serializer.fromJson<bool>(json['isDeleted']),
@@ -1560,6 +1591,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
       'organizationId': serializer.toJson<String>(organizationId),
       'farmId': serializer.toJson<String>(farmId),
       'name': serializer.toJson<String>(name),
+      'location': serializer.toJson<String?>(location),
       'version': serializer.toJson<int>(version),
       'serverUpdatedAt': serializer.toJson<DateTime>(serverUpdatedAt),
       'isDeleted': serializer.toJson<bool>(isDeleted),
@@ -1571,6 +1603,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
     String? organizationId,
     String? farmId,
     String? name,
+    Value<String?> location = const Value.absent(),
     int? version,
     DateTime? serverUpdatedAt,
     bool? isDeleted,
@@ -1579,6 +1612,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
     organizationId: organizationId ?? this.organizationId,
     farmId: farmId ?? this.farmId,
     name: name ?? this.name,
+    location: location.present ? location.value : this.location,
     version: version ?? this.version,
     serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
     isDeleted: isDeleted ?? this.isDeleted,
@@ -1591,6 +1625,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
           : this.organizationId,
       farmId: data.farmId.present ? data.farmId.value : this.farmId,
       name: data.name.present ? data.name.value : this.name,
+      location: data.location.present ? data.location.value : this.location,
       version: data.version.present ? data.version.value : this.version,
       serverUpdatedAt: data.serverUpdatedAt.present
           ? data.serverUpdatedAt.value
@@ -1606,6 +1641,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
           ..write('organizationId: $organizationId, ')
           ..write('farmId: $farmId, ')
           ..write('name: $name, ')
+          ..write('location: $location, ')
           ..write('version: $version, ')
           ..write('serverUpdatedAt: $serverUpdatedAt, ')
           ..write('isDeleted: $isDeleted')
@@ -1619,6 +1655,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
     organizationId,
     farmId,
     name,
+    location,
     version,
     serverUpdatedAt,
     isDeleted,
@@ -1631,6 +1668,7 @@ class LocalShed extends DataClass implements Insertable<LocalShed> {
           other.organizationId == this.organizationId &&
           other.farmId == this.farmId &&
           other.name == this.name &&
+          other.location == this.location &&
           other.version == this.version &&
           other.serverUpdatedAt == this.serverUpdatedAt &&
           other.isDeleted == this.isDeleted);
@@ -1641,6 +1679,7 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
   final Value<String> organizationId;
   final Value<String> farmId;
   final Value<String> name;
+  final Value<String?> location;
   final Value<int> version;
   final Value<DateTime> serverUpdatedAt;
   final Value<bool> isDeleted;
@@ -1650,6 +1689,7 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
     this.organizationId = const Value.absent(),
     this.farmId = const Value.absent(),
     this.name = const Value.absent(),
+    this.location = const Value.absent(),
     this.version = const Value.absent(),
     this.serverUpdatedAt = const Value.absent(),
     this.isDeleted = const Value.absent(),
@@ -1660,6 +1700,7 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
     required String organizationId,
     required String farmId,
     required String name,
+    this.location = const Value.absent(),
     this.version = const Value.absent(),
     required DateTime serverUpdatedAt,
     this.isDeleted = const Value.absent(),
@@ -1674,6 +1715,7 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
     Expression<String>? organizationId,
     Expression<String>? farmId,
     Expression<String>? name,
+    Expression<String>? location,
     Expression<int>? version,
     Expression<DateTime>? serverUpdatedAt,
     Expression<bool>? isDeleted,
@@ -1684,6 +1726,7 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
       if (organizationId != null) 'organization_id': organizationId,
       if (farmId != null) 'farm_id': farmId,
       if (name != null) 'name': name,
+      if (location != null) 'location': location,
       if (version != null) 'version': version,
       if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
       if (isDeleted != null) 'is_deleted': isDeleted,
@@ -1696,6 +1739,7 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
     Value<String>? organizationId,
     Value<String>? farmId,
     Value<String>? name,
+    Value<String?>? location,
     Value<int>? version,
     Value<DateTime>? serverUpdatedAt,
     Value<bool>? isDeleted,
@@ -1706,6 +1750,7 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
       organizationId: organizationId ?? this.organizationId,
       farmId: farmId ?? this.farmId,
       name: name ?? this.name,
+      location: location ?? this.location,
       version: version ?? this.version,
       serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
       isDeleted: isDeleted ?? this.isDeleted,
@@ -1727,6 +1772,9 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
     }
     if (version.present) {
       map['version'] = Variable<int>(version.value);
@@ -1750,6 +1798,7 @@ class LocalShedsCompanion extends UpdateCompanion<LocalShed> {
           ..write('organizationId: $organizationId, ')
           ..write('farmId: $farmId, ')
           ..write('name: $name, ')
+          ..write('location: $location, ')
           ..write('version: $version, ')
           ..write('serverUpdatedAt: $serverUpdatedAt, ')
           ..write('isDeleted: $isDeleted, ')
@@ -14726,6 +14775,7 @@ typedef $$LocalShedsTableCreateCompanionBuilder =
       required String organizationId,
       required String farmId,
       required String name,
+      Value<String?> location,
       Value<int> version,
       required DateTime serverUpdatedAt,
       Value<bool> isDeleted,
@@ -14737,6 +14787,7 @@ typedef $$LocalShedsTableUpdateCompanionBuilder =
       Value<String> organizationId,
       Value<String> farmId,
       Value<String> name,
+      Value<String?> location,
       Value<int> version,
       Value<DateTime> serverUpdatedAt,
       Value<bool> isDeleted,
@@ -14769,6 +14820,11 @@ class $$LocalShedsTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get location => $composableBuilder(
+    column: $table.location,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14817,6 +14873,11 @@ class $$LocalShedsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get version => $composableBuilder(
     column: $table.version,
     builder: (column) => ColumnOrderings(column),
@@ -14855,6 +14916,9 @@ class $$LocalShedsTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
 
   GeneratedColumn<int> get version =>
       $composableBuilder(column: $table.version, builder: (column) => column);
@@ -14903,6 +14967,7 @@ class $$LocalShedsTableTableManager
                 Value<String> organizationId = const Value.absent(),
                 Value<String> farmId = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String?> location = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<DateTime> serverUpdatedAt = const Value.absent(),
                 Value<bool> isDeleted = const Value.absent(),
@@ -14912,6 +14977,7 @@ class $$LocalShedsTableTableManager
                 organizationId: organizationId,
                 farmId: farmId,
                 name: name,
+                location: location,
                 version: version,
                 serverUpdatedAt: serverUpdatedAt,
                 isDeleted: isDeleted,
@@ -14923,6 +14989,7 @@ class $$LocalShedsTableTableManager
                 required String organizationId,
                 required String farmId,
                 required String name,
+                Value<String?> location = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 required DateTime serverUpdatedAt,
                 Value<bool> isDeleted = const Value.absent(),
@@ -14932,6 +14999,7 @@ class $$LocalShedsTableTableManager
                 organizationId: organizationId,
                 farmId: farmId,
                 name: name,
+                location: location,
                 version: version,
                 serverUpdatedAt: serverUpdatedAt,
                 isDeleted: isDeleted,

@@ -16,6 +16,7 @@ class EmployeeLoan extends Model
         'farm_id',
         'employee_id',
         'loan_number',
+        'type',
         'disbursement_date',
         'principal_amount',
         'monthly_installment',

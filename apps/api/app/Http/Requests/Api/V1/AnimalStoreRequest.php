@@ -6,7 +6,6 @@ use App\Domain\AnimalRegistry\Support\AnimalRegistryNormalizer;
 use App\Rules\UuidV7;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Validator;
 
 class AnimalStoreRequest extends FormRequest
 {
@@ -34,7 +33,7 @@ class AnimalStoreRequest extends FormRequest
     {
         return [
             'id' => ['sometimes', new UuidV7],
-            'animal_number' => ['nullable', 'string', 'max:40', 'regex:/^[A-Z0-9][A-Z0-9._\/-]*$/'],
+            'animal_number' => ['prohibited'],
             'ear_tag_number' => ['nullable', 'string', 'max:80', 'regex:/^[A-Z0-9][A-Z0-9._\/-]*$/'],
             'rfid_number' => ['nullable', 'string', 'max:120', 'regex:/^[A-Z0-9]+$/'],
             'name' => ['nullable', 'string', 'max:120'],
@@ -58,17 +57,6 @@ class AnimalStoreRequest extends FormRequest
             'source_description' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:5000'],
             'operational_status' => ['sometimes', Rule::in(['active', 'inactive', 'missing'])],
-        ];
-    }
-
-    public function after(): array
-    {
-        return [
-            function (Validator $validator): void {
-                if ($this->filled('animal_number') && ! $this->attributes->get('membership')?->can('animals.manage_identifiers')) {
-                    $validator->errors()->add('animal_number', 'You do not have permission to supply an animal number.');
-                }
-            },
         ];
     }
 }

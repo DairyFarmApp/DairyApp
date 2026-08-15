@@ -94,6 +94,20 @@ final class AnimalRepository {
     return animal;
   }
 
+  Future<void> uploadPhoto({
+    required String animalId,
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    await _api.postMultipart(
+      '/animals/$animalId/photos',
+      fields: const {},
+      fileField: 'photo',
+      bytes: Uint8List.fromList(bytes),
+      filename: filename,
+    );
+  }
+
   Future<Animal> updateAnimal(
     Animal animal,
     AnimalDraft draft, {
@@ -191,6 +205,7 @@ final class AnimalRepository {
                 organizationId: raw['organization_id'] as String,
                 farmId: raw['farm_id'] as String,
                 name: raw['name'] as String,
+                location: Value(raw['location'] as String?),
                 version: Value(raw['version'] as int? ?? 1),
                 serverUpdatedAt: _date(raw['updated_at'], now),
                 isDeleted: Value(raw['is_deleted'] as bool? ?? false),

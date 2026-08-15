@@ -125,81 +125,167 @@ final class FinanceScreen extends ConsumerWidget {
   }
 }
 
-final class _FinanceBody extends StatelessWidget {
+final class _FinanceBody extends StatefulWidget {
   const _FinanceBody({required this.data});
 
   final FinanceDashboard data;
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      metricGrid([
-        MetricCard(
-          label: 'Income',
-          value: pkr(data.overview.income),
-          icon: Icons.trending_up_rounded,
-          color: const Color(0xFF2BAE74),
-        ),
-        MetricCard(
-          label: 'Expenses',
-          value: pkr(data.overview.expenses),
-          icon: Icons.trending_down_rounded,
-          color: const Color(0xFFEB5757),
-        ),
-        MetricCard(
-          label: 'Net profit',
-          value: pkr(data.overview.netProfit),
-          icon: Icons.query_stats_rounded,
-          color: const Color(0xFF2D9CDB),
-        ),
-        MetricCard(
-          label: 'Employee loans due',
-          value: pkr(data.overview.outstandingEmployeeLoans),
-          icon: Icons.account_balance_wallet_outlined,
-          color: const Color(0xFFF2994A),
-        ),
-      ]),
-      const SizedBox(height: 20),
-      DefaultTabController(
-        length: 3,
-        child: GlassSurface(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+  State<_FinanceBody> createState() => _FinanceBodyState();
+}
+
+final class _FinanceBodyState extends State<_FinanceBody> {
+  String _selectedCategory = 'All';
+
+  static const _filterOptions = [
+    'All',
+    'Sales',
+    'Purchases',
+    'Animal Sales',
+    'Animal Purchases',
+    'Milk Sales',
+    'Inventory Purchases',
+    'Salaries',
+  ];
+
+  List<FinanceRecord> _filterRecords(List<FinanceRecord> records) {
+    if (_selectedCategory == 'All') return records;
+    if (_selectedCategory == 'Sales') {
+      return records.where((r) => r.category.toLowerCase().contains('sale')).toList();
+    }
+    if (_selectedCategory == 'Purchases') {
+      return records.where((r) =>
+        r.category.toLowerCase().contains('purchase') ||
+        r.category == 'Feed' ||
+        r.category == 'Medicine'
+      ).toList();
+    }
+    if (_selectedCategory == 'Salaries') {
+      return records.where((r) => r.category.toLowerCase().contains('salary') || r.category.toLowerCase().contains('payroll')).toList();
+    }
+    return records.where((r) => r.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
+  }
+
+  List<LedgerEntry> _filterLedger(List<LedgerEntry> entries) {
+    if (_selectedCategory == 'All') return entries;
+    final query = _selectedCategory.toLowerCase();
+    return entries.where((e) =>
+      e.description.toLowerCase().contains(query) ||
+      e.sourceType.toLowerCase().contains(query)
+    ).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredIncome = _filterRecords(widget.data.income);
+    final filteredExpenses = _filterRecords(widget.data.expenses);
+    final filteredLedger = _filterLedger(widget.data.ledger);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        metricGrid([
+          MetricCard(
+            label: 'Sales Total',
+            value: pkr(widget.data.overview.totalSales),
+            icon: Icons.point_of_sale_rounded,
+            color: const Color(0xFF2BAE74),
+          ),
+          MetricCard(
+            label: 'Purchases Total',
+            value: pkr(widget.data.overview.totalPurchases),
+            icon: Icons.shopping_bag_outlined,
+            color: const Color(0xFFEB5757),
+          ),
+          MetricCard(
+            label: 'Investments',
+            value: pkr(widget.data.overview.totalInvestments),
+            icon: Icons.account_balance_rounded,
+            color: const Color(0xFF9B51E0),
+          ),
+          MetricCard(
+            label: 'Liabilities',
+            value: pkr(widget.data.overview.totalLiabilities),
+            icon: Icons.account_balance_wallet_outlined,
+            color: const Color(0xFFF2994A),
+          ),
+          MetricCard(
+            label: 'Net profit',
+            value: pkr(widget.data.overview.netProfit),
+            icon: Icons.query_stats_rounded,
+            color: const Color(0xFF2D9CDB),
+          ),
+        ]),
+        const SizedBox(height: 16),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
             children: [
-              const TabBar(
-                isScrollable: true,
-                tabs: [
-                  Tab(text: 'Income'),
-                  Tab(text: 'Expenses'),
-                  Tab(text: 'Ledger'),
-                ],
+              const Text(
+                'Category Filter: ',
+                style: TextStyle(fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 430,
-                child: TabBarView(
-                  children: [
-                    _RecordList(
-                      records: data.income,
-                      emptyMessage: 'No income recorded for this month.',
-                      icon: Icons.south_west_rounded,
-                    ),
-                    _RecordList(
-                      records: data.expenses,
-                      emptyMessage: 'No expenses recorded for this month.',
-                      icon: Icons.north_east_rounded,
-                    ),
-                    _LedgerList(entries: data.ledger),
-                  ],
+              const SizedBox(width: 8),
+              for (final cat in _filterOptions) ...[
+                FilterChip(
+                  label: Text(cat),
+                  selected: _selectedCategory == cat,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() => _selectedCategory = cat);
+                    }
+                  },
                 ),
-              ),
+                const SizedBox(width: 6),
+              ],
             ],
           ),
         ),
-      ),
-    ],
-  );
+        const SizedBox(height: 16),
+        DefaultTabController(
+          length: 3,
+          child: GlassSurface(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const TabBar(
+                  isScrollable: true,
+                  tabs: [
+                    Tab(text: 'Income'),
+                    Tab(text: 'Expenses'),
+                    Tab(text: 'Ledger'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 430,
+                  child: TabBarView(
+                    children: [
+                      _RecordList(
+                        records: filteredIncome,
+                        emptyMessage: _selectedCategory == 'All'
+                            ? 'No income recorded for this month.'
+                            : 'No income records found for category "$_selectedCategory".',
+                        icon: Icons.south_west_rounded,
+                      ),
+                      _RecordList(
+                        records: filteredExpenses,
+                        emptyMessage: _selectedCategory == 'All'
+                            ? 'No expenses recorded for this month.'
+                            : 'No expense records found for category "$_selectedCategory".',
+                        icon: Icons.north_east_rounded,
+                      ),
+                      _LedgerList(entries: filteredLedger),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 final class _RecordList extends StatelessWidget {

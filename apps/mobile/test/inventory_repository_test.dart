@@ -25,6 +25,13 @@ void main() {
       final updated = await repository.updateItem(created, const {
         'name': 'Updated Oxytocin',
       });
+      final movements = await repository.movements(updated);
+      await repository.recordStockUsage(
+        updated,
+        quantity: '2.000',
+        purpose: 'Treatment room usage',
+      );
+      final usage = await repository.stockUsageHistory();
       final exported = await repository.export(
         InventoryKind.medicine,
         InventoryExportFormat.spreadsheet,
@@ -38,6 +45,12 @@ void main() {
       expect(overview.items.single.name, 'Oxytocin');
       expect(created.currentStock, '10.000');
       expect(updated.id, created.id);
+      expect(movements.first.quantityChange, '-14.000');
+      expect(movements.first.balanceAfter, '10.000');
+      expect(movements.last.quantityChange, '24.000');
+      expect(movements.last.balanceAfter, '24.000');
+      expect(usage.single.quantity, '2.000');
+      expect(usage.single.purpose, 'Treatment room usage');
       expect(exported.bytes, [80, 75]);
       expect(exported.filename, endsWith('.xlsx'));
       expect(
@@ -47,6 +60,9 @@ void main() {
           'GET /inventory/medicine',
           'POST /inventory/medicine/items',
           'PATCH /inventory/medicine/items/item-1',
+          'GET /inventory/medicine/items/item-1/movements',
+          'POST /inventory/medicine/items/item-1/usage',
+          'GET /inventory/usage',
           'GET /inventory/medicine/exports/spreadsheet',
           'DELETE /inventory/medicine/items/item-1',
         ]),
@@ -104,6 +120,44 @@ ApiClient _api(List<RequestOptions> requests) {
                   for (final kind in InventoryKind.values)
                     kind.name: _summary(),
                 },
+              }
+            : options.path == '/inventory/usage'
+            ? {
+                'data': [
+                  {
+                    'id': 'usage-1',
+                    'item_id': 'item-1',
+                    'item_name': 'Oxytocin',
+                    'item_code': 'MED-001',
+                    'kind': 'medicine',
+                    'unit': 'vial',
+                    'quantity_change': '-2.000',
+                    'occurred_at': '2026-08-11T08:00:00Z',
+                    'reason': 'Treatment room usage',
+                    'batch_number': 'B-001',
+                  },
+                ],
+              }
+            : options.path.endsWith('/movements')
+            ? {
+                'data': [
+                  {
+                    'id': 'movement-2',
+                    'movement_type': 'consumption',
+                    'quantity_change': '-14.000',
+                    'occurred_at': '2026-08-11T09:00:00Z',
+                    'reason': 'Daily feed usage',
+                    'batch_number': 'B-001',
+                  },
+                  {
+                    'id': 'movement-1',
+                    'movement_type': 'purchase_receipt',
+                    'quantity_change': '24.000',
+                    'occurred_at': '2026-08-11T08:00:00Z',
+                    'reason': 'Stock purchase',
+                    'batch_number': 'B-001',
+                  },
+                ],
               }
             : options.path == '/inventory/medicine'
             ? {

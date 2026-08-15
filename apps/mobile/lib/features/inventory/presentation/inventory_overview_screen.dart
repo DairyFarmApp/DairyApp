@@ -9,8 +9,10 @@ import 'package:dairycare_mobile/features/inventory/domain/inventory_models.dart
 import 'package:dairycare_mobile/features/inventory/presentation/inventory_date_field.dart';
 import 'package:dairycare_mobile/features/inventory/presentation/inventory_form_validators.dart';
 import 'package:flutter/material.dart';
+import 'package:dairycare_mobile/core/formatting/pkr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 final class InventoryOverviewScreen extends ConsumerStatefulWidget {
   const InventoryOverviewScreen({super.key, required this.kind});
@@ -253,6 +255,8 @@ class _InventoryOverviewScreenState
                                 selectedIds: _selectedIds,
                                 onSelected: _selectItem,
                                 onReceipt: _receiveStock,
+                                onAdjust: _adjustStock,
+                                onHistory: _showStockHistory,
                                 onEdit: _editItem,
                                 onArchive: _archiveItem,
                                 onReceiptExport: _singleReceipt,
@@ -264,6 +268,8 @@ class _InventoryOverviewScreenState
                                 selectedIds: _selectedIds,
                                 onSelected: _selectItem,
                                 onReceipt: _receiveStock,
+                                onAdjust: _adjustStock,
+                                onHistory: _showStockHistory,
                                 onEdit: _editItem,
                                 onArchive: _archiveItem,
                                 onReceiptExport: _singleReceipt,
@@ -289,6 +295,25 @@ class _InventoryOverviewScreenState
       ref.invalidate(inventoryDashboardProvider);
     }
   }
+
+  Future<void> _adjustStock(InventoryItem item) async {
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (_) => _AdjustmentDialog(item: item),
+    );
+    if (saved ?? false) {
+      ref.invalidate(inventoryOverviewProvider(_query));
+      ref.invalidate(inventoryDashboardProvider);
+    }
+  }
+
+  Future<void> _showStockHistory(InventoryItem item) => showDialog<void>(
+    context: context,
+    builder: (context) => _StockHistoryDialog(
+      item: item,
+      movements: ref.read(inventoryRepositoryProvider).movements(item),
+    ),
+  );
 
   void _selectItem(InventoryItem item, bool selected) {
     setState(() {
@@ -615,6 +640,8 @@ final class _InventoryCards extends StatelessWidget {
     required this.selectedIds,
     required this.onSelected,
     required this.onReceipt,
+    required this.onAdjust,
+    required this.onHistory,
     required this.onEdit,
     required this.onArchive,
     required this.onReceiptExport,
@@ -626,6 +653,8 @@ final class _InventoryCards extends StatelessWidget {
   final Set<String> selectedIds;
   final void Function(InventoryItem item, bool selected) onSelected;
   final ValueChanged<InventoryItem> onReceipt;
+  final ValueChanged<InventoryItem> onAdjust;
+  final ValueChanged<InventoryItem> onHistory;
   final ValueChanged<InventoryItem> onEdit;
   final ValueChanged<InventoryItem> onArchive;
   final ValueChanged<InventoryItem> onReceiptExport;
@@ -682,6 +711,11 @@ final class _InventoryCards extends StatelessWidget {
                     runSpacing: 8,
                     alignment: WrapAlignment.end,
                     children: [
+                      OutlinedButton.icon(
+                        onPressed: () => onHistory(item),
+                        icon: const Icon(Icons.history_rounded),
+                        label: const Text('Stock history'),
+                      ),
                       if (canExport)
                         OutlinedButton.icon(
                           onPressed: () => onReceiptExport(item),
@@ -698,6 +732,11 @@ final class _InventoryCards extends StatelessWidget {
                           onPressed: () => onReceipt(item),
                           icon: const Icon(Icons.add_box_outlined),
                           label: const Text('Receive stock'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => onAdjust(item),
+                          icon: const Icon(Icons.tune),
+                          label: const Text('Adjust stock'),
                         ),
                         IconButton(
                           tooltip: 'Delete / archive item',
@@ -726,6 +765,8 @@ final class _InventoryTable extends StatelessWidget {
     required this.selectedIds,
     required this.onSelected,
     required this.onReceipt,
+    required this.onAdjust,
+    required this.onHistory,
     required this.onEdit,
     required this.onArchive,
     required this.onReceiptExport,
@@ -737,6 +778,8 @@ final class _InventoryTable extends StatelessWidget {
   final Set<String> selectedIds;
   final void Function(InventoryItem item, bool selected) onSelected;
   final ValueChanged<InventoryItem> onReceipt;
+  final ValueChanged<InventoryItem> onAdjust;
+  final ValueChanged<InventoryItem> onHistory;
   final ValueChanged<InventoryItem> onEdit;
   final ValueChanged<InventoryItem> onArchive;
   final ValueChanged<InventoryItem> onReceiptExport;
@@ -778,6 +821,11 @@ final class _InventoryTable extends StatelessWidget {
                   Wrap(
                     spacing: 2,
                     children: [
+                      IconButton(
+                        tooltip: 'Stock history',
+                        onPressed: () => onHistory(item),
+                        icon: const Icon(Icons.history_rounded),
+                      ),
                       if (canExport)
                         IconButton(
                           tooltip: 'Download item receipt',
@@ -796,6 +844,11 @@ final class _InventoryTable extends StatelessWidget {
                           icon: const Icon(Icons.add_box_outlined),
                         ),
                         IconButton(
+                          tooltip: 'Adjust stock',
+                          onPressed: () => onAdjust(item),
+                          icon: const Icon(Icons.tune),
+                        ),
+                        IconButton(
                           tooltip: 'Delete / archive item',
                           onPressed: () => onArchive(item),
                           icon: const Icon(Icons.delete_outline_rounded),
@@ -811,6 +864,93 @@ final class _InventoryTable extends StatelessWidget {
     ),
   );
 }
+
+final class _StockHistoryDialog extends StatelessWidget {
+  const _StockHistoryDialog({required this.item, required this.movements});
+
+  final InventoryItem item;
+  final Future<List<InventoryMovement>> movements;
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text('${item.name} stock history'),
+    content: SizedBox(
+      width: 680,
+      height: 520,
+      child: FutureBuilder<List<InventoryMovement>>(
+        future: movements,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Could not load stock history.\n${snapshot.error}'),
+            );
+          }
+          final entries = snapshot.data ?? const [];
+          if (entries.isEmpty) {
+            return const Center(
+              child: Text('No stock transactions recorded yet.'),
+            );
+          }
+          return ListView.separated(
+            itemCount: entries.length,
+            separatorBuilder: (_, _) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final entry = entries[index];
+              final color = entry.isAddition
+                  ? const Color(0xFF2BAE74)
+                  : Theme.of(context).colorScheme.error;
+              final quantity = double.parse(
+                entry.quantityChange,
+              ).abs().toStringAsFixed(3);
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: color.withValues(alpha: 0.12),
+                  child: Icon(
+                    entry.isAddition ? Icons.add_rounded : Icons.remove_rounded,
+                    color: color,
+                  ),
+                ),
+                title: Text(
+                  '${entry.isAddition ? '+' : '-'}$quantity ${item.unit} · ${_movementLabel(entry.movementType)}',
+                  style: TextStyle(color: color, fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text(
+                  [
+                    DateFormat('dd MMM yyyy, hh:mm a').format(entry.occurredAt),
+                    if (entry.batchNumber?.isNotEmpty ?? false)
+                      'Batch ${entry.batchNumber}',
+                    if (entry.reason?.isNotEmpty ?? false) entry.reason!,
+                  ].join(' · '),
+                ),
+                trailing: Text(
+                  'Balance\n${entry.balanceAfter} ${item.unit}',
+                  textAlign: TextAlign.right,
+                ),
+              );
+            },
+          );
+        },
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Close'),
+      ),
+    ],
+  );
+}
+
+String _movementLabel(String type) => switch (type) {
+  'opening_stock' => 'Opening stock',
+  'purchase_receipt' => 'Purchased / received',
+  'consumption' => 'Stock used',
+  'adjustment' => 'Stock adjustment',
+  _ => type.replaceAll('_', ' '),
+};
 
 final class _StatusPill extends StatelessWidget {
   const _StatusPill({required this.item});
@@ -1094,10 +1234,10 @@ class _ReceiptDialogState extends ConsumerState<_ReceiptDialog> {
               ),
               _field(
                 _cost,
-                'Rate per unit',
+                'Rate per unit (PKR)',
                 required: true,
                 number: true,
-                decimalPlaces: 4,
+                decimalPlaces: 2,
               ),
               SizedBox(
                 width: 552,
@@ -1200,6 +1340,125 @@ String _nextExpiry(InventoryItem item) {
   return dates.first.toIso8601String().split('T').first;
 }
 
-String _money(String value) => double.parse(value).toStringAsFixed(2);
+final class _AdjustmentDialog extends ConsumerStatefulWidget {
+  const _AdjustmentDialog({required this.item});
+  final InventoryItem item;
+  @override
+  ConsumerState<_AdjustmentDialog> createState() => _AdjustmentState();
+}
+
+final class _AdjustmentState extends ConsumerState<_AdjustmentDialog> {
+  final quantity = TextEditingController(), reason = TextEditingController();
+  String type = 'decrease';
+  String? batch;
+  bool saving = false;
+  @override
+  void dispose() {
+    quantity.dispose();
+    reason.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text('Adjust ${widget.item.name} / Stock durust karein'),
+    content: SizedBox(
+      width: 480,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropdownButtonFormField<String>(
+            initialValue: batch,
+            decoration: const InputDecoration(labelText: 'Batch'),
+            items: [
+              for (final b in widget.item.batches)
+                DropdownMenuItem(
+                  value: b.id,
+                  child: Text('${b.batchNumber} · ${b.currentQuantity}'),
+                ),
+            ],
+            onChanged: (v) => setState(() => batch = v),
+          ),
+          DropdownButtonFormField(
+            initialValue: type,
+            decoration: const InputDecoration(
+              labelText: 'Adjustment / Tabdeeli',
+            ),
+            items: const [
+              DropdownMenuItem(
+                value: 'increase',
+                child: Text('Increase / Barhayein'),
+              ),
+              DropdownMenuItem(
+                value: 'decrease',
+                child: Text('Decrease / Kam karein'),
+              ),
+              DropdownMenuItem(
+                value: 'damage',
+                child: Text('Damaged / Kharab'),
+              ),
+              DropdownMenuItem(
+                value: 'expiry',
+                child: Text('Expired / Muddat khatam'),
+              ),
+            ],
+            onChanged: (v) => setState(() => type = v ?? type),
+          ),
+          TextField(
+            controller: quantity,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              labelText: 'Quantity (${widget.item.unit})',
+            ),
+          ),
+          TextField(
+            controller: reason,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              labelText: 'Reason (required) / Wajah',
+            ),
+          ),
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context, false),
+        child: const Text('Cancel'),
+      ),
+      FilledButton(
+        onPressed: saving ? null : _save,
+        child: const Text('Save adjustment'),
+      ),
+    ],
+  );
+  Future<void> _save() async {
+    if (batch == null ||
+        quantity.text.trim().isEmpty ||
+        reason.text.trim().length < 10) {
+      return;
+    }
+    setState(() => saving = true);
+    try {
+      await ref.read(inventoryRepositoryProvider).adjustStock(widget.item, {
+        'batch_id': batch,
+        'adjustment_type': type,
+        'quantity': quantity.text.trim(),
+        'occurred_at': DateTime.now().toUtc().toIso8601String(),
+        'reason': reason.text.trim(),
+      });
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
+      }
+      setState(() => saving = false);
+    }
+  }
+}
+
+String _money(String value) => formatPkr(value);
 
 String? _nullable(String value) => value.trim().isEmpty ? null : value.trim();

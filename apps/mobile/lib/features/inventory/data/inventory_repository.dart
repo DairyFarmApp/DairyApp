@@ -66,6 +66,37 @@ final class InventoryRepository {
     );
   }
 
+  Future<void> adjustStock(
+    InventoryItem item,
+    Map<String, dynamic> payload,
+  ) async {
+    await _api.postJson(
+      '/inventory/items/${item.id}/adjustments',
+      data: payload,
+      idempotencyKey: _uuid.v7(),
+    );
+  }
+
+  Future<List<InventoryMovement>> movements(InventoryItem item) async {
+    final body = await _api.getJson(
+      '/inventory/${item.kind.apiValue}/items/${item.id}/movements',
+    );
+    final rows = (body['data'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>();
+    var balance = double.parse(item.currentStock);
+    final movements = <InventoryMovement>[];
+    for (final row in rows) {
+      movements.add(
+        InventoryMovement.fromJson(
+          row,
+          balanceAfter: balance.toStringAsFixed(3),
+        ),
+      );
+      balance -= double.parse(row['quantity_change'].toString());
+    }
+    return movements;
+  }
+
   Future<InventoryItem> updateItem(
     InventoryItem item,
     Map<String, dynamic> payload,
@@ -81,6 +112,37 @@ final class InventoryRepository {
     await _api.deleteJson(
       '/inventory/${item.kind.apiValue}/items/${item.id}',
       data: {'version': item.version},
+    );
+  }
+
+  Future<List<InventoryItem>> stockUsageItems() async {
+    final overviews = await Future.wait(
+      InventoryKind.values.map((kind) => overview(kind)),
+    );
+    return overviews
+        .expand((overview) => overview.items)
+        .where((item) => double.parse(item.currentStock) > 0)
+        .toList(growable: false)
+      ..sort((a, b) => a.name.compareTo(b.name));
+  }
+
+  Future<List<StockUsageRecord>> stockUsageHistory() async {
+    final body = await _api.getJson('/inventory/usage');
+    return (body['data'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>()
+        .map(StockUsageRecord.fromJson)
+        .toList(growable: false);
+  }
+
+  Future<void> recordStockUsage(
+    InventoryItem item, {
+    required String quantity,
+    required String purpose,
+  }) async {
+    await _api.postJson(
+      '/inventory/${item.kind.apiValue}/items/${item.id}/usage',
+      data: {'quantity': quantity, 'purpose': purpose},
+      idempotencyKey: _uuid.v7(),
     );
   }
 

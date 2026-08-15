@@ -34,34 +34,78 @@ class FinanceController extends Controller
     {
         [$start, $end] = $this->month($request);
         $profitLoss = $this->profitLossData($request, $start, $end);
+        $orgId = $this->organizationId($request);
+        $farmId = $this->farmId($request);
+        $range = $this->dateRange($start, $end);
+
+        $totalSales = (float) IncomeRecord::query()
+            ->where('organization_id', $orgId)
+            ->where('farm_id', $farmId)
+            ->whereBetween('recorded_on', $range)
+            ->sum('amount');
+
+        $totalPurchases = (float) ExpenseRecord::query()
+            ->where('organization_id', $orgId)
+            ->where('farm_id', $farmId)
+            ->whereBetween('recorded_on', $range)
+            ->whereIn('category', [
+                'Feed', 'Medicine', 'Veterinary charges', 'Electricity', 'Fuel',
+                'Transport', 'Repairs', 'Rent', 'Water', 'Inventory Purchases',
+                'Cleaning', 'Laboratory', 'Miscellaneous', 'General Expense',
+            ])
+            ->sum('amount');
+
+        $totalInvestments = (float) ExpenseRecord::query()
+            ->where('organization_id', $orgId)
+            ->where('farm_id', $farmId)
+            ->whereBetween('recorded_on', $range)
+            ->whereIn('category', ['Animal Purchases', 'Equipment'])
+            ->sum('amount');
+
+        $paidPayroll = (float) PayrollPeriod::query()
+            ->where('organization_id', $orgId)
+            ->where('farm_id', $farmId)
+            ->where('status', 'paid')
+            ->whereBetween('paid_at', [$start, $end])
+            ->sum('total_basic_salary');
+
+        $outstandingLoans = (float) EmployeeLoan::query()
+            ->where('organization_id', $orgId)
+            ->where('farm_id', $farmId)
+            ->sum('outstanding_amount');
+
+        $unpaidPayroll = (float) PayrollPeriod::query()
+            ->where('organization_id', $orgId)
+            ->where('farm_id', $farmId)
+            ->where('status', 'draft')
+            ->sum('total_basic_salary');
 
         return ApiResponse::success($request, [
             'currency' => 'PKR',
             'month' => $start->format('Y-m'),
             ...$profitLoss,
-            'paid_payroll' => $this->money(PayrollPeriod::query()
-                ->where('organization_id', $this->organizationId($request))
-                ->where('farm_id', $this->farmId($request))
-                ->where('status', 'paid')
-                ->whereBetween('paid_at', [$start, $end])
-                ->sum('total_basic_salary')),
-            'outstanding_employee_loans' => $this->money(EmployeeLoan::query()
-                ->where('organization_id', $this->organizationId($request))
-                ->where('farm_id', $this->farmId($request))
-                ->sum('outstanding_amount')),
+            'total_sales' => $this->money($totalSales),
+            'total_purchases' => $this->money($totalPurchases),
+            'total_investments' => $this->money($totalInvestments),
+            'total_liabilities' => $this->money($outstandingLoans + $unpaidPayroll),
+            'paid_payroll' => $this->money($paidPayroll),
+            'outstanding_employee_loans' => $this->money($outstandingLoans),
         ]);
     }
 
     public function income(Request $request): JsonResponse
     {
         [$start, $end] = $this->month($request);
-        $records = IncomeRecord::query()
+        $query = IncomeRecord::query()
             ->where('organization_id', $this->organizationId($request))
             ->where('farm_id', $this->farmId($request))
-            ->whereBetween('recorded_on', $this->dateRange($start, $end))
-            ->orderByDesc('recorded_on')
-            ->limit(200)
-            ->get();
+            ->whereBetween('recorded_on', $this->dateRange($start, $end));
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->query('category'));
+        }
+
+        $records = $query->orderByDesc('recorded_on')->limit(200)->get();
 
         return ApiResponse::success($request, [
             'currency' => 'PKR',
@@ -77,13 +121,16 @@ class FinanceController extends Controller
     public function expenses(Request $request): JsonResponse
     {
         [$start, $end] = $this->month($request);
-        $records = ExpenseRecord::query()
+        $query = ExpenseRecord::query()
             ->where('organization_id', $this->organizationId($request))
             ->where('farm_id', $this->farmId($request))
-            ->whereBetween('recorded_on', $this->dateRange($start, $end))
-            ->orderByDesc('recorded_on')
-            ->limit(200)
-            ->get();
+            ->whereBetween('recorded_on', $this->dateRange($start, $end));
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->query('category'));
+        }
+
+        $records = $query->orderByDesc('recorded_on')->limit(200)->get();
 
         return ApiResponse::success($request, [
             'currency' => 'PKR',

@@ -6,9 +6,14 @@
     <style>
         @page { margin: 28px; }
         body { color: #17211e; font-family: "DejaVu Sans", sans-serif; font-size: 10px; }
-        h1 { color: #0e6b57; font-size: 23px; margin: 0 0 4px; }
+        h1 { color: #ffffff; font-size: 23px; margin: 0 0 4px; }
         h2 { color: #0e6b57; font-size: 15px; margin: 22px 0 7px; }
         .muted { color: #66746f; }
+        .hero { background: #0e6b57; color: #ffffff; padding: 18px 20px; }
+        .hero .subtitle { color: #d9f3ec; font-size: 11px; }
+        .identity { background: #eef8f5; border-left: 4px solid #0e6b57; margin-top: 12px; padding: 10px 12px; }
+        .identity table { margin: 0; }
+        .identity td { border: 0; padding: 2px 12px 2px 0; }
         .meta { border: 1px solid #cbd8d3; border-radius: 5px; margin-top: 12px; padding: 9px; }
         .meta span { display: inline-block; margin-right: 28px; }
         table { border-collapse: collapse; margin-top: 7px; width: 100%; }
@@ -21,8 +26,20 @@
     </style>
 </head>
 <body>
-    <h1>DairyCare inventory receipt</h1>
-    <div class="muted">{{ $farm->name }} · {{ ucfirst($kind) }} inventory</div>
+    <div class="hero">
+        <h1>DairyCare</h1>
+        <div class="subtitle">{{ $items->count() === 1 ? 'Inventory item record' : 'Inventory management report' }}</div>
+    </div>
+    <div class="identity">
+        <table>
+            <tr>
+                <td><strong>Farm</strong><br>{{ $farm->name }}</td>
+                <td><strong>Owner</strong><br>{{ $owner?->name ?? 'Not provided' }}</td>
+                <td><strong>Phone</strong><br>{{ $owner?->phone_number ?? 'Not provided' }}</td>
+                <td><strong>Section</strong><br>{{ ucfirst($kind) }} inventory</td>
+            </tr>
+        </table>
+    </div>
     <div class="meta">
         <span><strong>Generated:</strong> {{ $generatedAt->format('Y-m-d H:i:s T') }}</span>
         <span><strong>Movement period:</strong>

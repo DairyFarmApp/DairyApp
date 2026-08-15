@@ -47,5 +47,9 @@ class AppServiceProvider extends ServiceProvider
             Limit::perHour(10)->by($request->ip()),
             Limit::perHour(5)->by('signup:'.hash('sha256', strtolower((string) $request->input('email')))),
         ]);
+        RateLimiter::for('health-ai', fn (Request $request) => [
+            Limit::perMinute(12)->by('health-ai-session:'.hash('sha256', (string) $request->bearerToken())),
+            Limit::perMinute(60)->by('health-ai-ip:'.$request->ip()),
+        ]);
     }
 }

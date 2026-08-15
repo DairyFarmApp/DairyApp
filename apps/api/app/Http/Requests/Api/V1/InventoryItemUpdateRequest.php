@@ -15,6 +15,12 @@ class InventoryItemUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:180'],
+            'generic_name' => ['nullable', 'string', 'max:180'],
+            'drap_registration_number' => ['nullable', 'string', 'max:100'],
+            'concentration' => ['nullable', 'string', 'max:100'],
+            'milk_withdrawal_hours' => ['nullable', 'integer', 'min:0', 'max:8760'],
+            'meat_withdrawal_days' => ['nullable', 'integer', 'min:0', 'max:3650'],
+            'regulatory_verified_on' => ['nullable', 'date', 'before_or_equal:today'],
             'category' => ['required', 'string', 'max:100'],
             'barcode' => ['nullable', 'string', 'max:120'],
             'brand' => ['nullable', 'string', 'max:160'],

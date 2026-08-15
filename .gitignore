@@ -45,3 +45,5 @@ coverage/
 *.log
 .phpunit.result.cache
 .phpunit.cache/
+apps/api/dairycare_test
+ScreenShots/

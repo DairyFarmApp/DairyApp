@@ -1,5 +1,4 @@
 import 'package:dairycare_mobile/app/theme.dart';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 final class GlassBackground extends StatelessWidget {
@@ -9,41 +8,9 @@ final class GlassBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: dark
-              ? const [Color(0xFF07120F), Color(0xFF10231C), Color(0xFF0B151C)]
-              : const [Color(0xFFF8FBF8), Color(0xFFEAF6F0), Color(0xFFF4F7FD)],
-        ),
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            left: -140,
-            top: -160,
-            child: _Glow(
-              color: AppColors.meadow.withValues(alpha: dark ? 0.18 : 0.13),
-              size: 440,
-            ),
-          ),
-          Positioned(
-            right: -100,
-            bottom: -180,
-            child: _Glow(
-              color: const Color(
-                0xFF5B7CFA,
-              ).withValues(alpha: dark ? 0.12 : 0.08),
-              size: 420,
-            ),
-          ),
-          child,
-        ],
-      ),
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: child,
     );
   }
 }
@@ -53,7 +20,7 @@ final class GlassSurface extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(20),
-    this.borderRadius = 22,
+    this.borderRadius = 8,
   });
 
   final Widget child;
@@ -62,56 +29,23 @@ final class GlassSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: dark
-                ? Colors.white.withValues(alpha: 0.055)
-                : Colors.white.withValues(alpha: 0.58),
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(
-              color: dark
-                  ? Colors.white.withValues(alpha: 0.12)
-                  : Colors.white.withValues(alpha: 0.86),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: dark ? 0.18 : 0.06),
-                blurRadius: 28,
-                offset: const Offset(0, 14),
-              ),
-            ],
-          ),
-          child: child,
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+        side: BorderSide(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF374151)
+              : const Color(0xFFE5E7EB),
         ),
       ),
+      child: Padding(padding: padding, child: child),
     );
   }
 }
 
-final class _Glow extends StatelessWidget {
-  const _Glow({required this.color, required this.size});
-
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) => IgnorePointer(
-    child: ImageFiltered(
-      imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      ),
-    ),
-  );
-}
+// Removed _Glow
 
 final class AppMark extends StatelessWidget {
   const AppMark({super.key, this.size = 44, this.inverted = false});
@@ -223,6 +157,7 @@ final class MetricCard extends StatelessWidget {
     required this.icon,
     this.helper,
     this.color,
+    this.solidBackground = false,
   });
 
   final String label;
@@ -230,11 +165,27 @@ final class MetricCard extends StatelessWidget {
   final IconData icon;
   final String? helper;
   final Color? color;
+  final bool solidBackground;
 
   @override
   Widget build(BuildContext context) {
     final accent = color ?? Theme.of(context).colorScheme.primary;
+    final cardColor = solidBackground
+        ? accent
+        : Theme.of(context).cardTheme.color;
+    final textColor = solidBackground
+        ? Colors.white
+        : Theme.of(context).colorScheme.onSurface;
+    final mutedTextColor = solidBackground
+        ? Colors.white70
+        : Theme.of(context).colorScheme.onSurfaceVariant;
+    final iconBgColor = solidBackground
+        ? Colors.white.withValues(alpha: 0.2)
+        : accent.withValues(alpha: 0.12);
+    final iconColor = solidBackground ? Colors.white : accent;
+
     return Card(
+      color: cardColor,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -244,29 +195,40 @@ final class MetricCard extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: accent.withValues(alpha: 0.12),
+                color: iconBgColor,
                 borderRadius: BorderRadius.circular(13),
               ),
-              child: Icon(icon, color: accent, size: 22),
+              child: Icon(icon, color: iconColor, size: 22),
             ),
             const Spacer(),
-            Text(
-              value,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                maxLines: 1,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: textColor,
+                ),
+              ),
             ),
             const SizedBox(height: 3),
-            Text(label, style: Theme.of(context).textTheme.titleSmall),
+            Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(color: mutedTextColor),
+            ),
             if (helper != null) ...[
               const SizedBox(height: 5),
               Text(
                 helper!,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: mutedTextColor),
               ),
             ],
           ],
@@ -350,4 +312,4 @@ final class ResponsiveContent extends StatelessWidget {
   );
 }
 
-const dashboardAccentGold = AppColors.gold;
+const dashboardAccentGold = AppColors.cardYellow;

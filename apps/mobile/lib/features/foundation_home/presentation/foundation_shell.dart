@@ -17,7 +17,7 @@ final class FoundationShell extends ConsumerStatefulWidget {
 }
 
 final class _FoundationShellState extends ConsumerState<FoundationShell> {
-  bool _employeesExpanded = false;
+  bool _settingsExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -30,40 +30,12 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
         Icons.dashboard_rounded,
         '/home',
       ),
-      if (session?.can('farms.view') ?? false)
+      if (session?.can('alerts.view') ?? false)
         const _Destination(
-          'Farm',
-          Icons.agriculture_outlined,
-          Icons.agriculture_rounded,
-          '/farms',
-        ),
-      if (session?.can('sheds.view') ?? false)
-        const _Destination(
-          'Sheds',
-          Icons.warehouse_outlined,
-          Icons.warehouse_rounded,
-          '/sheds',
-        ),
-      if (session?.can('animals.view') ?? false)
-        const _Destination(
-          'Animals',
-          Icons.pets_outlined,
-          Icons.pets_rounded,
-          '/animals',
-        ),
-      if (session?.can('animal_breeds.view') ?? false)
-        const _Destination(
-          'Breeds',
-          Icons.category_outlined,
-          Icons.category_rounded,
-          '/animal-breeds',
-        ),
-      if (session?.can('inventory.view') ?? false)
-        const _Destination(
-          'Inventory',
-          Icons.inventory_2_outlined,
-          Icons.inventory_2_rounded,
-          '/inventory',
+          'Alerts & Reminders',
+          Icons.notifications_active_outlined,
+          Icons.notifications_active_rounded,
+          '/alerts',
         ),
       if (session?.can('milk.view') ?? false)
         const _Destination(
@@ -72,57 +44,166 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
           Icons.water_drop_rounded,
           '/milk',
         ),
+      if (session?.can('milk_sales.view') ?? false)
+        const _Destination(
+          'Milk Sales',
+          Icons.point_of_sale_outlined,
+          Icons.point_of_sale_rounded,
+          '/milk-sales',
+          navigationKey: Key('main_milk_sales_menu_action'),
+        ),
+      if (session?.can('deliveries.view') ?? false)
+        const _Destination(
+          'Milk Deliveries',
+          Icons.local_shipping_outlined,
+          Icons.local_shipping_rounded,
+          '/deliveries',
+          navigationKey: Key('main_deliveries_menu_action'),
+        ),
+      if (session?.can('health.view') ?? false)
+        const _Destination(
+          'Animal Health Guide',
+          Icons.health_and_safety_outlined,
+          Icons.health_and_safety_rounded,
+          '/health-guide',
+        ),
+      if (session?.can('milk.view') ?? false)
+        const _Destination(
+          'Milking & Daily Feed',
+          Icons.bar_chart_outlined,
+          Icons.bar_chart_rounded,
+          '/reports/daily-production',
+        ),
+      if (session?.can('inventory.view') ?? false)
+        const _Destination(
+          'Stock Usage',
+          Icons.assignment_outlined,
+          Icons.assignment_rounded,
+          '/inventory/indents',
+        ),
+      if (session?.can('inventory.view') ?? false)
+        const _Destination(
+          'Feed Analysis',
+          Icons.analytics_outlined,
+          Icons.analytics_rounded,
+          '/feed/analysis',
+        ),
+      if (session?.can('inventory.view') ?? false)
+        const _Destination(
+          'Manage Inventory',
+          Icons.inventory_2_outlined,
+          Icons.inventory_2_rounded,
+          '/inventory',
+        ),
+      if (session?.can('animals.view') ?? false)
+        const _Destination(
+          'Cattle Management',
+          Icons.pets_outlined,
+          Icons.pets_rounded,
+          '/animals',
+        ),
+      if (session?.can('sheds.view') ?? false)
+        const _Destination(
+          'Animal Housing',
+          Icons.warehouse_outlined,
+          Icons.warehouse_rounded,
+          '/sheds',
+        ),
+      if (session?.can('animals.view') ?? false)
+        const _Destination(
+          'Cattles Sale/Purchase',
+          Icons.storefront_outlined,
+          Icons.storefront_rounded,
+          '/animals/sales-dashboard',
+          relatedPaths: ['/animals/purchases/new', '/animals/sales/new'],
+        ),
+      if (session?.can('customers.view') ?? false)
+        const _Destination(
+          'Customers',
+          Icons.people_alt_outlined,
+          Icons.people_alt_rounded,
+          '/customers',
+          navigationKey: Key('main_customers_menu_action'),
+        ),
+      if (session?.can('suppliers.view') ?? false)
+        const _Destination(
+          'Suppliers',
+          Icons.local_shipping_outlined,
+          Icons.local_shipping_rounded,
+          '/suppliers',
+          navigationKey: Key('main_suppliers_menu_action'),
+        ),
+      if (session?.can('purchases.view') ?? false)
+        const _Destination(
+          'Purchase Orders',
+          Icons.shopping_cart_checkout_outlined,
+          Icons.shopping_cart_checkout_rounded,
+          '/purchases',
+          navigationKey: Key('main_purchase_orders_menu_action'),
+        ),
+      if (session?.can('supplier_invoices.view') ?? false)
+        const _Destination(
+          'Supplier Invoices',
+          Icons.request_quote_outlined,
+          Icons.request_quote_rounded,
+          '/supplier-invoices',
+          navigationKey: Key('main_supplier_invoices_menu_action'),
+        ),
       const _Destination(
-        'Employees',
+        'Manage Users',
         Icons.groups_2_outlined,
         Icons.groups_2_rounded,
         '/employees',
         relatedPaths: ['/payroll', '/employee-loans'],
-        togglesEmployeeSubmenu: true,
       ),
+      if (session?.can('finance.view') ?? false)
+        const _Destination(
+          'Finance',
+          Icons.account_balance_wallet_outlined,
+          Icons.account_balance_wallet_rounded,
+          '/finance',
+          navigationKey: Key('main_finance_menu_action'),
+        ),
       const _Destination(
-        'Finance',
-        Icons.query_stats_outlined,
-        Icons.query_stats_rounded,
-        '/finance',
+        'Settings',
+        Icons.settings_outlined,
+        Icons.settings_rounded,
+        '/settings', // Dummy path, used to toggle submenu
+        togglesSettingsSubmenu: true,
       ),
+    ];
+    final settingsSubdestinations = [
+      if (session?.can('farms.view') ?? false)
+        const _Destination(
+          'Farm',
+          Icons.agriculture_outlined,
+          Icons.agriculture_rounded,
+          '/farms',
+          isSubdestination: true,
+          navigationKey: Key('settings_farm_menu_action'),
+        ),
+      if (session?.can('animal_breeds.view') ?? false)
+        const _Destination(
+          'Breeds',
+          Icons.category_outlined,
+          Icons.category_rounded,
+          '/animal-breeds',
+          isSubdestination: true,
+          navigationKey: Key('settings_breeds_menu_action'),
+        ),
       const _Destination(
-        'Sync',
+        'Sync Diagnostics',
         Icons.sync_outlined,
         Icons.sync_rounded,
         '/sync',
+        isSubdestination: true,
+        navigationKey: Key('settings_sync_menu_action'),
       ),
     ];
-    const employeeSubdestinations = [
-      _Destination(
-        'Employee list',
-        Icons.badge_outlined,
-        Icons.badge_rounded,
-        '/employees',
-        isSubdestination: true,
-        navigationKey: Key('employee_list_menu_action'),
-      ),
-      _Destination(
-        'Salary',
-        Icons.payments_outlined,
-        Icons.payments_rounded,
-        '/payroll',
-        isSubdestination: true,
-        navigationKey: Key('employee_salary_menu_action'),
-      ),
-      _Destination(
-        'Loans',
-        Icons.account_balance_wallet_outlined,
-        Icons.account_balance_wallet_rounded,
-        '/employee-loans',
-        isSubdestination: true,
-        navigationKey: Key('employee_loans_menu_action'),
-      ),
-    ];
-    final onEmployeeRoute = employeeSubdestinations.any(
+    final onSettingsRoute = settingsSubdestinations.any(
       (item) => item.matchesPrimary(location),
     );
-    final showEmployeeSubmenu = _employeesExpanded || onEmployeeRoute;
+    final showSettingsSubmenu = _settingsExpanded || onSettingsRoute;
     final compactIndex = _selectedIndex(destinations, location);
     final width = MediaQuery.sizeOf(context).width;
     final wide = width >= 760;
@@ -134,7 +215,9 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
 
     final content = Scaffold(
       appBar: AppBar(
-        toolbarHeight: 72,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+        toolbarHeight: 64,
         titleSpacing: wide ? 24 : 16,
         title: Row(
           children: [
@@ -334,31 +417,31 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
           : _CompactNavigation(
               destinations: destinations,
               selectedIndex: compactIndex,
-              employeeSubmenuExpanded: showEmployeeSubmenu,
-              employeeSubdestinations: employeeSubdestinations,
+              settingsSubmenuExpanded: showSettingsSubmenu,
+              settingsSubdestinations: settingsSubdestinations,
               selectedPath: location,
               onSelected: (value) =>
                   _selectDestination(context, destinations[value]),
-              onEmployeeSubdestinationSelected: (destination) =>
+              onSettingsSubdestinationSelected: (destination) =>
                   context.go(destination.path),
             ),
     );
 
-    if (!wide) return GlassBackground(child: content);
-    return GlassBackground(
-      child: Row(
+    if (!wide) return content;
+    return Scaffold(
+      body: Row(
         children: [
           Container(
-            width: width >= 1080 ? 224 : 96,
-            color: Theme.of(context).colorScheme.surface,
+            width: width >= 1080 ? 250 : 80,
+            color: Theme.of(context).navigationRailTheme.backgroundColor,
             child: Column(
               children: [
                 Padding(
                   padding: EdgeInsets.fromLTRB(
                     width >= 1080 ? 20 : 12,
-                    18,
+                    24,
                     width >= 1080 ? 20 : 12,
-                    14,
+                    24,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -372,8 +455,8 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
                             maxLines: 1,
                             style: TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -384,8 +467,8 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
                 Expanded(
                   child: _WideNavigation(
                     destinations: destinations,
-                    employeeSubdestinations: employeeSubdestinations,
-                    employeeSubmenuExpanded: showEmployeeSubmenu,
+                    settingsSubdestinations: settingsSubdestinations,
+                    settingsSubmenuExpanded: showSettingsSubmenu,
                     selectedPath: location,
                     extended: width >= 1080,
                     onSelected: (destination) =>
@@ -403,8 +486,8 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
   }
 
   void _selectDestination(BuildContext context, _Destination destination) {
-    if (destination.togglesEmployeeSubmenu) {
-      setState(() => _employeesExpanded = !_employeesExpanded);
+    if (destination.togglesSettingsSubmenu) {
+      setState(() => _settingsExpanded = !_settingsExpanded);
       return;
     }
     context.go(destination.path);
@@ -414,16 +497,16 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
 final class _WideNavigation extends StatelessWidget {
   const _WideNavigation({
     required this.destinations,
-    required this.employeeSubdestinations,
-    required this.employeeSubmenuExpanded,
+    required this.settingsSubdestinations,
+    required this.settingsSubmenuExpanded,
     required this.selectedPath,
     required this.extended,
     required this.onSelected,
   });
 
   final List<_Destination> destinations;
-  final List<_Destination> employeeSubdestinations;
-  final bool employeeSubmenuExpanded;
+  final List<_Destination> settingsSubdestinations;
+  final bool settingsSubmenuExpanded;
   final String selectedPath;
   final bool extended;
   final ValueChanged<_Destination> onSelected;
@@ -433,17 +516,17 @@ final class _WideNavigation extends StatelessWidget {
     color: Colors.transparent,
     child: ListView(
       key: const Key('wide_sidebar_navigation'),
-      padding: const EdgeInsets.fromLTRB(10, 8, 10, 20),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 20),
       children: [
         for (final destination in destinations) ...[
           _SidebarDestinationTile(
             destination: destination,
             selected: destination.matches(selectedPath),
             extended: extended,
-            employeeSubmenuExpanded: employeeSubmenuExpanded,
+            settingsSubmenuExpanded: settingsSubmenuExpanded,
             onTap: () => onSelected(destination),
           ),
-          if (destination.togglesEmployeeSubmenu)
+          if (destination.togglesSettingsSubmenu)
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 240),
               reverseDuration: const Duration(milliseconds: 180),
@@ -454,24 +537,24 @@ final class _WideNavigation extends StatelessWidget {
                 axisAlignment: -1,
                 child: FadeTransition(opacity: animation, child: child),
               ),
-              child: employeeSubmenuExpanded
+              child: settingsSubmenuExpanded
                   ? Column(
-                      key: const Key('employee_slide_down_menu'),
+                      key: const Key('settings_slide_down_menu'),
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        for (final subdestination in employeeSubdestinations)
+                        for (final subdestination in settingsSubdestinations)
                           _SidebarDestinationTile(
                             destination: subdestination,
                             selected: subdestination.matchesPrimary(
                               selectedPath,
                             ),
                             extended: extended,
-                            employeeSubmenuExpanded: employeeSubmenuExpanded,
+                            settingsSubmenuExpanded: settingsSubmenuExpanded,
                             onTap: () => onSelected(subdestination),
                           ),
                       ],
                     )
-                  : const SizedBox(key: Key('employee_slide_down_menu_closed')),
+                  : const SizedBox(key: Key('settings_slide_down_menu_closed')),
             ),
         ],
       ],
@@ -484,14 +567,14 @@ final class _SidebarDestinationTile extends StatelessWidget {
     required this.destination,
     required this.selected,
     required this.extended,
-    required this.employeeSubmenuExpanded,
+    required this.settingsSubmenuExpanded,
     required this.onTap,
   });
 
   final _Destination destination;
   final bool selected;
   final bool extended;
-  final bool employeeSubmenuExpanded;
+  final bool settingsSubmenuExpanded;
   final VoidCallback onTap;
 
   @override
@@ -512,24 +595,30 @@ final class _SidebarDestinationTile extends StatelessWidget {
           ? Text(
               destination.label,
               style: destination.isSubdestination
-                  ? Theme.of(context).textTheme.bodyMedium
+                  ? Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.white70)
                   : Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
+                      color: selected ? Colors.white : Colors.white70,
                     ),
             )
           : null,
-      trailing: extended && destination.togglesEmployeeSubmenu
+      trailing: extended && destination.togglesSettingsSubmenu
           ? AnimatedRotation(
-              turns: employeeSubmenuExpanded ? 0.5 : 0,
+              turns: settingsSubmenuExpanded ? 0.5 : 0,
               duration: const Duration(milliseconds: 220),
-              child: const Icon(Icons.keyboard_arrow_down_rounded),
+              child: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: selected ? Colors.white : Colors.white70,
+              ),
             )
           : null,
       selected: selected,
-      selectedTileColor: Theme.of(
-        context,
-      ).colorScheme.primaryContainer.withValues(alpha: 0.7),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      iconColor: Colors.white70,
+      selectedColor: Colors.white,
+      selectedTileColor: Theme.of(context).colorScheme.primary,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       onTap: onTap,
     );
     return Padding(
@@ -543,24 +632,24 @@ final class _CompactNavigation extends StatelessWidget {
   const _CompactNavigation({
     required this.destinations,
     required this.selectedIndex,
-    required this.employeeSubmenuExpanded,
-    required this.employeeSubdestinations,
+    required this.settingsSubmenuExpanded,
+    required this.settingsSubdestinations,
     required this.selectedPath,
     required this.onSelected,
-    required this.onEmployeeSubdestinationSelected,
+    required this.onSettingsSubdestinationSelected,
   });
 
   final List<_Destination> destinations;
   final int selectedIndex;
-  final bool employeeSubmenuExpanded;
-  final List<_Destination> employeeSubdestinations;
+  final bool settingsSubmenuExpanded;
+  final List<_Destination> settingsSubdestinations;
   final String selectedPath;
   final ValueChanged<int> onSelected;
-  final ValueChanged<_Destination> onEmployeeSubdestinationSelected;
+  final ValueChanged<_Destination> onSettingsSubdestinationSelected;
 
   @override
   Widget build(BuildContext context) => Material(
-    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.96),
+    color: Theme.of(context).navigationBarTheme.backgroundColor,
     elevation: 8,
     child: SafeArea(
       top: false,
@@ -574,9 +663,9 @@ final class _CompactNavigation extends StatelessWidget {
               axisAlignment: 1,
               child: FadeTransition(opacity: animation, child: child),
             ),
-            child: employeeSubmenuExpanded
+            child: settingsSubmenuExpanded
                 ? DecoratedBox(
-                    key: const Key('compact_employee_slide_down_menu'),
+                    key: const Key('compact_settings_slide_down_menu'),
                     decoration: BoxDecoration(
                       color: Theme.of(
                         context,
@@ -590,7 +679,7 @@ final class _CompactNavigation extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        for (final destination in employeeSubdestinations)
+                        for (final destination in settingsSubdestinations)
                           ListTile(
                             key: destination.navigationKey,
                             dense: true,
@@ -607,13 +696,13 @@ final class _CompactNavigation extends StatelessWidget {
                             title: Text(destination.label),
                             selected: destination.matchesPrimary(selectedPath),
                             onTap: () =>
-                                onEmployeeSubdestinationSelected(destination),
+                                onSettingsSubdestinationSelected(destination),
                           ),
                       ],
                     ),
                   )
                 : const SizedBox(
-                    key: Key('compact_employee_slide_down_menu_closed'),
+                    key: Key('compact_settings_slide_down_menu_closed'),
                   ),
           ),
           SizedBox(
@@ -635,10 +724,8 @@ final class _CompactNavigation extends StatelessWidget {
                                   ? destinations[index].selectedIcon
                                   : destinations[index].icon,
                               color: index == selectedIndex
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
+                                  ? Colors.white
+                                  : Colors.white70,
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -648,12 +735,10 @@ final class _CompactNavigation extends StatelessWidget {
                               style: Theme.of(context).textTheme.labelSmall
                                   ?.copyWith(
                                     color: index == selectedIndex
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(
-                                            context,
-                                          ).colorScheme.onSurfaceVariant,
+                                        ? Colors.white
+                                        : Colors.white70,
                                     fontWeight: index == selectedIndex
-                                        ? FontWeight.w800
+                                        ? FontWeight.w700
                                         : FontWeight.w500,
                                   ),
                             ),
@@ -678,7 +763,7 @@ final class _Destination {
     this.selectedIcon,
     this.path, {
     this.relatedPaths = const [],
-    this.togglesEmployeeSubmenu = false,
+    this.togglesSettingsSubmenu = false,
     this.isSubdestination = false,
     this.navigationKey,
   });
@@ -688,7 +773,7 @@ final class _Destination {
   final IconData selectedIcon;
   final String path;
   final List<String> relatedPaths;
-  final bool togglesEmployeeSubmenu;
+  final bool togglesSettingsSubmenu;
   final bool isSubdestination;
   final Key? navigationKey;
 

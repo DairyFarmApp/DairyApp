@@ -309,6 +309,7 @@ final class SyncService {
                 organizationId: raw['organization_id'] as String,
                 farmId: raw['farm_id'] as String,
                 name: raw['name'] as String,
+                location: Value(raw['location'] as String?),
                 version: Value(raw['version'] as int? ?? 1),
                 serverUpdatedAt: _date(raw['updated_at'], synchronizedAt),
                 isDeleted: Value(raw['is_deleted'] as bool? ?? false),

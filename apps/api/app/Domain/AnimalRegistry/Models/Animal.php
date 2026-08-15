@@ -5,6 +5,7 @@ namespace App\Domain\AnimalRegistry\Models;
 use App\Domain\AnimalMovements\Models\AnimalMovement;
 use App\Domain\AnimalStatuses\Models\AnimalStatusChange;
 use App\Domain\AnimalWeights\Models\AnimalWeight;
+use App\Domain\MilkProduction\Models\MilkEntry;
 use App\Models\Concerns\UsesUuidV7;
 use App\Models\Farm;
 use App\Models\Organization;
@@ -47,6 +48,7 @@ class Animal extends Model
         'source_description',
         'notes',
         'operational_status',
+        'photo_requirement_exempt',
         'version',
         'created_by',
         'updated_by',
@@ -61,6 +63,7 @@ class Animal extends Model
             'acquisition_date' => 'date',
             'is_date_of_birth_estimated' => 'boolean',
             'version' => 'integer',
+            'photo_requirement_exempt' => 'boolean',
             'archived_at' => 'datetime',
         ];
     }
@@ -145,5 +148,25 @@ class Animal extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function feedConsumptions(): HasMany
+    {
+        return $this->hasMany(AnimalFeedConsumption::class);
+    }
+
+    public function milkEntries(): HasMany
+    {
+        return $this->hasMany(MilkEntry::class);
+    }
+
+    public function photos(): HasMany
+    {
+        return $this->hasMany(AnimalPhoto::class)->orderBy('sort_order');
+    }
+
+    public function hasRequiredPhotos(): bool
+    {
+        return $this->photo_requirement_exempt || $this->photos()->count() >= 4;
     }
 }

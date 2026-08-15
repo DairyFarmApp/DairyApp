@@ -48,6 +48,10 @@ class OwnerOnboardingTest extends TestCase
             'code' => 'BUFFALO',
             'name' => 'Buffalo',
         ]);
+        $this->assertDatabaseHas('animal_species', [
+            'code' => 'GOAT',
+            'name' => 'Goat',
+        ]);
         $this->assertDatabaseHas('animal_breeds', [
             'organization_id' => $organizationId,
             'code' => 'SAHIWAL',
@@ -58,7 +62,12 @@ class OwnerOnboardingTest extends TestCase
             'code' => 'NILI-RAVI',
             'name' => 'Nili-Ravi',
         ]);
-        $this->assertDatabaseCount('animal_breeds', 12);
+        $this->assertDatabaseHas('animal_breeds', [
+            'organization_id' => $organizationId,
+            'code' => 'BEETAL',
+            'name' => 'Beetal',
+        ]);
+        $this->assertDatabaseCount('animal_breeds', 19);
         $this->assertContains('users.manage', $response->json('data.permissions'));
         $this->assertContains('farms.create', $response->json('data.permissions'));
         $secondFarm = $this->postJson('/api/v1/farms', [

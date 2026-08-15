@@ -112,19 +112,20 @@ final class EmployeesScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Deactivate employee?'),
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete employee?'),
         content: Text(
-          '${employee.name} will no longer be included in new payroll periods.',
+          '${employee.name} will be deactivated and removed from active employee lists. Payroll and loan history will be preserved.',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Deactivate'),
+            key: const Key('confirm_delete_employee'),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete employee'),
           ),
         ],
       ),
@@ -218,7 +219,7 @@ final class _EmployeeBody extends StatelessWidget {
                             PopupMenuItem(value: 'edit', child: Text('Edit')),
                             PopupMenuItem(
                               value: 'archive',
-                              child: Text('Deactivate'),
+                              child: Text('Delete employee'),
                             ),
                           ],
                         )
@@ -249,7 +250,6 @@ final class _EmployeeDialogState extends State<_EmployeeDialog> {
   late final TextEditingController _salary;
   late final TextEditingController _phone;
   late final TextEditingController _email;
-  late final TextEditingController _department;
   late DateTime _joiningDate;
   late String _employmentType;
 
@@ -262,21 +262,13 @@ final class _EmployeeDialogState extends State<_EmployeeDialog> {
     _salary = TextEditingController(text: employee?.monthlySalary);
     _phone = TextEditingController(text: employee?.phone);
     _email = TextEditingController(text: employee?.email);
-    _department = TextEditingController(text: employee?.department);
     _joiningDate = employee?.joiningDate ?? DateTime.now();
     _employmentType = employee?.employmentType ?? 'full_time';
   }
 
   @override
   void dispose() {
-    for (final controller in [
-      _name,
-      _designation,
-      _salary,
-      _phone,
-      _email,
-      _department,
-    ]) {
+    for (final controller in [_name, _designation, _salary, _phone, _email]) {
       controller.dispose();
     }
     super.dispose();
@@ -367,11 +359,6 @@ final class _EmployeeDialogState extends State<_EmployeeDialog> {
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _department,
-                decoration: fieldDecoration('Department'),
-              ),
             ],
           ),
         ),
@@ -393,9 +380,6 @@ final class _EmployeeDialogState extends State<_EmployeeDialog> {
             'joining_date': DateFormat('yyyy-MM-dd').format(_joiningDate),
             'phone': _phone.text.trim().isEmpty ? null : _phone.text.trim(),
             'email': _email.text.trim().isEmpty ? null : _email.text.trim(),
-            'department': _department.text.trim().isEmpty
-                ? null
-                : _department.text.trim(),
           });
         },
         child: const Text('Save employee'),

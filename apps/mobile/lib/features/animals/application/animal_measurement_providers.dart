@@ -3,6 +3,9 @@ import 'package:dairycare_mobile/core/providers.dart';
 import 'package:dairycare_mobile/features/animals/data/animal_measurement_repository.dart';
 import 'package:dairycare_mobile/features/animals/domain/animal_status_models.dart';
 import 'package:dairycare_mobile/features/animals/domain/animal_weight_models.dart';
+import 'package:dairycare_mobile/features/animals/data/animal_feed_repository.dart';
+import 'package:dairycare_mobile/features/animals/data/animal_milk_repository.dart';
+import 'package:dairycare_mobile/features/animals/domain/animal_feed_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final animalMeasurementRepositoryProvider =
@@ -52,4 +55,41 @@ final animalStatusHistoryProvider =
       return ref
           .watch(animalMeasurementRepositoryProvider)
           .getStatusHistory(organizationId: organizationId, animalId: animalId);
+    });
+
+
+final animalFeedHistoryProvider =
+    FutureProvider.family<AnimalFeedHistoryLoadResult, String>((
+      ref,
+      animalId,
+    ) {
+      final organizationId = ref
+          .watch(authControllerProvider)
+          .asData
+          ?.value
+          ?.activeOrganizationId;
+      if (organizationId == null) {
+        return const AnimalFeedHistoryLoadResult(items: [], currentPage: 1, lastPage: 1, total: 0);
+      }
+      return ref
+          .watch(animalFeedRepositoryProvider)
+          .getFeedConsumptions(organizationId: organizationId, animalId: animalId);
+    });
+
+final animalMilkHistoryProvider =
+    FutureProvider.family<AnimalMilkHistoryLoadResult, String>((
+      ref,
+      animalId,
+    ) {
+      final organizationId = ref
+          .watch(authControllerProvider)
+          .asData
+          ?.value
+          ?.activeOrganizationId;
+      if (organizationId == null) {
+        return const AnimalMilkHistoryLoadResult(items: [], currentPage: 1, lastPage: 1, total: 0);
+      }
+      return ref
+          .watch(animalMilkRepositoryProvider)
+          .getMilkEntries(organizationId: organizationId, animalId: animalId);
     });

@@ -22,16 +22,14 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pump();
     expect(find.text('Farm'), findsNothing);
-    expect(find.text('Sheds'), findsNothing);
+    expect(find.text('Animal Housing'), findsNothing);
     expect(find.text('Milk Production'), findsNothing);
-    expect(find.text('Employees'), findsOneWidget);
+    expect(find.text('Manage Users'), findsOneWidget);
     expect(find.text('Salary'), findsNothing);
     expect(find.text('Loans'), findsNothing);
-    expect(find.text('Finance'), findsOneWidget);
-    expect(find.text('Sync'), findsOneWidget);
   });
 
-  testWidgets('employee navigation expands indented items inside the sidebar', (
+  testWidgets('settings navigation expands indented items inside the sidebar', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1200, 520);
@@ -46,67 +44,61 @@ void main() {
         'animal_breeds.view',
         'inventory.view',
         'milk.view',
+        'finance.view',
       },
     );
     FakeSyncController.status = const SyncStatus();
 
     await tester.pumpWidget(_app());
     await tester.pump();
-    await tester.drag(
-      find.byKey(const Key('wide_sidebar_navigation')),
-      const Offset(0, -320),
+    await tester.scrollUntilVisible(
+      find.text('Settings'),
+      320,
+      scrollable: find.descendant(
+        of: find.byKey(const Key('wide_sidebar_navigation')),
+        matching: find.byType(Scrollable),
+      ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Employees'));
+    await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(SimpleDialog), findsNothing);
-    expect(find.byKey(const Key('employee_list_menu_action')), findsOneWidget);
+    expect(find.byKey(const Key('settings_farm_menu_action')), findsOneWidget);
     expect(
-      find.byKey(const Key('employee_salary_menu_action')),
+      find.byKey(const Key('settings_breeds_menu_action')),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('employee_loans_menu_action')), findsOneWidget);
-    expect(find.text('Employee list'), findsOneWidget);
-    expect(find.text('Salary'), findsOneWidget);
-    expect(find.text('Loans'), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('wide_sidebar_navigation')),
-        matching: find.byKey(const Key('employee_salary_menu_action')),
-      ),
-      findsOneWidget,
-    );
-    expect(find.byKey(const Key('employee_slide_down_menu')), findsOneWidget);
+    expect(find.byKey(const Key('main_finance_menu_action')), findsOneWidget);
+    expect(find.text('Farm'), findsOneWidget);
+    expect(find.text('Breeds'), findsOneWidget);
+    expect(find.text('Finance'), findsOneWidget);
+    expect(find.byKey(const Key('settings_slide_down_menu')), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('Employees'));
+    await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('employee_salary_menu_action')), findsNothing);
+    expect(find.byKey(const Key('settings_farm_menu_action')), findsNothing);
   });
 
-  testWidgets('salary route expands and selects its employee subheading', (
+  testWidgets('farm route expands and selects its settings subheading', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1200, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    FakeAuthController.session = foundationSession();
+    FakeAuthController.session = foundationSession(
+      permissions: const {'farms.view'},
+    );
     FakeSyncController.status = const SyncStatus();
 
-    await tester.pumpWidget(_app(initialLocation: '/payroll'));
+    await tester.pumpWidget(_app(initialLocation: '/farms'));
     await tester.pump();
 
-    expect(
-      find.byKey(const Key('employee_salary_menu_action')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('settings_farm_menu_action')), findsOneWidget);
     expect(
       tester
-          .widget<ListTile>(
-            find.byKey(const Key('employee_salary_menu_action')),
-          )
+          .widget<ListTile>(find.byKey(const Key('settings_farm_menu_action')))
           .selected,
       isTrue,
     );
@@ -126,9 +118,8 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('wide_sidebar_navigation')), findsOneWidget);
     expect(find.byType(NavigationRail), findsNothing);
-    expect(find.text('Farm'), findsOneWidget);
-    expect(find.text('Sheds'), findsOneWidget);
-    expect(find.text('Inventory'), findsOneWidget);
+    expect(find.text('Animal Housing'), findsOneWidget);
+    expect(find.text('Manage Inventory'), findsOneWidget);
   });
 
   testWidgets('animal, breed and milk entries follow their permissions', (
@@ -143,14 +134,129 @@ void main() {
     );
     await tester.pumpWidget(_app());
     await tester.pump();
-    expect(find.text('Animals'), findsOneWidget);
-    expect(find.text('Breeds'), findsOneWidget);
+    expect(find.text('Cattle Management'), findsOneWidget);
     expect(find.text('Milk Production'), findsOneWidget);
+  });
+
+  testWidgets('daily operation sections appear before management sections', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    FakeAuthController.session = foundationSession(
+      permissions: const {'milk.view', 'inventory.view', 'animals.view'},
+    );
+    await tester.pumpWidget(_app());
+    await tester.pump();
+
+    expect(
+      tester.getTopLeft(find.text('Milk Production')).dy,
+      lessThan(tester.getTopLeft(find.text('Stock Usage')).dy),
+    );
+    expect(
+      tester.getTopLeft(find.text('Stock Usage')).dy,
+      lessThan(tester.getTopLeft(find.text('Manage Inventory')).dy),
+    );
+    expect(
+      tester.getTopLeft(find.text('Manage Inventory')).dy,
+      lessThan(tester.getTopLeft(find.text('Cattle Management')).dy),
+    );
+  });
+
+  testWidgets(
+    'commercial menu entries follow customer and supplier permissions',
+    (tester) async {
+      tester.view.physicalSize = const Size(1400, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      FakeAuthController.session = foundationSession(
+        permissions: const {'customers.view', 'suppliers.view'},
+      );
+      FakeSyncController.status = const SyncStatus();
+      await tester.pumpWidget(_app());
+      await tester.pump();
+
+      expect(
+        find.byKey(const Key('main_customers_menu_action')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('main_suppliers_menu_action')),
+        findsOneWidget,
+      );
+      expect(find.text('Customers'), findsOneWidget);
+      expect(find.text('Suppliers'), findsOneWidget);
+    },
+  );
+
+  testWidgets('purchase order menu follows purchasing permission', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    FakeAuthController.session = foundationSession(
+      permissions: const {'purchases.view'},
+    );
+    FakeSyncController.status = const SyncStatus();
+    await tester.pumpWidget(_app());
+    await tester.pump();
+    expect(
+      find.byKey(const Key('main_purchase_orders_menu_action')),
+      findsOneWidget,
+    );
+    expect(find.text('Purchase Orders'), findsOneWidget);
+  });
+
+  testWidgets('milk sales menu follows sales permission', (tester) async {
+    tester.view.physicalSize = const Size(1400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    FakeAuthController.session = foundationSession(
+      permissions: const {'milk_sales.view'},
+    );
+    FakeSyncController.status = const SyncStatus();
+    await tester.pumpWidget(_app());
+    await tester.pump();
+    expect(
+      find.byKey(const Key('main_milk_sales_menu_action')),
+      findsOneWidget,
+    );
+    expect(find.text('Milk Sales'), findsOneWidget);
+  });
+
+  testWidgets('supplier invoice menu follows invoice permission', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    FakeAuthController.session = foundationSession(
+      permissions: const {'supplier_invoices.view'},
+    );
+    FakeSyncController.status = const SyncStatus();
+    await tester.pumpWidget(_app());
+    await tester.pump();
+    expect(
+      find.byKey(const Key('main_supplier_invoices_menu_action')),
+      findsOneWidget,
+    );
+    expect(find.text('Supplier Invoices'), findsOneWidget);
   });
 
   testWidgets('primary owner menu exposes profile and family management', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     FakeAuthController.session = foundationSession(
       membershipType: 'primary_owner',
     );
@@ -180,6 +286,10 @@ Widget _app({String initialLocation = '/home'}) {
           GoRoute(path: '/animals', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/animal-breeds', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/inventory', builder: (_, _) => const SizedBox()),
+          GoRoute(
+            path: '/inventory/indents',
+            builder: (_, _) => const SizedBox(),
+          ),
           GoRoute(path: '/milk', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/employees', builder: (_, _) => const SizedBox()),
           GoRoute(path: '/payroll', builder: (_, _) => const SizedBox()),

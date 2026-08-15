@@ -64,13 +64,14 @@ class EmployeeLoanController extends Controller
                     ->lockForUpdate()
                     ->findOrFail($data['employee_id']);
                 $loanId = $data['id'] ?? (string) Str::uuid7();
+                $isAdvance = $data['type'] === 'salary_advance';
                 $journal = $this->posting->post(
                     $organizationId,
                     $farmId,
                     'employee_loan',
                     $loanId,
                     $data['disbursement_date'],
-                    'Employee loan '.$employee->name,
+                    ($isAdvance ? 'Salary advance ' : 'Employee loan ').$employee->name,
                     $request->user()->id,
                     [
                         ['account' => 'EMPLOYEE_LOANS', 'debit' => $data['principal_amount']],
@@ -82,7 +83,12 @@ class EmployeeLoanController extends Controller
                     'organization_id' => $organizationId,
                     'farm_id' => $farmId,
                     'employee_id' => $employee->id,
-                    'loan_number' => $this->numbers->next($organizationId, 'employee_loan', 'LOAN-'),
+                    'loan_number' => $this->numbers->next(
+                        $organizationId,
+                        $isAdvance ? 'employee_advance' : 'employee_loan',
+                        $isAdvance ? 'ADV-' : 'LOAN-',
+                    ),
+                    'type' => $data['type'],
                     'disbursement_date' => $data['disbursement_date'],
                     'principal_amount' => $data['principal_amount'],
                     'monthly_installment' => $data['monthly_installment'],
@@ -106,6 +112,7 @@ class EmployeeLoanController extends Controller
                     null,
                     [
                         'employee_id' => $employee->id,
+                        'type' => $loan->type,
                         'principal_amount' => $loan->principal_amount,
                         'monthly_installment' => $loan->monthly_installment,
                         'currency' => 'PKR',

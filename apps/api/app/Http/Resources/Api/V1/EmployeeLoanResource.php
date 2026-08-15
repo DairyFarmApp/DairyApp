@@ -15,6 +15,7 @@ class EmployeeLoanResource extends JsonResource
             'employee_number' => $this->whenLoaded('employee', fn () => $this->employee->employee_number),
             'employee_name' => $this->whenLoaded('employee', fn () => $this->employee->name),
             'loan_number' => $this->loan_number,
+            'type' => $this->type,
             'disbursement_date' => $this->disbursement_date?->toDateString(),
             'principal_amount' => $this->principal_amount,
             'monthly_installment' => $this->monthly_installment,

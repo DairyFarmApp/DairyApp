@@ -110,12 +110,13 @@ final class FoundationRepository {
     required String organizationId,
     required String farmId,
     required String name,
+    String? location,
   }) async {
     final id = _uuid.v7();
     try {
       final body = await _api.postJson(
         '/farms/$farmId/sheds',
-        data: {'id': id, 'name': name},
+        data: {'id': id, 'name': name, 'location': location},
         idempotencyKey: _uuid.v7(),
       );
       return ShedCreateResult(
@@ -127,6 +128,7 @@ final class FoundationRepository {
         organizationId: organizationId,
         farmId: farmId,
         name: name,
+        location: location,
         id: id,
       );
       return ShedCreateResult(
@@ -138,6 +140,7 @@ final class FoundationRepository {
         organizationId: organizationId,
         farmId: farmId,
         name: name,
+        location: location,
         id: id,
       );
       return ShedCreateResult(
@@ -150,12 +153,25 @@ final class FoundationRepository {
   Future<LocalShed> updateShed({
     required LocalShed shed,
     required String name,
+    String? location,
   }) async {
     final body = await _api.patchJson(
       '/sheds/${shed.id}',
-      data: {'name': name},
+      data: {'name': name, 'location': location},
     );
     return _cacheShed(body['data'] as Map<String, dynamic>);
+  }
+
+  Future<void> archiveShed(LocalShed shed) async {
+    await _api.deleteJson('/sheds/${shed.id}');
+    await (_database.update(
+      _database.localSheds,
+    )..where((row) => row.id.equals(shed.id))).write(
+      LocalShedsCompanion(
+        isDeleted: const Value(true),
+        serverUpdatedAt: Value(DateTime.now().toUtc()),
+      ),
+    );
   }
 
   Future<String> createFarmOffline({
@@ -198,6 +214,7 @@ final class FoundationRepository {
     required String organizationId,
     required String farmId,
     required String name,
+    String? location,
     String? deviceId,
     String? id,
   }) async {
@@ -211,6 +228,7 @@ final class FoundationRepository {
         organizationId: organizationId,
         farmId: farmId,
         name: name,
+        location: Value(location),
         serverUpdatedAt: now,
       ),
       SyncOutboxCompanion.insert(
@@ -223,7 +241,11 @@ final class FoundationRepository {
         aggregateId: shedId,
         method: 'POST',
         path: '/farms/$farmId/sheds',
-        payloadJson: jsonEncode({'id': shedId, 'name': name}),
+        payloadJson: jsonEncode({
+          'id': shedId,
+          'name': name,
+          'location': location,
+        }),
         createdAt: now,
         updatedAt: now,
       ),
@@ -259,6 +281,7 @@ final class FoundationRepository {
             organizationId: raw['organization_id'] as String,
             farmId: raw['farm_id'] as String,
             name: raw['name'] as String,
+            location: Value(raw['location'] as String?),
             version: Value(raw['version'] as int? ?? 1),
             serverUpdatedAt: _date(raw['updated_at'], now),
             isDeleted: Value(raw['is_deleted'] as bool? ?? false),

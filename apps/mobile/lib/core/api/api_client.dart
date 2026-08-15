@@ -41,12 +41,25 @@ final class ApiClient {
   final AccessTokenReader _readAccessToken;
   final ApiErrorMapper _errorMapper;
 
+  String _normalizePath(String path) {
+    if (path.startsWith('/api/v1/')) {
+      return path.substring(7);
+    }
+    if (path.startsWith('/v1/')) {
+      return path.substring(3);
+    }
+    return path;
+  }
+
   Future<Map<String, dynamic>> getJson(
     String path, {
     Map<String, dynamic>? query,
   }) async {
     try {
-      final response = await dio.get<Object>(path, queryParameters: query);
+      final response = await dio.get<Object>(
+        _normalizePath(path),
+        queryParameters: query,
+      );
       return _asJson(response.data);
     } catch (error) {
       throw _errorMapper.map(error);
@@ -60,7 +73,7 @@ final class ApiClient {
   }) async {
     try {
       final response = await dio.post<Object>(
-        path,
+        _normalizePath(path),
         data: data,
         options: Options(
           headers: idempotencyKey == null
@@ -79,7 +92,10 @@ final class ApiClient {
     required Object data,
   }) async {
     try {
-      final response = await dio.patch<Object>(path, data: data);
+      final response = await dio.patch<Object>(
+        _normalizePath(path),
+        data: data,
+      );
       return _asJson(response.data);
     } catch (error) {
       throw _errorMapper.map(error);
@@ -92,14 +108,16 @@ final class ApiClient {
     required String fileField,
     required Uint8List bytes,
     required String filename,
+    String? idempotencyKey,
   }) async {
     try {
       final response = await dio.post<Object>(
-        path,
+        _normalizePath(path),
         data: FormData.fromMap({
           ...fields,
           fileField: MultipartFile.fromBytes(bytes, filename: filename),
         }),
+        options: Options(headers: {'Idempotency-Key': ?idempotencyKey}),
       );
       return _asJson(response.data);
     } catch (error) {
@@ -110,7 +128,7 @@ final class ApiClient {
   Future<Uint8List> getBytes(String path, {Map<String, dynamic>? query}) async {
     try {
       final response = await dio.get<List<int>>(
-        path,
+        _normalizePath(path),
         queryParameters: query,
         options: Options(responseType: ResponseType.bytes),
       );
@@ -126,7 +144,10 @@ final class ApiClient {
 
   Future<Map<String, dynamic>> deleteJson(String path, {Object? data}) async {
     try {
-      final response = await dio.delete<Object>(path, data: data);
+      final response = await dio.delete<Object>(
+        _normalizePath(path),
+        data: data,
+      );
       return _asJson(response.data);
     } catch (error) {
       throw _errorMapper.map(error);

@@ -199,6 +199,33 @@ class DailyMilkProductionTest extends TestCase
             ->assertJsonPath('data.milk_entries.0.id', $entryId);
     }
 
+    public function test_animal_profile_history_uses_the_same_current_entries_as_daily_production(): void
+    {
+        $context = $this->context('milk-animal-history@example.test');
+        $entry = $this->postJson(
+            '/api/v1/milk/entries/bulk',
+            $this->bulkPayload($context['animal']->id),
+            [...$context['headers'], 'Idempotency-Key' => 'animal-history-entry'],
+        )->assertCreated()->json('data.0');
+
+        $this->getJson(
+            "/api/v1/animals/{$context['animal']->id}/milk-entries",
+            $context['headers'],
+        )->assertOk()
+            ->assertJsonPath('data.0.id', $entry['id'])
+            ->assertJsonPath('data.0.animal_id', $context['animal']->id)
+            ->assertJsonPath('data.0.production_date', '2026-07-30')
+            ->assertJsonPath('data.0.session', 'morning')
+            ->assertJsonPath('data.0.quantity_litres', '12.500')
+            ->assertJsonPath('meta.total', 1);
+
+        $foreign = $this->context('milk-foreign-history@example.test');
+        $this->getJson(
+            "/api/v1/animals/{$context['animal']->id}/milk-entries",
+            $foreign['headers'],
+        )->assertNotFound();
+    }
+
     private function context(string $email): array
     {
         $owner = $this->postJson('/api/v1/auth/owner-signup', [

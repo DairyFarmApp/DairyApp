@@ -49,13 +49,16 @@ void main() {
         organizationId: '018f0000-0000-7000-8000-000000000010',
         farmId: '018f0000-0000-7000-8000-000000000020',
         name: 'Main Cow Shed',
+        location: 'North block',
       );
 
       expect(result.queuedOffline, isTrue);
       expect(result.shed.name, 'Main Cow Shed');
+      expect(result.shed.location, 'North block');
       expect(await database.select(database.syncDevices).get(), hasLength(1));
       final operation = await database.select(database.syncOutbox).getSingle();
       expect(operation.aggregateType, 'shed');
+      expect(operation.payloadJson, contains('North block'));
       expect(
         operation.path,
         '/farms/018f0000-0000-7000-8000-000000000020/sheds',

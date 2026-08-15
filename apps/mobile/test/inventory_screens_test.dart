@@ -4,6 +4,7 @@ import 'package:dairycare_mobile/features/inventory/domain/inventory_models.dart
 import 'package:dairycare_mobile/features/inventory/presentation/inventory_date_field.dart';
 import 'package:dairycare_mobile/features/inventory/presentation/inventory_dashboard_screen.dart';
 import 'package:dairycare_mobile/features/inventory/presentation/inventory_overview_screen.dart';
+import 'package:dairycare_mobile/features/inventory/presentation/stock_usage_indents_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -101,6 +102,46 @@ void main() {
     expect(find.byType(DatePickerDialog), findsOneWidget);
   });
 
+  testWidgets('stock usage shows deduction form and permanent history', (
+    tester,
+  ) async {
+    FakeAuthController.session = foundationSession(
+      permissions: const {'inventory.view', 'inventory.manage'},
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authControllerProvider.overrideWith(FakeAuthController.new),
+          stockUsageItemsProvider.overrideWith((ref) async => [_item]),
+          stockUsageHistoryProvider.overrideWith(
+            (ref) async => [
+              StockUsageRecord(
+                id: 'usage-1',
+                itemId: _item.id,
+                itemName: _item.name,
+                itemCode: _item.itemCode,
+                kind: _item.kind,
+                unit: _item.unit,
+                quantity: '1.000',
+                occurredAt: DateTime(2026, 8, 11, 8),
+                purpose: 'Treatment room usage',
+                batchNumber: 'B-001',
+              ),
+            ],
+          ),
+        ],
+        child: const MaterialApp(home: StockUsageIndentsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Stock Usage'), findsOneWidget);
+    expect(find.byKey(const Key('stock_usage_item')), findsOneWidget);
+    expect(find.byKey(const Key('stock_usage_quantity')), findsOneWidget);
+    expect(find.byKey(const Key('stock_usage_purpose')), findsOneWidget);
+    expect(find.textContaining('Treatment room usage'), findsOneWidget);
+  });
+
   testWidgets('wide inventory table exposes selection and row actions', (
     tester,
   ) async {
@@ -137,6 +178,7 @@ void main() {
 
     expect(find.byType(DataTable), findsOneWidget);
     expect(find.byIcon(Icons.picture_as_pdf_outlined), findsWidgets);
+    expect(find.byIcon(Icons.history_rounded), findsOneWidget);
     expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
     expect(find.byIcon(Icons.add_box_outlined), findsOneWidget);
     expect(find.byIcon(Icons.delete_outline_rounded), findsOneWidget);

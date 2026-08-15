@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\AnimalRegistry\Models\Animal;
+use App\Domain\AnimalRegistry\Models\AnimalGroup;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ShedRequest;
 use App\Http\Resources\Api\V1\ShedResource;
@@ -33,7 +35,7 @@ class ShedController extends Controller
 
         return $this->idempotency->execute($request, function () use ($request, $farmModel): JsonResponse {
             $data = $request->validated();
-            $shed = Shed::create(['id' => $data['id'] ?? (string) Str::uuid7(), 'organization_id' => $farmModel->organization_id, 'farm_id' => $farmModel->id, 'name' => $data['name'], 'code' => $data['code'] ?? strtoupper(Str::slug($data['name'], '-')), 'version' => 1]);
+            $shed = Shed::create(['id' => $data['id'] ?? (string) Str::uuid7(), 'organization_id' => $farmModel->organization_id, 'farm_id' => $farmModel->id, 'name' => $data['name'], 'code' => $data['code'] ?? strtoupper(Str::slug($data['name'], '-')), 'location' => $data['location'] ?? null, 'version' => 1]);
             $this->audit->record($request, 'shed.created', 'shed', $shed->id, null, $shed->toArray());
 
             return ApiResponse::success($request, (new ShedResource($shed))->resolve($request), 201);
@@ -65,6 +67,22 @@ class ShedController extends Controller
     public function destroy(Request $request, string $shed): JsonResponse
     {
         $model = $this->shed($request, $shed);
+        $isInUse = Animal::query()
+            ->where('current_shed_id', $model->id)
+            ->where('operational_status', 'active')
+            ->exists()
+            || AnimalGroup::query()
+                ->where('default_shed_id', $model->id)
+                ->where('is_active', true)
+                ->exists();
+        if ($isInUse) {
+            return ApiResponse::error(
+                $request,
+                'SHED_IN_USE',
+                'Move active animals and groups to another shed before deleting this shed.',
+                409,
+            );
+        }
         DB::transaction(function () use ($model, $request): void {
             $model->delete();
             $this->audit->record($request, 'shed.archived', 'shed', $model->id, $model->toArray(), ['archived' => true]);

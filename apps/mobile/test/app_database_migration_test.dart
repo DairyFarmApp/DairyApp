@@ -9,6 +9,9 @@ void main() {
         database.execute(
           'CREATE TABLE local_animals (id TEXT NOT NULL PRIMARY KEY)',
         );
+        database.execute(
+          'CREATE TABLE local_sheds (id TEXT NOT NULL PRIMARY KEY)',
+        );
         database.execute('PRAGMA user_version = 3');
       },
     );
@@ -40,6 +43,9 @@ void main() {
   test('schema 4 upgrade creates the offline milk-entry cache', () async {
     final executor = NativeDatabase.memory(
       setup: (database) {
+        database.execute(
+          'CREATE TABLE local_sheds (id TEXT NOT NULL PRIMARY KEY)',
+        );
         database.execute('PRAGMA user_version = 4');
       },
     );
@@ -54,5 +60,27 @@ void main() {
         .get();
 
     expect(tables.single.read<String>('name'), 'local_milk_entries');
+  });
+
+  test('schema 5 upgrade adds the shed location column', () async {
+    final executor = NativeDatabase.memory(
+      setup: (database) {
+        database.execute(
+          'CREATE TABLE local_sheds (id TEXT NOT NULL PRIMARY KEY)',
+        );
+        database.execute('PRAGMA user_version = 5');
+      },
+    );
+    final database = AppDatabase(executor);
+    addTearDown(database.close);
+
+    final columns = await database
+        .customSelect('PRAGMA table_info(local_sheds)')
+        .get();
+
+    expect(
+      columns.map((row) => row.read<String>('name')),
+      contains('location'),
+    );
   });
 }

@@ -283,7 +283,7 @@ class _AnimalListScreenState extends ConsumerState<AnimalListScreen> {
                     clearFarm: defaultFarmId == null,
                     clearShed: true,
                     clearGroup: true,
-                    clearOperationalStatus: true,
+                    operationalStatus: 'active',
                     archiveState: 'active',
                   ),
                 ),

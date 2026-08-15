@@ -1,6 +1,9 @@
 import 'package:dairycare_mobile/core/auth/auth_controller.dart';
+import 'package:dairycare_mobile/features/animals/application/animal_measurement_providers.dart';
 import 'package:dairycare_mobile/features/animals/application/animal_providers.dart';
+import 'package:dairycare_mobile/features/animals/data/animal_milk_repository.dart';
 import 'package:dairycare_mobile/features/animals/data/animal_repository.dart';
+import 'package:dairycare_mobile/features/animals/domain/animal_feed_models.dart';
 import 'package:dairycare_mobile/features/animals/domain/animal_models.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_detail_screen.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_form_screen.dart';
@@ -123,6 +126,13 @@ void main() {
       await tester.pump();
 
       expect(find.byKey(const Key('farm_field')), findsNothing);
+      expect(find.byKey(const Key('ear_tag_field')), findsNothing);
+      expect(find.byKey(const Key('rfid_field')), findsNothing);
+      expect(find.byKey(const Key('animal_name_field')), findsNothing);
+      expect(find.text('Parentage'), findsOneWidget);
+      expect(find.text('Mother animal'), findsOneWidget);
+      expect(find.text('Father'), findsNothing);
+      expect(find.text('Initial operational status *'), findsNothing);
       expect(find.text('North Farm'), findsOneWidget);
       expect(find.text('Sahiwal'), findsOneWidget);
       expect(find.byKey(const Key('add_custom_breed_action')), findsOneWidget);
@@ -193,6 +203,22 @@ Widget _app(Widget home, {AnimalReferenceData? references, Animal? detail}) =>
       overrides: [
         authControllerProvider.overrideWith(FakeAuthController.new),
         animalListControllerProvider.overrideWith(FakeAnimalListController.new),
+        animalFeedHistoryProvider.overrideWith(
+          (ref, id) async => const AnimalFeedHistoryLoadResult(
+            items: [],
+            currentPage: 1,
+            lastPage: 1,
+            total: 0,
+          ),
+        ),
+        animalMilkHistoryProvider.overrideWith(
+          (ref, id) async => const AnimalMilkHistoryLoadResult(
+            items: [],
+            currentPage: 1,
+            lastPage: 1,
+            total: 0,
+          ),
+        ),
         if (references != null)
           animalReferencesProvider.overrideWith((ref, id) async => references),
         if (detail != null)

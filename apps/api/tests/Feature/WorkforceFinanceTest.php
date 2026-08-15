@@ -51,6 +51,7 @@ class WorkforceFinanceTest extends TestCase
     {
         $context = $this->context();
         $payload = $this->employeePayload();
+        unset($payload['department']);
         $created = $this->postJson(
             '/api/v1/employees',
             $payload,
@@ -58,6 +59,7 @@ class WorkforceFinanceTest extends TestCase
         )->assertCreated()
             ->assertJsonPath('data.name', 'Ali Raza')
             ->assertJsonPath('data.monthly_salary', '65000.00')
+            ->assertJsonPath('data.department', null)
             ->assertJsonPath('data.currency', 'PKR')
             ->assertJsonPath('data.version', 1);
         $id = $created->json('data.id');
@@ -103,12 +105,43 @@ class WorkforceFinanceTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'employee.updated', 'entity_id' => $id]);
     }
 
+    public function test_employee_delete_and_restore_preserve_the_record_and_history(): void
+    {
+        $context = $this->context();
+        $employeeId = $this->createEmployee($context);
+
+        $archived = $this->deleteJson(
+            "/api/v1/employees/$employeeId",
+            ['version' => 1],
+            $context['headers'],
+        )->assertOk()
+            ->assertJsonPath('data.is_active', false)
+            ->assertJsonPath('data.version', 2);
+
+        $this->getJson('/api/v1/employees', $context['headers'])
+            ->assertOk()
+            ->assertJsonCount(0, 'data.employees');
+
+        $this->postJson(
+            "/api/v1/employees/$employeeId/restore",
+            ['version' => $archived->json('data.version')],
+            $context['headers'],
+        )->assertOk()
+            ->assertJsonPath('data.is_active', true)
+            ->assertJsonPath('data.version', 3);
+
+        $this->assertDatabaseHas('employees', ['id' => $employeeId]);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'employee.deactivated', 'entity_id' => $employeeId]);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'employee.restored', 'entity_id' => $employeeId]);
+    }
+
     public function test_loan_disbursement_posts_a_balanced_immutable_journal(): void
     {
         $context = $this->context();
         $employee = $this->createEmployee($context);
         $payload = [
             'employee_id' => $employee,
+            'type' => 'salary_advance',
             'disbursement_date' => now()->toDateString(),
             'principal_amount' => '30000.00',
             'monthly_installment' => '5000.00',
@@ -119,6 +152,8 @@ class WorkforceFinanceTest extends TestCase
         $first = $this->postJson('/api/v1/employee-loans', $payload, $headers)
             ->assertCreated()
             ->assertJsonPath('data.principal_amount', '30000.00')
+            ->assertJsonPath('data.type', 'salary_advance')
+            ->assertJsonPath('data.loan_number', 'ADV-000001')
             ->assertJsonPath('data.outstanding_amount', '30000.00')
             ->assertJsonPath('data.monthly_installment', '5000.00')
             ->assertJsonPath('data.status', 'active')
@@ -144,6 +179,7 @@ class WorkforceFinanceTest extends TestCase
         $employee = $this->createEmployee($context);
         $this->postJson('/api/v1/employee-loans', [
             'employee_id' => $employee,
+            'type' => 'loan',
             'disbursement_date' => now()->toDateString(),
             'principal_amount' => '12000.00',
             'monthly_installment' => '5000.00',

@@ -4,6 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helpers/animal_fixtures.dart';
 
 void main() {
+  test('animal lists default to currently active animals', () {
+    expect(
+      const AnimalFilters().toQuery()['filter[operational_status]'],
+      'active',
+    );
+  });
+
   test(
     'animal serialization preserves registry terminology and timestamps',
     () {

@@ -12,6 +12,8 @@ use App\Models\Permission;
 use App\Models\Shed;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\Concerns\CreatesFoundationData;
 use Tests\TestCase;
@@ -154,7 +156,46 @@ class AnimalRegistryTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'animal.created', 'entity_id' => $first->json('data.id')]);
     }
 
-    public function test_user_supplied_numbers_require_permission_and_identifier_uniqueness_is_per_tenant(): void
+    public function test_new_animal_requires_four_private_photos_before_operational_use(): void
+    {
+        Storage::fake('local');
+        $data = $this->foundation($this->permissions);
+        $references = $this->animalRegistryReferences($data);
+        $headers = $this->bearer($this->loginToken());
+        $created = $this->postJson(
+            '/api/v1/animals',
+            $this->animalPayload($data, $references),
+            $headers + ['Idempotency-Key' => 'animal-photo-requirement'],
+        )->assertCreated()
+            ->assertJsonPath('data.photo_count', 0)
+            ->assertJsonPath('data.photo_requirement_met', false);
+        $animalId = $created->json('data.id');
+
+        foreach (range(1, 4) as $number) {
+            $this->post(
+                "/api/v1/animals/{$animalId}/photos",
+                ['photo' => UploadedFile::fake()->createWithContent(
+                    "animal-{$number}.png",
+                    base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='),
+                )],
+                $headers,
+            )->assertCreated()
+                ->assertJsonPath('data.photo_requirement_met', $number >= 4);
+        }
+
+        $this->getJson("/api/v1/animals/{$animalId}", $headers)
+            ->assertOk()
+            ->assertJsonPath('data.photo_count', 4)
+            ->assertJsonPath('data.photo_requirement_met', true)
+            ->assertJsonCount(4, 'data.photos');
+        $this->assertDatabaseCount('animal_photos', 4);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'animal.photo_uploaded',
+            'entity_id' => $animalId,
+        ]);
+    }
+
+    public function test_animal_numbers_are_server_generated_and_other_identifiers_are_unique_per_tenant(): void
     {
         $data = $this->foundation(array_values(array_diff($this->permissions, ['animals.manage_identifiers'])));
         $references = $this->animalRegistryReferences($data);
@@ -163,18 +204,15 @@ class AnimalRegistryTest extends TestCase
             'animal_number' => 'custom 001',
         ]), $headers)->assertUnprocessable()->assertJsonStructure(['error' => ['fields' => ['animal_number']]]);
 
-        $data['role']->permissions()->attach(Permission::firstOrCreate(['name' => 'animals.manage_identifiers'])->id);
         $created = $this->postJson('/api/v1/animals', $this->animalPayload($data, $references, [
-            'animal_number' => 'custom 001',
             'ear_tag_number' => 'TAG-1',
             'rfid_number' => 'RFID1',
         ]), $headers)->assertCreated();
-        $this->assertSame('CUSTOM-001', $created->json('data.animal_number'));
+        $this->assertSame('AN-000001', $created->json('data.animal_number'));
 
         foreach ([
-            ['animal_number' => 'CUSTOM-001', 'ear_tag_number' => 'TAG-2', 'rfid_number' => 'RFID2', 'field' => 'animal_number'],
-            ['animal_number' => 'CUSTOM-002', 'ear_tag_number' => 'TAG-1', 'rfid_number' => 'RFID3', 'field' => 'ear_tag_number'],
-            ['animal_number' => 'CUSTOM-003', 'ear_tag_number' => 'TAG-3', 'rfid_number' => 'RFID1', 'field' => 'rfid_number'],
+            ['ear_tag_number' => 'TAG-1', 'rfid_number' => 'RFID3', 'field' => 'ear_tag_number'],
+            ['ear_tag_number' => 'TAG-3', 'rfid_number' => 'RFID1', 'field' => 'rfid_number'],
         ] as $case) {
             $field = $case['field'];
             unset($case['field']);
@@ -185,11 +223,10 @@ class AnimalRegistryTest extends TestCase
 
         $foreign = $this->foreignRegistry($references['species']);
         $foreignAnimal = $this->createAnimalModel($foreign['foundation'], $foreign['references'], [
-            'animal_number' => 'CUSTOM-001',
             'ear_tag_number' => 'TAG-1',
             'rfid_number' => 'RFID1',
         ]);
-        $this->assertSame('CUSTOM-001', $foreignAnimal->animal_number);
+        $this->assertSame('AN-MODEL-102', $foreignAnimal->animal_number);
     }
 
     public function test_classification_location_and_cross_tenant_references_are_rejected_without_exposure(): void

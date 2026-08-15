@@ -15,6 +15,11 @@ class ShedRequest extends FormRequest
     {
         $presence = $this->isMethod('post') ? 'required' : 'sometimes';
 
-        return ['id' => ['sometimes', 'uuid'], 'name' => [$presence, 'string', 'max:160'], 'code' => ['sometimes', 'string', 'max:40']];
+        return [
+            'id' => ['sometimes', 'uuid'],
+            'name' => [$presence, 'string', 'max:160'],
+            'code' => ['sometimes', 'string', 'max:40'],
+            'location' => ['nullable', 'string', 'max:255'],
+        ];
     }
 }

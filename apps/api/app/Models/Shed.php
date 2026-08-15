@@ -11,7 +11,7 @@ class Shed extends Model
 {
     use SoftDeletes, UsesUuidV7;
 
-    protected $fillable = ['id', 'organization_id', 'farm_id', 'name', 'code', 'version'];
+    protected $fillable = ['id', 'organization_id', 'farm_id', 'name', 'code', 'location', 'version'];
 
     public function farm(): BelongsTo
     {

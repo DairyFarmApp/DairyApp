@@ -12,8 +12,10 @@ use App\Http\Requests\Api\V1\InventoryItemArchiveRequest;
 use App\Http\Requests\Api\V1\InventoryItemStoreRequest;
 use App\Http\Requests\Api\V1\InventoryItemUpdateRequest;
 use App\Http\Requests\Api\V1\InventoryReceiptRequest;
+use App\Http\Requests\Api\V1\InventoryUsageRequest;
 use App\Http\Resources\Api\V1\InventoryItemResource;
 use App\Models\Farm;
+use App\Models\OrganizationMembership;
 use App\Support\ApiResponse;
 use App\Support\AuditService;
 use App\Support\IdempotencyService;
@@ -97,12 +99,19 @@ class InventoryController extends Controller
                     'item_code' => $data['item_code'] ?? $this->generatedCode($kind),
                     'barcode' => $data['barcode'] ?? null,
                     'name' => trim($data['name']),
+                    'generic_name' => $data['generic_name'] ?? null,
+                    'drap_registration_number' => $data['drap_registration_number'] ?? null,
+                    'concentration' => $data['concentration'] ?? null,
+                    'milk_withdrawal_hours' => $data['milk_withdrawal_hours'] ?? 0,
+                    'meat_withdrawal_days' => $data['meat_withdrawal_days'] ?? 0,
+                    'regulatory_verified_on' => $data['regulatory_verified_on'] ?? null,
                     'category' => trim($data['category']),
                     'brand' => $data['brand'] ?? null,
                     'unit' => trim($data['unit']),
                     'minimum_stock' => $data['minimum_stock'],
                     'maximum_stock' => $data['maximum_stock'] ?? null,
                     'notes' => $data['notes'] ?? null,
+                    ...collect(['dry_matter_percent', 'crude_protein_percent', 'metabolizable_energy_mj_per_kg', 'fibre_percent', 'fat_percent', 'minerals_percent'])->mapWithKeys(fn ($field) => [$field => $data[$field] ?? null])->all(),
                     'is_active' => true,
                     'version' => 1,
                     'created_by' => $userId,
@@ -165,6 +174,12 @@ class InventoryController extends Controller
             }
             $old = $lockedItem->only([
                 'name',
+                'generic_name',
+                'drap_registration_number',
+                'concentration',
+                'milk_withdrawal_hours',
+                'meat_withdrawal_days',
+                'regulatory_verified_on',
                 'category',
                 'barcode',
                 'brand',
@@ -339,10 +354,120 @@ class InventoryController extends Controller
         return ApiResponse::success($request, $movements);
     }
 
+    public function usageHistory(Request $request): JsonResponse
+    {
+        $movements = StockMovement::query()
+            ->with(['item', 'batch'])
+            ->where('organization_id', $request->attributes->get('organization_id'))
+            ->where('farm_id', $request->attributes->get('api_session')->farm_id)
+            ->where('movement_type', 'consumption')
+            ->latest('occurred_at')
+            ->limit(200)
+            ->get()
+            ->map(fn (StockMovement $movement) => [
+                ...$this->movementPayload($movement),
+                'item_name' => $movement->item?->name,
+                'item_code' => $movement->item?->item_code,
+                'kind' => $movement->item?->kind,
+                'unit' => $movement->item?->unit,
+            ]);
+
+        return ApiResponse::success($request, $movements);
+    }
+
+    public function usage(
+        InventoryUsageRequest $request,
+        string $kind,
+        string $item,
+    ): JsonResponse {
+        $model = $this->item($request, $this->kind($kind), $item);
+
+        return $this->idempotency->execute($request, function () use ($request, $model): JsonResponse {
+            $data = $request->validated();
+            $quantity = (float) $data['quantity'];
+            $result = DB::transaction(function () use ($request, $model, $data, $quantity): ?array {
+                $lockedItem = InventoryItem::query()->lockForUpdate()->findOrFail($model->id);
+                $batches = InventoryBatch::query()
+                    ->where('inventory_item_id', $lockedItem->id)
+                    ->where('current_quantity', '>', 0)
+                    ->orderByRaw('CASE WHEN expiry_date IS NULL THEN 1 ELSE 0 END')
+                    ->orderBy('expiry_date')
+                    ->orderBy('created_at')
+                    ->lockForUpdate()
+                    ->get();
+                if ($batches->sum(fn (InventoryBatch $batch) => (float) $batch->current_quantity) + 0.000001 < $quantity) {
+                    return null;
+                }
+
+                $remaining = $quantity;
+                $movements = collect();
+                foreach ($batches as $batch) {
+                    if ($remaining <= 0) {
+                        break;
+                    }
+                    $used = min($remaining, (float) $batch->current_quantity);
+                    $batch->forceFill([
+                        'current_quantity' => (float) $batch->current_quantity - $used,
+                        'version' => $batch->version + 1,
+                    ])->save();
+                    $movements->push(StockMovement::create([
+                        'organization_id' => $lockedItem->organization_id,
+                        'farm_id' => $lockedItem->farm_id,
+                        'inventory_item_id' => $lockedItem->id,
+                        'inventory_batch_id' => $batch->id,
+                        'movement_type' => 'consumption',
+                        'quantity_change' => -$used,
+                        'unit_cost' => $batch->unit_cost,
+                        'occurred_at' => $data['occurred_at'] ?? now(),
+                        'reason' => trim($data['purpose']),
+                        'created_by' => $request->user()->id,
+                    ]));
+                    $remaining -= $used;
+                }
+                $lockedItem->forceFill([
+                    'version' => $lockedItem->version + 1,
+                    'updated_by' => $request->user()->id,
+                ])->save();
+                $this->audit->record(
+                    $request,
+                    'inventory.stock_used',
+                    'inventory_item',
+                    $lockedItem->id,
+                    null,
+                    ['quantity' => $quantity, 'unit' => $lockedItem->unit, 'purpose' => $data['purpose']],
+                );
+
+                return [$lockedItem, $movements];
+            });
+
+            if ($result === null) {
+                return ApiResponse::error(
+                    $request,
+                    'INSUFFICIENT_STOCK',
+                    'The requested quantity is greater than the available stock.',
+                    422,
+                );
+            }
+            [$item, $movements] = $result;
+
+            return ApiResponse::success($request, [
+                'item_id' => $item->id,
+                'used_quantity' => number_format($quantity, 3, '.', ''),
+                'remaining_stock' => number_format(
+                    (float) InventoryBatch::query()->where('inventory_item_id', $item->id)->sum('current_quantity'),
+                    3,
+                    '.',
+                    '',
+                ),
+                'movements' => $movements->map(fn (StockMovement $movement) => $this->movementPayload($movement->load('batch'))),
+            ], 201);
+        });
+    }
+
     public function receiptExport(InventoryExportRequest $request, string $kind): Response
     {
-        [$farm, $items, $movements, $from, $to] = $this->exportData($request, $kind);
-        $contents = $this->exports->pdf($farm, $kind, $items, $movements, $from, $to);
+        [$farm, $owner, $items, $movements, $from, $to] = $this->exportData($request, $kind);
+        $contents = $this->exports->pdf($farm, $kind, $items, $movements, $owner, $from, $to);
 
         $this->recordExportAudit($request, 'inventory.receipt_exported', $kind, $items);
 
@@ -355,8 +480,8 @@ class InventoryController extends Controller
 
     public function spreadsheetExport(InventoryExportRequest $request, string $kind): Response
     {
-        [$farm, $items, $movements, $from, $to] = $this->exportData($request, $kind);
-        $contents = $this->exports->xlsx($farm, $kind, $items, $movements, $from, $to);
+        [$farm, $owner, $items, $movements, $from, $to] = $this->exportData($request, $kind);
+        $contents = $this->exports->xlsx($farm, $kind, $items, $movements, $owner, $from, $to);
 
         $this->recordExportAudit($request, 'inventory.spreadsheet_exported', $kind, $items);
 
@@ -451,6 +576,12 @@ class InventoryController extends Controller
         $farm = Farm::query()
             ->where('organization_id', $request->attributes->get('organization_id'))
             ->findOrFail($request->attributes->get('api_session')->farm_id);
+        $owner = OrganizationMembership::query()
+            ->with('user')
+            ->where('organization_id', $farm->organization_id)
+            ->where('membership_type', 'primary_owner')
+            ->where('status', 'active')
+            ->first()?->user;
         $itemIds = $data['item_ids'] ?? [];
         $query = $this->baseQuery($request, $kind);
         if ($itemIds !== []) {
@@ -478,7 +609,7 @@ class InventoryController extends Controller
             ->orderBy('id')
             ->get();
 
-        return [$farm, $items, $movements, $from, $to];
+        return [$farm, $owner, $items, $movements, $from, $to];
     }
 
     private function recordExportAudit(

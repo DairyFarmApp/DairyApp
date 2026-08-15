@@ -49,7 +49,10 @@ trait CreatesFoundationData
 
     protected function animalRegistryReferences(array $foundation): array
     {
-        $species = AnimalSpecies::create(['code' => 'CATTLE', 'name' => 'Cattle', 'is_active' => true]);
+        $species = AnimalSpecies::firstOrCreate(
+            ['code' => 'CATTLE'],
+            ['name' => 'Cattle', 'is_active' => true],
+        );
         $breed = AnimalBreed::create([
             'organization_id' => $foundation['organization']->id,
             'species_id' => $species->id,

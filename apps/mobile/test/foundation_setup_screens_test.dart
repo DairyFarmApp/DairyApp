@@ -31,6 +31,7 @@ void main() {
         'sheds.view',
         'sheds.create',
         'sheds.update',
+        'sheds.archive',
       },
       membershipType: 'primary_owner',
     );
@@ -93,11 +94,24 @@ void main() {
       find.byKey(const Key('shed_name_field')),
       'Main Cow Shed',
     );
+    await tester.enterText(
+      find.byKey(const Key('shed_location_field')),
+      'North block',
+    );
     await tester.tap(find.byKey(const Key('save_shed_button')));
     await tester.pumpAndSettle();
 
     expect(find.text('Main Cow Shed'), findsOneWidget);
+    expect(find.text('North block'), findsOneWidget);
     expect(find.text('1 shed'), findsOneWidget);
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    expect(find.text('Delete shed'), findsOneWidget);
+    await tester.tap(find.text('Delete shed'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('confirm_delete_shed')));
+    await tester.pumpAndSettle();
+    expect(find.text('Sheds'), findsOneWidget);
   });
 }
 
@@ -183,6 +197,7 @@ ApiClient _api() {
                 'organization_id': organizationId,
                 'farm_id': farmId,
                 'name': (options.data as Map<String, dynamic>)['name'],
+                'location': (options.data as Map<String, dynamic>)['location'],
                 'version': 1,
                 'updated_at': now,
                 'is_deleted': false,

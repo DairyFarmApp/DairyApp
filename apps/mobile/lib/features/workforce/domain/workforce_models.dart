@@ -85,6 +85,7 @@ final class EmployeeLoan {
     required this.employeeId,
     required this.employeeName,
     required this.loanNumber,
+    this.type = 'loan',
     required this.disbursementDate,
     required this.principalAmount,
     required this.monthlyInstallment,
@@ -101,6 +102,7 @@ final class EmployeeLoan {
     employeeId: json['employee_id'] as String,
     employeeName: json['employee_name'] as String? ?? 'Employee',
     loanNumber: json['loan_number'] as String,
+    type: json['type'] as String? ?? 'loan',
     disbursementDate: DateTime.parse(json['disbursement_date'] as String),
     principalAmount: json['principal_amount'].toString(),
     monthlyInstallment: json['monthly_installment'].toString(),
@@ -116,6 +118,7 @@ final class EmployeeLoan {
   final String employeeId;
   final String employeeName;
   final String loanNumber;
+  final String type;
   final DateTime disbursementDate;
   final String principalAmount;
   final String monthlyInstallment;
@@ -228,6 +231,10 @@ final class FinanceOverview {
     required this.netProfit,
     required this.paidPayroll,
     required this.outstandingEmployeeLoans,
+    this.totalSales = '0.00',
+    this.totalPurchases = '0.00',
+    this.totalInvestments = '0.00',
+    this.totalLiabilities = '0.00',
   });
 
   factory FinanceOverview.fromJson(Map<String, dynamic> json) =>
@@ -238,6 +245,14 @@ final class FinanceOverview {
         netProfit: json['net_profit'].toString(),
         paidPayroll: json['paid_payroll'].toString(),
         outstandingEmployeeLoans: json['outstanding_employee_loans'].toString(),
+        totalSales:
+            json['total_sales']?.toString() ?? json['income'].toString(),
+        totalPurchases:
+            json['total_purchases']?.toString() ?? json['expenses'].toString(),
+        totalInvestments: json['total_investments']?.toString() ?? '0.00',
+        totalLiabilities:
+            json['total_liabilities']?.toString() ??
+            json['outstanding_employee_loans'].toString(),
       );
 
   final String month;
@@ -246,6 +261,10 @@ final class FinanceOverview {
   final String netProfit;
   final String paidPayroll;
   final String outstandingEmployeeLoans;
+  final String totalSales;
+  final String totalPurchases;
+  final String totalInvestments;
+  final String totalLiabilities;
 }
 
 final class FinanceRecord {

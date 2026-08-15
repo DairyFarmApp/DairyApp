@@ -32,3 +32,11 @@ final inventoryOverviewProvider =
             lowStock: query.lowStock,
           ),
     );
+
+final stockUsageItemsProvider = FutureProvider<List<InventoryItem>>(
+  (ref) => ref.watch(inventoryRepositoryProvider).stockUsageItems(),
+);
+
+final stockUsageHistoryProvider = FutureProvider<List<StockUsageRecord>>(
+  (ref) => ref.watch(inventoryRepositoryProvider).stockUsageHistory(),
+);

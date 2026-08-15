@@ -44,6 +44,7 @@ class LocalSheds extends Table {
   TextColumn get organizationId => text()();
   TextColumn get farmId => text()();
   TextColumn get name => text()();
+  TextColumn get location => text().nullable()();
   IntColumn get version => integer().withDefault(const Constant(1))();
   DateTimeColumn get serverUpdatedAt => dateTime()();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
@@ -384,7 +385,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -411,6 +412,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 5) {
         await migrator.createTable(localMilkEntries);
+      }
+      if (from < 6) {
+        await migrator.addColumn(localSheds, localSheds.location);
       }
     },
   );

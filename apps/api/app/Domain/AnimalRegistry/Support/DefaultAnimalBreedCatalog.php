@@ -35,6 +35,18 @@ final class DefaultAnimalBreedCatalog
                 'BUFFALO-CROSSBRED' => 'Buffalo Crossbred',
             ],
         ],
+        'GOAT' => [
+            'name' => 'Goat',
+            'breeds' => [
+                'BEETAL' => 'Beetal',
+                'KAMORI' => 'Kamori',
+                'DAMANI' => 'Damani',
+                'NACHI' => 'Nachi',
+                'TEDDY' => 'Teddy',
+                'BARBARI' => 'Barbari',
+                'GOAT-CROSSBRED' => 'Goat Crossbred',
+            ],
+        ],
     ];
 
     public function __construct(private readonly AnimalRegistryNormalizer $normalizer) {}

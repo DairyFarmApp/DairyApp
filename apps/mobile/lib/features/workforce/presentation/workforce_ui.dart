@@ -1,14 +1,9 @@
 import 'package:dairycare_mobile/core/widgets/app_surface.dart';
+import 'package:dairycare_mobile/core/formatting/pkr.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-final _pkr = NumberFormat.currency(
-  locale: 'en_PK',
-  symbol: 'PKR ',
-  decimalDigits: 2,
-);
-
-String pkr(String value) => _pkr.format(double.tryParse(value) ?? 0);
+String pkr(String value) => formatPkr(value);
 
 String shortDate(DateTime value) => DateFormat('dd MMM yyyy').format(value);
 

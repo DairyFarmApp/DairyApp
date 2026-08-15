@@ -20,6 +20,7 @@ class StockMovement extends Model
         'unit_cost',
         'occurred_at',
         'reason',
+        'reference_type', 'reference_id',
         'created_by',
     ];
 

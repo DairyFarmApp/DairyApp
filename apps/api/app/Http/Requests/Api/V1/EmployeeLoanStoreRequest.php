@@ -5,6 +5,7 @@ namespace App\Http\Requests\Api\V1;
 use App\Rules\UuidV7;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class EmployeeLoanStoreRequest extends FormRequest
@@ -27,6 +28,7 @@ class EmployeeLoanStoreRequest extends FormRequest
         return [
             'id' => ['sometimes', new UuidV7],
             'employee_id' => ['required', 'uuid'],
+            'type' => ['required', Rule::in(['loan', 'salary_advance'])],
             'disbursement_date' => ['required', 'date_format:Y-m-d', 'before_or_equal:today'],
             'principal_amount' => ['required', 'decimal:0,2', 'gt:0', 'max:999999999999.99'],
             'monthly_installment' => [

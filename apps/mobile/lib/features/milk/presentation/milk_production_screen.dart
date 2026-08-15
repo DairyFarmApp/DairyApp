@@ -495,6 +495,8 @@ final class _AnimalMilkRow extends StatelessWidget {
               : animal.animalNumber,
         ),
         subtitle: Text(animal.shedName ?? 'Assigned shed'),
+        trailing: const Icon(Icons.chevron_right_rounded, size: 20),
+        onTap: () => context.push('/animals/${animal.id}'),
       );
       if (existing != null) {
         final recorded = Row(

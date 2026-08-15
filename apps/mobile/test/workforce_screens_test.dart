@@ -49,8 +49,19 @@ void main() {
     await tester.tap(find.text('Add employee'));
     await tester.pumpAndSettle();
     expect(find.text('Full name'), findsOneWidget);
+    expect(find.byKey(const Key('employee_department_field')), findsNothing);
+    expect(find.text('Department *'), findsNothing);
     expect(find.text('Monthly salary (PKR)'), findsOneWidget);
     expect(find.text('Save employee'), findsOneWidget);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete employee'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('confirm_delete_employee')));
+    await tester.pumpAndSettle();
+    expect(find.text('Employees'), findsOneWidget);
   });
 
   testWidgets('loan screen shows recovery balances and complete loan form', (
@@ -69,15 +80,16 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Employee loans'), findsOneWidget);
+    expect(find.text('Employee advances & loans'), findsOneWidget);
     expect(find.text('Outstanding'), findsOneWidget);
     expect(find.text('Ali Raza • LOAN-000001'), findsOneWidget);
-    await tester.tap(find.text('New loan'));
+    await tester.tap(find.text('New advance / loan'));
     await tester.pumpAndSettle();
-    expect(find.text('Loan amount (PKR)'), findsOneWidget);
+    expect(find.text('Payment type'), findsOneWidget);
+    expect(find.text('Amount (PKR)'), findsOneWidget);
     expect(find.text('Monthly installment (PKR)'), findsOneWidget);
     expect(find.text('First payroll recovery month'), findsOneWidget);
-    expect(find.text('Disburse loan'), findsOneWidget);
+    expect(find.text('Disburse'), findsOneWidget);
   });
 
   testWidgets(

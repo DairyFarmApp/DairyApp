@@ -43,7 +43,7 @@ final class AnimalListState {
 
 class AnimalListController extends AsyncNotifier<AnimalListState> {
   Timer? _searchTimer;
-  AnimalFilters _filters = const AnimalFilters();
+  AnimalFilters _filters = const AnimalFilters(operationalStatus: 'active');
 
   @override
   Future<AnimalListState> build() async {

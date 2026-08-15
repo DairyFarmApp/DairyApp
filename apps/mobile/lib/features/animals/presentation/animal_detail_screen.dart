@@ -1,12 +1,18 @@
 import 'package:dairycare_mobile/core/auth/auth_controller.dart';
 import 'package:dairycare_mobile/core/errors/app_exception.dart';
+import 'package:dairycare_mobile/core/providers.dart';
 import 'package:dairycare_mobile/core/widgets/async_state_view.dart';
 import 'package:dairycare_mobile/features/animals/application/animal_providers.dart';
 import 'package:dairycare_mobile/features/animals/domain/animal_models.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_feed_history_section.dart';
+import 'package:dairycare_mobile/features/animals/presentation/animal_milk_history_section.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_movement_history_section.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_registry_strings.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_status_history_section.dart';
 import 'package:dairycare_mobile/features/animals/presentation/animal_weight_history_section.dart';
+import 'package:dairycare_mobile/features/health/presentation/animal_health_section.dart';
+import 'package:dairycare_mobile/features/health/presentation/breeding_section.dart';
+import 'package:dairycare_mobile/features/health/presentation/calf_care_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,19 +33,63 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final detail = ref.watch(animalDetailProvider(widget.animalId));
-    final session = ref.watch(authControllerProvider).asData?.value;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Animal profile'),
         actions: [
-          if (detail.asData?.value != null &&
-              !detail.requireValue.isArchived &&
-              (session?.can('animals.update') ?? false))
-            IconButton(
+          if (detail.asData?.value != null && !detail.requireValue.isArchived)
+            PopupMenuButton<String>(
               key: const Key('edit_animal_action'),
-              tooltip: AnimalRegistryStrings.editAnimal,
-              onPressed: () => context.go('/animals/${widget.animalId}/edit'),
-              icon: const Icon(Icons.edit_outlined),
+              onSelected: (value) {
+                final animal = detail.requireValue;
+                switch (value) {
+                  case 'record_weight':
+                    context.push('/animals/${animal.id}/record-weight');
+                  case 'record_feed':
+                    context.push('/animals/${animal.id}/record-feed');
+                  case 'record_milk':
+                    context.push('/animals/${animal.id}/record-milk');
+                  case 'health_assessment':
+                    context.push('/animals/${animal.id}/health-assessment');
+                  case 'change_status':
+                    context.push('/animals/${animal.id}/change-status');
+                  case 'edit':
+                    context.go('/animals/${widget.animalId}/edit');
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(value: 'edit', child: Text('Edit details')),
+                const PopupMenuItem(
+                  value: 'record_weight',
+                  child: Text('Record weight'),
+                ),
+                if (detail.requireValue.operationalStatus == 'active' &&
+                    detail.requireValue.photoRequirementMet) ...[
+                  const PopupMenuItem(
+                    value: 'record_milk',
+                    child: Text('Record milk'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'record_feed',
+                    child: Text('Record feed'),
+                  ),
+                ],
+                const PopupMenuItem(
+                  value: 'change_status',
+                  child: Text('Change status'),
+                ),
+                if (detail.requireValue.operationalStatus != 'deceased' &&
+                    (ref
+                            .watch(authControllerProvider)
+                            .asData
+                            ?.value
+                            ?.can('health.assess') ??
+                        false))
+                  const PopupMenuItem(
+                    value: 'health_assessment',
+                    child: Text('Check health symptoms'),
+                  ),
+              ],
             ),
         ],
       ),
@@ -128,6 +178,18 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
                     ),
                     _operationalStatusChip(animal.operationalStatus),
                     Chip(
+                      avatar: Icon(
+                        animal.photoRequirementMet
+                            ? Icons.photo_library_outlined
+                            : Icons.warning_amber_rounded,
+                      ),
+                      label: Text(
+                        animal.photoRequirementMet
+                            ? '${animal.photoCount} photos'
+                            : '${animal.photoCount}/4 photos · restricted',
+                      ),
+                    ),
+                    Chip(
                       avatar: const Icon(Icons.cloud_done_outlined),
                       label: Text(
                         'Cached from server ${DateFormat.yMd().add_jm().format(animal.serverUpdatedAt.toLocal())}',
@@ -135,7 +197,80 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
+                _photoGallery(animal),
+                const SizedBox(height: 16),
+                if (ref
+                        .watch(authControllerProvider)
+                        .asData
+                        ?.value
+                        ?.can('health.view') ??
+                    false) ...[
+                  AnimalHealthSection(
+                    animalId: animal.id,
+                    canAssess:
+                        animal.operationalStatus != 'deceased' &&
+                        (ref
+                                .watch(authControllerProvider)
+                                .asData
+                                ?.value
+                                ?.can('health.assess') ??
+                            false),
+                    canTreat:
+                        animal.operationalStatus == 'active' &&
+                        (ref
+                                .watch(authControllerProvider)
+                                .asData
+                                ?.value
+                                ?.can('health.treat') ??
+                            false),
+                  ),
+                  const SizedBox(height: 16),
+                  if (animal.sex == 'female') ...[
+                    BreedingSection(
+                      animalId: animal.id,
+                      canManage:
+                          animal.operationalStatus == 'active' &&
+                          (ref
+                                  .watch(authControllerProvider)
+                                  .asData
+                                  ?.value
+                                  ?.can('breeding.manage') ??
+                              false),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ],
+                if (animal.lifeStage == 'calf') ...[
+                  CalfCareSection(
+                    animalId: animal.id,
+                    canManage:
+                        animal.operationalStatus == 'active' &&
+                        (ref
+                                .watch(authControllerProvider)
+                                .asData
+                                ?.value
+                                ?.can('calves.manage') ??
+                            false),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                AnimalFeedHistorySection(
+                  animalId: animal.id,
+                  canRecord:
+                      animal.operationalStatus == 'active' &&
+                      animal.photoRequirementMet,
+                ),
+                if (animal.sex.toLowerCase() == 'female') ...[
+                  const SizedBox(height: 16),
+                  AnimalMilkHistorySection(
+                    animalId: animal.id,
+                    canRecord:
+                        animal.operationalStatus == 'active' &&
+                        animal.photoRequirementMet,
+                  ),
+                ],
+                const SizedBox(height: 24),
                 if (width >= 760)
                   Wrap(
                     spacing: 12,
@@ -169,6 +304,56 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
       ),
     ),
   );
+
+  Widget _photoGallery(Animal animal) {
+    if (animal.photos.isEmpty) {
+      return Card(
+        child: ListTile(
+          leading: const Icon(Icons.add_a_photo_outlined),
+          title: const Text('Animal photos required'),
+          subtitle: Text(
+            animal.photoRequirementMet
+                ? 'This existing record has no uploaded photo gallery.'
+                : 'Upload at least four photos before milk or feed recording.',
+          ),
+        ),
+      );
+    }
+    final api = ref.read(apiClientProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Photos', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 150,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: animal.photos.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              final photo = animal.photos[index];
+              return FutureBuilder(
+                future: api.getBytes(photo.url),
+                builder: (context, snapshot) => ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: 190,
+                    child: snapshot.hasData
+                        ? Image.memory(snapshot.requireData, fit: BoxFit.cover)
+                        : const ColoredBox(
+                            color: Colors.black12,
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _operationalStatusChip(String status) {
     final (color, icon) = switch (status) {

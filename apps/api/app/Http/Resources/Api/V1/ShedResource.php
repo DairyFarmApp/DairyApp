@@ -9,6 +9,6 @@ class ShedResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return ['id' => $this->id, 'organization_id' => $this->organization_id, 'farm_id' => $this->farm_id, 'name' => $this->name, 'code' => $this->code, 'version' => $this->version, 'updated_at' => $this->updated_at?->toISOString(), 'is_deleted' => $this->trashed()];
+        return ['id' => $this->id, 'organization_id' => $this->organization_id, 'farm_id' => $this->farm_id, 'name' => $this->name, 'code' => $this->code, 'location' => $this->location, 'version' => $this->version, 'updated_at' => $this->updated_at?->toISOString(), 'is_deleted' => $this->trashed()];
     }
 }

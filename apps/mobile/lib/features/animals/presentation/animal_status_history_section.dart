@@ -103,8 +103,8 @@ class _AnimalStatusHistorySectionState
     };
     final items = byId.values.toList(growable: false);
     if (items.isEmpty) {
-      return const SizedBox(
-        height: 100,
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
         child: EmptyStateView(
           message: 'No operational-status changes recorded.',
         ),

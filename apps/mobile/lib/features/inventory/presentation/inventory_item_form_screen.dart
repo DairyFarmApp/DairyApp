@@ -34,6 +34,18 @@ class _InventoryItemFormScreenState
   final _minimum = TextEditingController(text: '0');
   final _maximum = TextEditingController();
   final _notes = TextEditingController();
+  final _genericName = TextEditingController();
+  final _drapNumber = TextEditingController();
+  final _concentration = TextEditingController();
+  final _milkWithdrawal = TextEditingController(text: '0');
+  final _meatWithdrawal = TextEditingController(text: '0');
+  final _verifiedOn = TextEditingController();
+  final _dryMatter = TextEditingController(),
+      _protein = TextEditingController(),
+      _energy = TextEditingController(),
+      _fibre = TextEditingController(),
+      _fat = TextEditingController(),
+      _minerals = TextEditingController();
   String? _category;
   late String _unit;
   bool _saving = false;
@@ -92,6 +104,18 @@ class _InventoryItemFormScreenState
       _minimum,
       _maximum,
       _notes,
+      _genericName,
+      _drapNumber,
+      _concentration,
+      _milkWithdrawal,
+      _meatWithdrawal,
+      _verifiedOn,
+      _dryMatter,
+      _protein,
+      _energy,
+      _fibre,
+      _fat,
+      _minerals,
     ]) {
       controller.dispose();
     }
@@ -186,6 +210,69 @@ class _InventoryItemFormScreenState
                             validateMaximumStock(value, _minimum.text),
                       ),
                     ]),
+                    if (widget.kind == InventoryKind.medicine) ...[
+                      const SizedBox(height: 24),
+                      Text(
+                        'Verified medicine label / Tasdeeq shuda dawa label',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Copy these values from the product label or veterinarian. The system will not calculate or invent a dose.',
+                      ),
+                      const SizedBox(height: 16),
+                      _fields([
+                        _field(
+                          _genericName,
+                          'Active ingredient / Asal dawa',
+                          required: true,
+                        ),
+                        _field(
+                          _concentration,
+                          'Strength / Taaqat (for example 100 mg/ml)',
+                          required: true,
+                        ),
+                        _field(_drapNumber, 'DRAP registration number'),
+                        _field(
+                          _milkWithdrawal,
+                          'Milk withdrawal hours / Doodh band ghantay',
+                          required: true,
+                          number: true,
+                          decimalPlaces: 0,
+                        ),
+                        _field(
+                          _meatWithdrawal,
+                          'Meat withdrawal days / Gosht band din',
+                          required: true,
+                          number: true,
+                          decimalPlaces: 0,
+                        ),
+                        InventoryDateField(
+                          controller: _verifiedOn,
+                          label: 'Label verified date',
+                          validator: validateInventoryDate,
+                        ),
+                      ]),
+                    ],
+                    if (widget.kind == InventoryKind.feed) ...[
+                      const SizedBox(height: 24),
+                      Text(
+                        'Nutrition / Ghizai maloomat',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const Text(
+                        'Enter laboratory or supplier values per kg. / Lab ya supplier ki tasdeeq shuda values.',
+                      ),
+                      const SizedBox(height: 16),
+                      _fields([
+                        _field(_dryMatter, 'Dry matter %', number: true),
+                        _field(_protein, 'Crude protein %', number: true),
+                        _field(_energy, 'Energy MJ/kg', number: true),
+                        _field(_fibre, 'Fibre %', number: true),
+                        _field(_fat, 'Fat %', number: true),
+                        _field(_minerals, 'Minerals %', number: true),
+                      ]),
+                    ],
                     const SizedBox(height: 24),
                     Text(
                       'Opening batch',
@@ -215,10 +302,10 @@ class _InventoryItemFormScreenState
                       ),
                       _field(
                         _cost,
-                        'Rate per item',
+                        'Rate per item (PKR)',
                         required: true,
                         number: true,
-                        decimalPlaces: 4,
+                        decimalPlaces: 2,
                       ),
                     ]),
                     const SizedBox(height: 16),
@@ -318,6 +405,22 @@ class _InventoryItemFormScreenState
         'minimum_stock': _minimum.text.trim(),
         'maximum_stock': _nullable(_maximum.text),
         'notes': _nullable(_notes.text),
+        if (widget.kind == InventoryKind.medicine) ...{
+          'generic_name': _genericName.text.trim(),
+          'drap_registration_number': _nullable(_drapNumber.text),
+          'concentration': _concentration.text.trim(),
+          'milk_withdrawal_hours': int.parse(_milkWithdrawal.text),
+          'meat_withdrawal_days': int.parse(_meatWithdrawal.text),
+          'regulatory_verified_on': _nullable(_verifiedOn.text),
+        },
+        if (widget.kind == InventoryKind.feed) ...{
+          'dry_matter_percent': _nullable(_dryMatter.text),
+          'crude_protein_percent': _nullable(_protein.text),
+          'metabolizable_energy_mj_per_kg': _nullable(_energy.text),
+          'fibre_percent': _nullable(_fibre.text),
+          'fat_percent': _nullable(_fat.text),
+          'minerals_percent': _nullable(_minerals.text),
+        },
         'batch_number': _batch.text.trim(),
         'supplier': _nullable(_supplier.text),
         'purchase_date': _nullable(_purchase.text),

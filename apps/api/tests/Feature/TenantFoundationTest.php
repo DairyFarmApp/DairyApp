@@ -107,12 +107,28 @@ class TenantFoundationTest extends TestCase
         $farm = $this->postJson('/api/v1/farms', ['name' => 'Riverside Farm', 'code' => 'RIVER', 'timezone' => 'Asia/Karachi'], $headers + ['Idempotency-Key' => 'farm-create-1'])->assertCreated()->json('data');
         $this->assertSame(7, Uuid::fromString($farm['id'])->getVersion());
         $this->patchJson('/api/v1/farms/'.$farm['id'], ['name' => 'Riverside Dairy Farm'], $headers)->assertOk();
-        $shed = $this->postJson('/api/v1/farms/'.$farm['id'].'/sheds', ['name' => 'Main Shed', 'code' => 'MAIN'], $headers + ['Idempotency-Key' => 'shed-create-1'])->assertCreated()->json('data');
-        $this->patchJson('/api/v1/sheds/'.$shed['id'], ['name' => 'Milking Shed'], $headers)->assertOk();
+        $shed = $this->postJson('/api/v1/farms/'.$farm['id'].'/sheds', ['name' => 'Main Shed', 'code' => 'MAIN', 'location' => 'North block'], $headers + ['Idempotency-Key' => 'shed-create-1'])->assertCreated()->assertJsonPath('data.location', 'North block')->json('data');
+        $this->patchJson('/api/v1/sheds/'.$shed['id'], ['name' => 'Milking Shed', 'location' => 'Beside milking parlour'], $headers)->assertOk()->assertJsonPath('data.location', 'Beside milking parlour');
         $this->deleteJson('/api/v1/sheds/'.$shed['id'], [], $headers)->assertOk();
         $this->deleteJson('/api/v1/farms/'.$farm['id'], [], $headers)->assertOk();
         $this->assertDatabaseHas('audit_logs', ['action' => 'farm.created', 'entity_id' => $farm['id']]);
         $this->assertDatabaseHas('audit_logs', ['action' => 'shed.archived', 'entity_id' => $shed['id']]);
+    }
+
+    public function test_shed_in_use_by_an_active_group_cannot_be_deleted(): void
+    {
+        $foundation = $this->foundation($this->permissions);
+        $references = $this->animalRegistryReferences($foundation);
+        $headers = $this->bearer($this->loginToken());
+
+        $this->deleteJson('/api/v1/sheds/'.$foundation['shed']->id, [], $headers)
+            ->assertConflict()
+            ->assertJsonPath('error.code', 'SHED_IN_USE');
+
+        $references['group']->update(['is_active' => false]);
+        $this->deleteJson('/api/v1/sheds/'.$foundation['shed']->id, [], $headers)
+            ->assertOk()
+            ->assertJsonPath('data.archived', true);
     }
 
     public function test_idempotency_replays_committed_result_and_rejects_conflicting_payload(): void

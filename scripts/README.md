@@ -17,3 +17,17 @@ The root `RUN_DAIRYCARE.bat` is the supported Windows development launcher. It:
 It deliberately does not run `migrate:fresh`, seed data, regenerate `APP_KEY`,
 install Composer packages, or embed credentials. Run
 `RUN_DAIRYCARE.bat --check` from a terminal for a non-launching preflight.
+
+## Full verification
+
+Run the complete local SQLite/API and Flutter quality suite with:
+
+```powershell
+.\scripts\verify.ps1
+```
+
+Use `-WithBuilds` for Android debug and production web compilation, and
+`-WithDependencyAudit` for Composer security and Flutter dependency reports.
+MySQL destructive migration verification is opt-in with `-WithMySql` and is
+refused unless `DB_DATABASE` ends in `_test`; this prevents accidental resets
+of development or production data.

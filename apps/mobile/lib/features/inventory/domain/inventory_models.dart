@@ -132,6 +132,12 @@ final class InventoryItem {
     required this.batches,
     this.barcode,
     this.brand,
+    this.genericName,
+    this.drapRegistrationNumber,
+    this.concentration,
+    this.milkWithdrawalHours,
+    this.meatWithdrawalDays,
+    this.regulatoryVerifiedOn,
     this.maximumStock,
     this.notes,
   });
@@ -144,6 +150,14 @@ final class InventoryItem {
     name: json['name'] as String,
     category: json['category'] as String,
     brand: json['brand'] as String?,
+    genericName: json['generic_name'] as String?,
+    drapRegistrationNumber: json['drap_registration_number'] as String?,
+    concentration: json['concentration'] as String?,
+    milkWithdrawalHours: (json['milk_withdrawal_hours'] as num?)?.toInt(),
+    meatWithdrawalDays: (json['meat_withdrawal_days'] as num?)?.toInt(),
+    regulatoryVerifiedOn: json['regulatory_verified_on'] == null
+        ? null
+        : DateTime.parse(json['regulatory_verified_on'] as String),
     unit: json['unit'] as String,
     minimumStock: json['minimum_stock'].toString(),
     maximumStock: json['maximum_stock']?.toString(),
@@ -164,6 +178,12 @@ final class InventoryItem {
   final String name;
   final String category;
   final String? brand;
+  final String? genericName;
+  final String? drapRegistrationNumber;
+  final String? concentration;
+  final int? milkWithdrawalHours;
+  final int? meatWithdrawalDays;
+  final DateTime? regulatoryVerifiedOn;
   final String unit;
   final String minimumStock;
   final String? maximumStock;
@@ -208,6 +228,83 @@ final class InventoryOverview {
   final List<InventoryItem> items;
   final List<String> categories;
   final List<String> suppliers;
+}
+
+final class StockUsageRecord {
+  const StockUsageRecord({
+    required this.id,
+    required this.itemId,
+    required this.itemName,
+    required this.itemCode,
+    required this.kind,
+    required this.unit,
+    required this.quantity,
+    required this.occurredAt,
+    required this.purpose,
+    required this.batchNumber,
+  });
+
+  factory StockUsageRecord.fromJson(Map<String, dynamic> json) =>
+      StockUsageRecord(
+        id: json['id'] as String,
+        itemId: json['item_id'] as String,
+        itemName: json['item_name'] as String? ?? 'Inventory item',
+        itemCode: json['item_code'] as String? ?? '',
+        kind:
+            InventoryKind.fromPath(json['kind'] as String? ?? '') ??
+            InventoryKind.feed,
+        unit: json['unit'] as String? ?? '',
+        quantity: json['quantity_change'].toString().replaceFirst('-', ''),
+        occurredAt: DateTime.parse(json['occurred_at'] as String).toLocal(),
+        purpose: json['reason'] as String? ?? '',
+        batchNumber: json['batch_number'] as String? ?? '',
+      );
+
+  final String id;
+  final String itemId;
+  final String itemName;
+  final String itemCode;
+  final InventoryKind kind;
+  final String unit;
+  final String quantity;
+  final DateTime occurredAt;
+  final String purpose;
+  final String batchNumber;
+}
+
+final class InventoryMovement {
+  const InventoryMovement({
+    required this.id,
+    required this.movementType,
+    required this.quantityChange,
+    required this.occurredAt,
+    required this.balanceAfter,
+    this.batchNumber,
+    this.reason,
+  });
+
+  factory InventoryMovement.fromJson(
+    Map<String, dynamic> json, {
+    required String balanceAfter,
+  }) => InventoryMovement(
+    id: json['id'] as String,
+    movementType: json['movement_type'] as String,
+    quantityChange: json['quantity_change'].toString(),
+    occurredAt: DateTime.parse(json['occurred_at'] as String).toLocal(),
+    balanceAfter: balanceAfter,
+    batchNumber: json['batch_number'] as String?,
+    reason: json['reason'] as String?,
+  );
+
+  final String id;
+  final String movementType;
+  final String quantityChange;
+  final DateTime occurredAt;
+  final String balanceAfter;
+  final String? batchNumber;
+  final String? reason;
+
+  bool get isAddition => double.parse(quantityChange) >= 0;
 }
 
 DateTime? _date(Object? value) =>

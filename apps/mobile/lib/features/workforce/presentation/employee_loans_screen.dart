@@ -29,15 +29,15 @@ final class EmployeeLoansScreen extends ConsumerWidget {
             children: [
               PageHeader(
                 eyebrow: 'Workforce',
-                title: 'Employee loans',
+                title: 'Employee advances & loans',
                 subtitle:
-                    'Disburse PKR loans and recover scheduled installments automatically from paid payroll.',
+                    'Disburse PKR salary advances or loans and recover installments automatically from paid payroll.',
                 actions: [
                   if (canManage)
                     FilledButton.icon(
                       onPressed: () => _openLoan(context, ref),
                       icon: const Icon(Icons.add_card_rounded),
-                      label: const Text('New loan'),
+                      label: const Text('New advance / loan'),
                     ),
                 ],
               ),
@@ -80,7 +80,9 @@ final class EmployeeLoansScreen extends ConsumerWidget {
       ref.invalidate(employeesProvider);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Employee loan posted successfully.')),
+          const SnackBar(
+            content: Text('Employee advance or loan posted successfully.'),
+          ),
         );
       }
     } catch (error) {
@@ -104,7 +106,7 @@ final class _LoanBody extends StatelessWidget {
     children: [
       metricGrid([
         MetricCard(
-          label: 'Active loans',
+          label: 'Active advances / loans',
           value: '${data.activeLoans}',
           icon: Icons.assignment_ind_rounded,
           color: const Color(0xFF2D9CDB),
@@ -131,8 +133,8 @@ final class _LoanBody extends StatelessWidget {
       const SizedBox(height: 20),
       if (data.loans.isEmpty)
         emptyPanel(
-          'No employee loans',
-          'New loans will appear here with recovered and outstanding balances.',
+          'No employee advances or loans',
+          'New advances and loans will appear here with recovered and outstanding balances.',
           Icons.account_balance_wallet_outlined,
         )
       else
@@ -160,7 +162,7 @@ final class _LoanBody extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(
-                    '${loan.reason}\n'
+                    '${loan.type == 'salary_advance' ? 'SALARY ADVANCE' : 'LOAN'} · ${loan.reason}\n'
                     '${pkr(loan.outstandingAmount)} outstanding • '
                     '${pkr(loan.monthlyInstallment)}/month',
                   ),
@@ -192,6 +194,7 @@ final class _LoanDialogState extends State<_LoanDialog> {
   final _reason = TextEditingController();
   final _notes = TextEditingController();
   late String _employeeId;
+  String _type = 'salary_advance';
   DateTime _disbursement = DateTime.now();
   DateTime _firstRecovery = DateTime(DateTime.now().year, DateTime.now().month);
 
@@ -212,7 +215,7 @@ final class _LoanDialogState extends State<_LoanDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('New employee loan'),
+    title: const Text('New employee advance or loan'),
     content: SizedBox(
       width: 560,
       child: Form(
@@ -236,10 +239,26 @@ final class _LoanDialogState extends State<_LoanDialog> {
                 onChanged: (value) => _employeeId = value!,
               ),
               const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _type,
+                decoration: fieldDecoration(
+                  'Payment type',
+                  icon: Icons.account_balance_wallet_outlined,
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'salary_advance',
+                    child: Text('Salary advance'),
+                  ),
+                  DropdownMenuItem(value: 'loan', child: Text('Employee loan')),
+                ],
+                onChanged: (value) => setState(() => _type = value!),
+              ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _principal,
                 decoration: fieldDecoration(
-                  'Loan amount (PKR)',
+                  'Amount (PKR)',
                   icon: Icons.payments_outlined,
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
@@ -330,6 +349,7 @@ final class _LoanDialogState extends State<_LoanDialog> {
           if (!_formKey.currentState!.validate()) return;
           Navigator.pop(context, {
             'employee_id': _employeeId,
+            'type': _type,
             'disbursement_date': DateFormat('yyyy-MM-dd').format(_disbursement),
             'principal_amount': double.parse(
               _principal.text,
@@ -344,7 +364,7 @@ final class _LoanDialogState extends State<_LoanDialog> {
             'notes': _notes.text.trim().isEmpty ? null : _notes.text.trim(),
           });
         },
-        child: const Text('Disburse loan'),
+        child: const Text('Disburse'),
       ),
     ],
   );

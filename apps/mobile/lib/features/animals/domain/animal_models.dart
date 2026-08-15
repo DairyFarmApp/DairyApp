@@ -135,6 +135,9 @@ final class Animal {
     this.sourceDescription,
     this.notes,
     this.latestWeight,
+    this.photoCount = 0,
+    this.photoRequirementMet = true,
+    this.photos = const [],
   });
 
   factory Animal.fromJson(Map<String, dynamic> json) => Animal(
@@ -175,6 +178,12 @@ final class Animal {
         ? AnimalWeight.fromJson(json['latest_weight'] as Map<String, dynamic>)
         : null,
     operationalStatus: json['operational_status'] as String,
+    photoCount: json['photo_count'] as int? ?? 0,
+    photoRequirementMet: json['photo_requirement_met'] as bool? ?? true,
+    photos: ((json['photos'] as List<dynamic>?) ?? const [])
+        .cast<Map<String, dynamic>>()
+        .map(AnimalPhoto.fromJson)
+        .toList(growable: false),
     version: json['version'] as int? ?? 1,
     isArchived: json['is_archived'] as bool? ?? false,
     serverUpdatedAt:
@@ -215,9 +224,26 @@ final class Animal {
   final String? notes;
   final AnimalWeight? latestWeight;
   final String operationalStatus;
+  final int photoCount;
+  final bool photoRequirementMet;
+  final List<AnimalPhoto> photos;
   final int version;
   final bool isArchived;
   final DateTime serverUpdatedAt;
+}
+
+final class AnimalPhoto {
+  const AnimalPhoto({required this.id, required this.name, required this.url});
+
+  factory AnimalPhoto.fromJson(Map<String, dynamic> json) => AnimalPhoto(
+    id: json['id'] as String,
+    name: json['name'] as String? ?? 'Animal photo',
+    url: json['url'] as String,
+  );
+
+  final String id;
+  final String name;
+  final String url;
 }
 
 final class AnimalDraft {
@@ -319,7 +345,7 @@ final class AnimalFilters {
     this.farmId,
     this.shedId,
     this.groupId,
-    this.operationalStatus,
+    this.operationalStatus = 'active',
     this.archiveState = 'active',
   });
 

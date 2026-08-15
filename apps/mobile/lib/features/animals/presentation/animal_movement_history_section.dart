@@ -91,8 +91,8 @@ class _AnimalMovementHistorySectionState
     final items = result.items;
     final isCached = result.isCached;
     if (items.isEmpty) {
-      return const SizedBox(
-        height: 100,
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
         child: EmptyStateView(message: 'No movement history recorded.'),
       );
     }

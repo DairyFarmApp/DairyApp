@@ -5,6 +5,7 @@ namespace App\Domain\Inventory\Support;
 use App\Domain\Inventory\Models\InventoryItem;
 use App\Domain\Inventory\Models\StockMovement;
 use App\Models\Farm;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -26,6 +27,7 @@ final class InventoryExportService
         string $kind,
         Collection $items,
         Collection $movements,
+        ?User $owner,
         ?CarbonImmutable $from,
         ?CarbonImmutable $to,
     ): string {
@@ -40,6 +42,7 @@ final class InventoryExportService
             'kind' => $kind,
             'items' => $items,
             'movements' => $movements,
+            'owner' => $owner,
             'from' => $from?->setTimezone($farm->timezone),
             'to' => $to?->setTimezone($farm->timezone),
             'generatedAt' => now($farm->timezone),
@@ -58,6 +61,7 @@ final class InventoryExportService
         string $kind,
         Collection $items,
         Collection $movements,
+        ?User $owner,
         ?CarbonImmutable $from,
         ?CarbonImmutable $to,
     ): string {
@@ -81,6 +85,8 @@ final class InventoryExportService
             $writer->getCurrentSheet()->setName('Inventory summary');
             $writer->addRow(Row::fromValues(['DairyCare inventory export'], $title));
             $writer->addRow(Row::fromValues(['Farm', $farm->name]));
+            $writer->addRow(Row::fromValues(['Owner', $owner?->name ?? 'Not provided']));
+            $writer->addRow(Row::fromValues(['Phone', $owner?->phone_number ?? 'Not provided']));
             $writer->addRow(Row::fromValues(['Inventory', ucfirst($kind)]));
             $writer->addRow(Row::fromValues([
                 'Movement date range',

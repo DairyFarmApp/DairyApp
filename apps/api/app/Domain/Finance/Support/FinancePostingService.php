@@ -16,6 +16,7 @@ final class FinancePostingService
         'GENERAL_EXPENSE' => ['General Expense', 'expense'],
         'SALARY_EXPENSE' => ['Salary Expense', 'expense'],
         'EMPLOYEE_LOANS' => ['Employee Loans Receivable', 'asset'],
+        'OPENING_EQUITY' => ['Opening Balance Equity', 'equity'],
     ];
 
     public function __construct(private readonly ScopedNumberGenerator $numbers) {}

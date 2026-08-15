@@ -115,6 +115,78 @@ class InventoryManagementTest extends TestCase
         ]);
     }
 
+    public function test_stock_usage_deducts_inventory_and_preserves_usage_history(): void
+    {
+        $owner = $this->owner('usage-owner@example.test', 'Usage Farm');
+        $headers = $this->bearer($owner->json('data.access_token'));
+        $created = $this->postJson(
+            '/api/v1/inventory/feed/items',
+            $this->itemPayload($owner->json('data.active_farm_id'), 'feed'),
+            [...$headers, 'Idempotency-Key' => 'usage-feed'],
+        )->assertCreated();
+        $itemId = $created->json('data.id');
+        $this->postJson(
+            "/api/v1/inventory/feed/items/$itemId/receipts",
+            [
+                'batch_number' => 'FEED-EARLY-EXPIRY',
+                'supplier' => 'Feed Supplier',
+                'purchase_date' => today()->toDateString(),
+                'expiry_date' => today()->addMonth()->toDateString(),
+                'quantity' => '5.000',
+                'unit_cost' => '90.0000',
+                'reason' => 'Additional feed stock',
+            ],
+            [...$headers, 'Idempotency-Key' => 'usage-receipt'],
+        )->assertCreated();
+
+        $usage = [
+            'quantity' => '12.000',
+            'purpose' => 'Morning feed for lactating animals',
+        ];
+        $first = $this->postJson(
+            "/api/v1/inventory/feed/items/$itemId/usage",
+            $usage,
+            [...$headers, 'Idempotency-Key' => 'usage-1'],
+        )->assertCreated()
+            ->assertJsonPath('data.used_quantity', '12.000')
+            ->assertJsonPath('data.remaining_stock', '3.000');
+        $this->postJson(
+            "/api/v1/inventory/feed/items/$itemId/usage",
+            $usage,
+            [...$headers, 'Idempotency-Key' => 'usage-1'],
+        )->assertStatus($first->status())->assertExactJson($first->json());
+
+        $this->assertSame(
+            -12.0,
+            (float) StockMovement::query()
+                ->where('movement_type', 'consumption')
+                ->sum('quantity_change'),
+        );
+        $this->getJson('/api/v1/inventory/feed', $headers)
+            ->assertOk()
+            ->assertJsonPath('data.items.0.current_stock', '3.000');
+        $this->getJson('/api/v1/inventory/usage', $headers)
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.reason', 'Morning feed for lactating animals');
+
+        $this->postJson(
+            "/api/v1/inventory/feed/items/$itemId/usage",
+            ['quantity' => '4.000', 'purpose' => 'Too much stock'],
+            [...$headers, 'Idempotency-Key' => 'usage-insufficient'],
+        )->assertUnprocessable()->assertJsonPath('error.code', 'INSUFFICIENT_STOCK');
+        $this->assertSame(
+            3.0,
+            (float) InventoryBatch::query()
+                ->where('inventory_item_id', $itemId)
+                ->sum('current_quantity'),
+        );
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'inventory.stock_used',
+            'entity_id' => $itemId,
+        ]);
+    }
+
     public function test_low_expiring_and_expired_inventory_summary_is_calculated_from_batches(): void
     {
         $owner = $this->owner('summary-owner@example.test', 'Summary Farm');
@@ -286,6 +358,8 @@ class InventoryManagementTest extends TestCase
         $rows = $this->xlsxRows($xlsx->getContent());
         $flat = collect($rows)->flatten()->filter()->map(fn ($value) => (string) $value);
         $this->assertTrue($flat->contains('Medicine item'));
+        $this->assertTrue($flat->contains('Inventory Owner'));
+        $this->assertTrue($flat->contains('+92 300 1234567'));
         $this->assertFalse($flat->contains('Second selected medicine'));
         $this->assertTrue($flat->contains('Purchase receipt'));
         $this->assertFalse($flat->contains('Opening stock'));
@@ -336,12 +410,39 @@ class InventoryManagementTest extends TestCase
         )->assertForbidden();
     }
 
+    public function test_approved_adjustment_updates_batch_through_ledger_and_blocks_negative_stock(): void
+    {
+        $owner = $this->owner('adjust@example.test', 'Adjustment Farm');
+        $headers = $this->bearer($owner->json('data.access_token'));
+        $created = $this->postJson('/api/v1/inventory/feed/items', $this->itemPayload($owner->json('data.active_farm_id'), 'feed'), [...$headers, 'Idempotency-Key' => 'adjust-item'])->assertCreated();
+        $batch = $created->json('data.batches.0.id');
+        $this->postJson('/api/v1/inventory/items/'.$created->json('data.id').'/adjustments', ['batch_id' => $batch, 'adjustment_type' => 'damage', 'quantity' => 2, 'occurred_at' => now()->toIso8601String(), 'reason' => 'Damaged during verified store inspection.'], [...$headers, 'Idempotency-Key' => 'adjust-1'])->assertCreated()->assertJsonPath('data.quantity_change', '-2.000');
+        $this->assertDatabaseHas('inventory_batches', ['id' => $batch, 'current_quantity' => '8.000']);
+        $this->assertDatabaseHas('stock_movements', ['inventory_batch_id' => $batch, 'movement_type' => 'damage', 'quantity_change' => '-2.000']);
+        $this->postJson('/api/v1/inventory/items/'.$created->json('data.id').'/adjustments', ['batch_id' => $batch, 'adjustment_type' => 'decrease', 'quantity' => 9, 'occurred_at' => now()->toIso8601String(), 'reason' => 'Verified physical count correction required.'], [...$headers, 'Idempotency-Key' => 'adjust-2'])->assertUnprocessable()->assertJsonPath('error.code', 'INSUFFICIENT_STOCK');
+        $this->assertDatabaseHas('audit_logs', ['action' => 'inventory.stock_adjusted']);
+    }
+
+    public function test_inventory_alert_sync_creates_low_stock_and_expiry_alerts_without_duplicates(): void
+    {
+        $owner = $this->owner('inventory-alert@example.test', 'Alert Stock Farm');
+        $headers = $this->bearer($owner->json('data.access_token'));
+        $payload = $this->itemPayload($owner->json('data.active_farm_id'), 'feed');
+        $payload['minimum_stock'] = '20.000';
+        $payload['expiry_date'] = today()->addDays(5)->toDateString();
+        $this->postJson('/api/v1/inventory/feed/items', $payload, [...$headers, 'Idempotency-Key' => 'alert-item'])->assertCreated();
+        $this->getJson('/api/v1/alerts', $headers)->assertOk()->assertJsonCount(2, 'data');
+        $this->getJson('/api/v1/alerts', $headers)->assertOk()->assertJsonCount(2, 'data');
+        $this->assertDatabaseCount('in_app_alerts', 2);
+    }
+
     private function owner(string $email, string $farmName)
     {
         return $this->postJson('/api/v1/auth/owner-signup', [
             'name' => 'Inventory Owner',
             'farm_name' => $farmName,
             'email' => $email,
+            'phone_number' => '+92 300 1234567',
             'password' => 'OwnerPass2026',
             'password_confirmation' => 'OwnerPass2026',
             'timezone' => 'Asia/Karachi',

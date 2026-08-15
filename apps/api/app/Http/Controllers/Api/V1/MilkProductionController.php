@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\AnimalHealth\Models\AnimalWithdrawalRestriction;
 use App\Domain\AnimalRegistry\Models\Animal;
 use App\Domain\MilkProduction\Models\MilkEntry;
 use App\Domain\MilkProduction\Models\MilkProductionSlot;
@@ -54,6 +55,10 @@ class MilkProductionController extends Controller
             ->where('sex', 'female')
             ->where('life_stage', 'adult')
             ->where('operational_status', 'active')
+            ->where(function ($query): void {
+                $query->where('photo_requirement_exempt', true)
+                    ->orWhereHas('photos', fn ($photos) => $photos, '>=', 4);
+            })
             ->orderBy('animal_number')
             ->get()
             ->map(fn (Animal $animal): array => [
@@ -86,6 +91,10 @@ class MilkProductionController extends Controller
             ->where('sex', 'female')
             ->where('life_stage', 'adult')
             ->where('operational_status', 'active')
+            ->where(function ($query): void {
+                $query->where('photo_requirement_exempt', true)
+                    ->orWhereHas('photos', fn ($photos) => $photos, '>=', 4);
+            })
             ->get()
             ->keyBy('id');
         if ($animals->count() !== $animalIds->count()) {
@@ -115,6 +124,15 @@ class MilkProductionController extends Controller
                     $created = collect();
                     foreach ($data['entries'] as $payload) {
                         $animal = $animals[$payload['animal_id']];
+                        $restricted = AnimalWithdrawalRestriction::query()
+                            ->where('organization_id', $organizationId)
+                            ->where('farm_id', $farmId)
+                            ->where('animal_id', $animal->id)
+                            ->where('type', 'milk')
+                            ->where('status', 'active')
+                            ->where('starts_at', '<=', $data['production_date'].' 23:59:59')
+                            ->where('ends_at', '>=', $data['production_date'].' 00:00:00')
+                            ->exists();
                         $slot = MilkProductionSlot::query()->create([
                             'id' => $payload['slot_id'],
                             'organization_id' => $organizationId,
@@ -134,8 +152,12 @@ class MilkProductionController extends Controller
                             'animal_id' => $animal->id,
                             'revision' => 1,
                             'quantity_litres' => $payload['quantity_litres'],
-                            'rejected_quantity_litres' => $payload['rejected_quantity_litres'] ?? '0.000',
-                            'rejection_reason' => $payload['rejection_reason'] ?? null,
+                            'rejected_quantity_litres' => $restricted
+                                ? $payload['quantity_litres']
+                                : ($payload['rejected_quantity_litres'] ?? '0.000'),
+                            'rejection_reason' => $restricted
+                                ? 'Medicine withdrawal restriction / Dawa ki wajah se doodh band hai'
+                                : ($payload['rejection_reason'] ?? null),
                             'notes' => $payload['notes'] ?? null,
                             'entry_source' => $payload['entry_source'] ?? 'manual',
                             'is_current' => true,

@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:file_selector/file_selector.dart';
 
 final class AnimalFormScreen extends ConsumerStatefulWidget {
   const AnimalFormScreen({super.key, this.animalId});
@@ -23,6 +24,11 @@ final class AnimalFormScreen extends ConsumerStatefulWidget {
 }
 
 class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
+  static const _animalImages = XTypeGroup(
+    label: 'Animal photos',
+    extensions: ['jpg', 'jpeg', 'png', 'webp'],
+  );
+  final List<XFile> _photos = [];
   final _formKey = GlobalKey<FormState>();
   final _animalNumber = TextEditingController();
   final _earTag = TextEditingController();
@@ -179,14 +185,6 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
   ) {
     final breeds = _activeBreeds(references, preserveId: animal?.breedId);
     final sheds = _farmSheds(references);
-    final groups = references.groups
-        .where(
-          (item) =>
-              item.farmId == _farmId &&
-              (!item.isArchived || item.id == animal?.currentAnimalGroupId) &&
-              (item.isActive || item.id == animal?.currentAnimalGroupId),
-        )
-        .toList();
     final potentialMothers = references.animals
         .where((item) => item.sex == 'female' && item.id != animal?.id)
         .toList();
@@ -206,51 +204,56 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
               width: contentWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+                children: <Widget>[
                   _sectionTitle(context, 'Identity'),
-                  if (!widget.isEditing && canManageIdentifiers)
-                    TextFormField(
-                      key: const Key('animal_number_field'),
-                      controller: _animalNumber,
-                      decoration: const InputDecoration(
-                        labelText: 'Animal number (optional)',
-                        helperText: 'Leave blank to generate the next number.',
+                  if (!widget.isEditing)
+                    const ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.numbers_rounded),
+                      title: Text('Animal number'),
+                      subtitle: Text(
+                        'Generated automatically when the animal is saved.',
                       ),
                     ),
                   if (widget.isEditing)
                     _readOnlyValue('Animal number', animal!.animalNumber),
-                  if (!widget.isEditing || canManageIdentifiers) ...[
-                    TextFormField(
-                      key: const Key('ear_tag_field'),
-                      controller: _earTag,
-                      decoration: const InputDecoration(
-                        labelText: 'Ear tag number',
+                  if (widget.isEditing)
+                    if (canManageIdentifiers) ...[
+                      TextFormField(
+                        key: const Key('ear_tag_field'),
+                        controller: _earTag,
+                        decoration: const InputDecoration(
+                          labelText: 'Ear tag number',
+                        ),
                       ),
+                      TextFormField(
+                        key: const Key('rfid_field'),
+                        controller: _rfid,
+                        decoration: const InputDecoration(
+                          labelText: 'RFID number',
+                        ),
+                      ),
+                    ] else ...[
+                      _readOnlyValue('Ear tag number', animal!.earTagNumber),
+                      _readOnlyValue('RFID number', animal.rfidNumber),
+                    ],
+                  if (widget.isEditing) ...[
+                    TextFormField(
+                      key: const Key('animal_name_field'),
+                      controller: _name,
+                      decoration: const InputDecoration(
+                        labelText: 'Animal name',
+                      ),
+                      maxLength: 120,
                     ),
                     TextFormField(
-                      key: const Key('rfid_field'),
-                      controller: _rfid,
+                      controller: _registration,
                       decoration: const InputDecoration(
-                        labelText: 'RFID number',
+                        labelText: 'Registration number',
                       ),
+                      maxLength: 120,
                     ),
-                  ] else ...[
-                    _readOnlyValue('Ear tag number', animal!.earTagNumber),
-                    _readOnlyValue('RFID number', animal.rfidNumber),
                   ],
-                  TextFormField(
-                    key: const Key('animal_name_field'),
-                    controller: _name,
-                    decoration: const InputDecoration(labelText: 'Animal name'),
-                    maxLength: 120,
-                  ),
-                  TextFormField(
-                    controller: _registration,
-                    decoration: const InputDecoration(
-                      labelText: 'Registration number',
-                    ),
-                    maxLength: 120,
-                  ),
                   _sectionTitle(context, 'Classification'),
                   DropdownButtonFormField<String>(
                     key: const Key('species_field'),
@@ -312,31 +315,34 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                     values: const ['calf', 'juvenile', 'adult'],
                     onChanged: (value) => setState(() => _lifeStage = value!),
                   ),
-                  _dateField(
-                    label: 'Date of birth',
-                    value: _dateOfBirth,
-                    onChanged: (value) => setState(() => _dateOfBirth = value),
-                  ),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Date of birth is estimated'),
-                    value: _estimatedBirthDate,
-                    onChanged: (value) =>
-                        setState(() => _estimatedBirthDate = value),
-                  ),
-                  TextFormField(
-                    controller: _colour,
-                    decoration: const InputDecoration(labelText: 'Colour'),
-                    maxLength: 80,
-                  ),
-                  TextFormField(
-                    controller: _marks,
-                    decoration: const InputDecoration(
-                      labelText: 'Identifying marks',
+                  if (widget.isEditing) ...[
+                    _dateField(
+                      label: 'Date of birth',
+                      value: _dateOfBirth,
+                      onChanged: (value) =>
+                          setState(() => _dateOfBirth = value),
                     ),
-                    maxLines: 2,
-                    maxLength: 2000,
-                  ),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Date of birth is estimated'),
+                      value: _estimatedBirthDate,
+                      onChanged: (value) =>
+                          setState(() => _estimatedBirthDate = value),
+                    ),
+                    TextFormField(
+                      controller: _colour,
+                      decoration: const InputDecoration(labelText: 'Colour'),
+                      maxLength: 80,
+                    ),
+                    TextFormField(
+                      controller: _marks,
+                      decoration: const InputDecoration(
+                        labelText: 'Identifying marks',
+                      ),
+                      maxLines: 2,
+                      maxLength: 2000,
+                    ),
+                  ],
                   _sectionTitle(context, 'Initial location'),
                   if (widget.isEditing) ...[
                     _readOnlyValue('Farm', animal!.currentFarmName),
@@ -386,46 +392,29 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                           ),
                         ),
                       ),
-                    DropdownButtonFormField<String>(
-                      key: ValueKey('group-$_farmId-$_groupId'),
-                      initialValue: groups.any((item) => item.id == _groupId)
-                          ? _groupId
-                          : null,
-                      decoration: const InputDecoration(labelText: 'Group'),
-                      items: [
-                        const DropdownMenuItem(
-                          value: null,
-                          child: Text('No group'),
-                        ),
-                        for (final item in groups)
-                          DropdownMenuItem(
-                            value: item.id,
-                            child: Text(item.name),
-                          ),
-                      ],
-                      onChanged: (value) => setState(() => _groupId = value),
-                    ),
                   ],
                   _sectionTitle(context, 'Parentage'),
                   _animalDropdown(
-                    label: 'Mother',
+                    label: 'Mother animal',
                     value: _motherId,
                     animals: potentialMothers,
                     onChanged: (value) => setState(() => _motherId = value),
                   ),
-                  _animalDropdown(
-                    label: 'Father',
-                    value: _fatherId,
-                    animals: potentialFathers,
-                    onChanged: (value) => setState(() => _fatherId = value),
-                  ),
-                  TextFormField(
-                    controller: _externalSire,
-                    decoration: const InputDecoration(
-                      labelText: 'External sire reference',
+                  if (widget.isEditing) ...[
+                    _animalDropdown(
+                      label: 'Father',
+                      value: _fatherId,
+                      animals: potentialFathers,
+                      onChanged: (value) => setState(() => _fatherId = value),
                     ),
-                    maxLength: 160,
-                  ),
+                    TextFormField(
+                      controller: _externalSire,
+                      decoration: const InputDecoration(
+                        labelText: 'External sire reference',
+                      ),
+                      maxLength: 160,
+                    ),
+                  ],
                   _sectionTitle(context, 'Origin and status'),
                   _enumDropdown(
                     label: 'Origin *',
@@ -438,28 +427,20 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                     ],
                     onChanged: (value) => setState(() => _origin = value!),
                   ),
-                  _dateField(
-                    label: 'Acquisition date',
-                    value: _acquisitionDate,
-                    onChanged: (value) =>
-                        setState(() => _acquisitionDate = value),
-                  ),
-                  TextFormField(
-                    controller: _source,
-                    decoration: const InputDecoration(
-                      labelText: 'Source description',
-                    ),
-                    maxLength: 255,
-                  ),
-                  if (!widget.isEditing)
-                    _enumDropdown(
-                      label: 'Initial operational status *',
-                      value: _operationalStatus,
-                      values: const ['active', 'inactive', 'missing'],
+                  if (widget.isEditing) ...[
+                    _dateField(
+                      label: 'Acquisition date',
+                      value: _acquisitionDate,
                       onChanged: (value) =>
-                          setState(() => _operationalStatus = value!),
-                    )
-                  else ...[
+                          setState(() => _acquisitionDate = value),
+                    ),
+                    TextFormField(
+                      controller: _source,
+                      decoration: const InputDecoration(
+                        labelText: 'Source description',
+                      ),
+                      maxLength: 255,
+                    ),
                     _readOnlyValue(
                       'Operational status',
                       _label(_operationalStatus),
@@ -468,12 +449,55 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                       'Post-registration status changes are recorded through the operational-status workflow.',
                     ),
                   ],
-                  TextFormField(
-                    controller: _notes,
-                    decoration: const InputDecoration(labelText: 'Notes'),
-                    maxLines: 4,
-                    maxLength: 5000,
-                  ),
+                  if (widget.isEditing)
+                    TextFormField(
+                      controller: _notes,
+                      decoration: const InputDecoration(labelText: 'Notes'),
+                      maxLines: 4,
+                      maxLength: 5000,
+                    ),
+                  if (!widget.isEditing) ...[
+                    _sectionTitle(context, 'Required photos'),
+                    Text(
+                      '${_photos.length} of 4 required photos selected',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const Text(
+                      'Select clear photos from multiple sides. JPG, PNG, and WebP are supported.',
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        OutlinedButton.icon(
+                          key: const Key('select_animal_photos'),
+                          onPressed: _saving ? null : _selectPhotos,
+                          icon: const Icon(Icons.add_a_photo_outlined),
+                          label: const Text('Select photos'),
+                        ),
+                        if (_photos.isNotEmpty)
+                          TextButton(
+                            onPressed: _saving
+                                ? null
+                                : () => setState(_photos.clear),
+                            child: const Text('Clear'),
+                          ),
+                      ],
+                    ),
+                    for (final photo in _photos)
+                      ListTile(
+                        dense: true,
+                        leading: const Icon(Icons.image_outlined),
+                        title: Text(photo.name),
+                        trailing: IconButton(
+                          tooltip: 'Remove photo',
+                          onPressed: _saving
+                              ? null
+                              : () => setState(() => _photos.remove(photo)),
+                          icon: const Icon(Icons.close),
+                        ),
+                      ),
+                  ],
                   if (_error != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -499,7 +523,7 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
                     label: const Text(AnimalRegistryStrings.save),
                   ),
                   const SizedBox(height: 32),
-                ],
+                ].expand((w) => [w, const SizedBox(height: 16)]).toList()..removeLast(),
               ),
             ),
           ),
@@ -536,6 +560,10 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
 
   Future<void> _save(Animal? animal, bool canManageIdentifiers) async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (animal == null && _photos.length < 4) {
+      setState(() => _error = 'Select at least four animal photos.');
+      return;
+    }
     if (_speciesId == null ||
         _breedId == null ||
         _farmId == null ||
@@ -582,6 +610,15 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
               draft,
               canManageIdentifiers: canManageIdentifiers,
             );
+      if (animal == null) {
+        for (final photo in _photos) {
+          await repository.uploadPhoto(
+            animalId: saved.id,
+            bytes: await photo.readAsBytes(),
+            filename: photo.name,
+          );
+        }
+      }
       ref.invalidate(animalListControllerProvider);
       ref.invalidate(animalDetailProvider(saved.id));
       if (mounted) context.go('/animals/${saved.id}');
@@ -597,6 +634,19 @@ class _AnimalFormScreenState extends ConsumerState<AnimalFormScreen> {
     } finally {
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  Future<void> _selectPhotos() async {
+    final selected = await openFiles(acceptedTypeGroups: const [_animalImages]);
+    if (!mounted || selected.isEmpty) return;
+    setState(() {
+      for (final photo in selected) {
+        if (_photos.length >= 12) break;
+        if (!_photos.any((existing) => existing.name == photo.name)) {
+          _photos.add(photo);
+        }
+      }
+    });
   }
 
   Widget _sectionTitle(BuildContext context, String text) => Padding(

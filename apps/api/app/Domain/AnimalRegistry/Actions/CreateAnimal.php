@@ -62,13 +62,14 @@ final class CreateAnimal
 
         try {
             return DB::transaction(function () use ($request, $data, $organizationId, $animalId): Animal {
-                $animalNumber = $data['animal_number'] ?? $this->numbers->next($organizationId);
+                $animalNumber = $this->numbers->next($organizationId);
                 $animal = Animal::create([
                     ...$data,
                     'id' => $animalId,
                     'organization_id' => $organizationId,
                     'animal_number' => $animalNumber,
                     'operational_status' => $data['operational_status'] ?? 'active',
+                    'photo_requirement_exempt' => false,
                     'version' => 1,
                     'created_by' => $request->user()->id,
                     'updated_by' => $request->user()->id,

@@ -205,26 +205,45 @@ class EmployeeController extends Controller
             return ApiResponse::error($request, 'STALE_VERSION', 'The employee was changed.', 412);
         }
 
-        return ApiResponse::success($request, ['id' => $model->id, 'is_active' => false]);
+        return ApiResponse::success($request, [
+            'id' => $model->id,
+            'is_active' => false,
+            'version' => $model->version + 1,
+        ]);
     }
 
     public function restore(Request $request, string $employee): JsonResponse
     {
-        $model = $this->scope($request, true)->whereKey($employee)->firstOrFail();
-        $model->restore();
-        $model->forceFill([
-            'is_active' => true,
-            'version' => $model->version + 1,
-            'updated_by' => $request->user()->id,
-        ])->save();
-        $this->audit->record(
-            $request,
-            'employee.restored',
-            'employee',
-            $model->id,
-            ['is_active' => false],
-            ['is_active' => true],
-        );
+        $data = $request->validate(['version' => ['required', 'integer', 'min:1']]);
+        $model = DB::transaction(function () use ($request, $employee, $data): ?Employee {
+            $locked = $this->scope($request, true)
+                ->whereKey($employee)
+                ->lockForUpdate()
+                ->firstOrFail();
+            if ($locked->version !== (int) $data['version']) {
+                return null;
+            }
+            $locked->restore();
+            $locked->forceFill([
+                'is_active' => true,
+                'version' => $locked->version + 1,
+                'updated_by' => $request->user()->id,
+            ])->save();
+            $this->audit->record(
+                $request,
+                'employee.restored',
+                'employee',
+                $locked->id,
+                ['is_active' => false],
+                ['is_active' => true],
+            );
+
+            return $locked;
+        });
+
+        if (! $model) {
+            return ApiResponse::error($request, 'STALE_VERSION', 'The employee was changed.', 412);
+        }
 
         return ApiResponse::success($request, (new EmployeeResource($model))->resolve($request));
     }
