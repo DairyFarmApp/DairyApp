@@ -4,6 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('white theme is the default when no preference exists', () async {
+    final container = ProviderContainer(
+      overrides: [
+        themePreferenceStoreProvider.overrideWithValue(_MemoryThemeStore(null)),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    expect(await container.read(themeModeProvider.future), ThemeMode.light);
+  });
+
   test('theme mode loads and persists system white and dark choices', () async {
     final store = _MemoryThemeStore('light');
     final container = ProviderContainer(

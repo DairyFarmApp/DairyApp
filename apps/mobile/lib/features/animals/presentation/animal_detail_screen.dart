@@ -37,6 +37,20 @@ class _AnimalDetailScreenState extends ConsumerState<AnimalDetailScreen> {
       appBar: AppBar(
         title: const Text('Animal profile'),
         actions: [
+          if (detail.asData?.value != null &&
+              !detail.requireValue.isArchived &&
+              (ref
+                      .watch(authControllerProvider)
+                      .asData
+                      ?.value
+                      ?.can('animals.update') ??
+                  false))
+            IconButton(
+              key: const Key('edit_animal_profile_button'),
+              tooltip: 'Edit animal profile',
+              onPressed: () => context.go('/animals/${widget.animalId}/edit'),
+              icon: const Icon(Icons.edit_outlined),
+            ),
           if (detail.asData?.value != null && !detail.requireValue.isArchived)
             PopupMenuButton<String>(
               key: const Key('edit_animal_action'),

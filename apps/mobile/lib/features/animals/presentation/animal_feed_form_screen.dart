@@ -11,10 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 final class AnimalFeedFormScreen extends ConsumerStatefulWidget {
-  const AnimalFeedFormScreen({
-    super.key,
-    required this.animalId,
-  });
+  const AnimalFeedFormScreen({super.key, required this.animalId});
 
   final String animalId;
 
@@ -25,7 +22,8 @@ final class AnimalFeedFormScreen extends ConsumerStatefulWidget {
 
 class _AnimalFeedFormScreenState extends ConsumerState<AnimalFeedFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _inventoryItemId = TextEditingController(); // A real app would use a dropdown here
+  final _inventoryItemId =
+      TextEditingController(); // A real app would use a dropdown here
   final _quantity = TextEditingController();
   final _notes = TextEditingController();
   String _session = 'morning';
@@ -89,7 +87,8 @@ class _AnimalFeedFormScreenState extends ConsumerState<AnimalFeedFormScreen> {
                       labelText: 'Inventory Item ID (UUID)',
                       border: OutlineInputBorder(),
                     ),
-                    validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                    validator: (v) =>
+                        v == null || v.trim().isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
@@ -99,17 +98,29 @@ class _AnimalFeedFormScreenState extends ConsumerState<AnimalFeedFormScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: const [
-                      DropdownMenuItem(value: 'morning', child: Text('Morning')),
-                      DropdownMenuItem(value: 'afternoon', child: Text('Afternoon')),
-                      DropdownMenuItem(value: 'evening', child: Text('Evening')),
+                      DropdownMenuItem(
+                        value: 'morning',
+                        child: Text('Morning'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'afternoon',
+                        child: Text('Afternoon'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'evening',
+                        child: Text('Evening'),
+                      ),
                       DropdownMenuItem(value: 'night', child: Text('Night')),
                     ],
-                    onChanged: (value) => setState(() => _session = value ?? 'morning'),
+                    onChanged: (value) =>
+                        setState(() => _session = value ?? 'morning'),
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _quantity,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Quantity',
                       border: OutlineInputBorder(),
@@ -139,9 +150,7 @@ class _AnimalFeedFormScreenState extends ConsumerState<AnimalFeedFormScreen> {
                     ),
                     child: Row(
                       children: [
-                        Expanded(
-                          child: Text(DateFormat.yMMMd().format(_date)),
-                        ),
+                        Expanded(child: Text(DateFormat.yMMMd().format(_date))),
                         IconButton(
                           tooltip: 'Choose date',
                           onPressed: _pickDate,
@@ -204,7 +213,9 @@ class _AnimalFeedFormScreenState extends ConsumerState<AnimalFeedFormScreen> {
   }
 
   Future<void> _submit(Animal animal) async {
-    final timeValid = !_date.isAfter(DateTime.now().add(const Duration(days: 1)));
+    final timeValid = !_date.isAfter(
+      DateTime.now().add(const Duration(days: 1)),
+    );
     setState(() {
       _dateError = timeValid ? null : 'Date cannot be in the future.';
     });
@@ -225,7 +236,9 @@ class _AnimalFeedFormScreenState extends ConsumerState<AnimalFeedFormScreen> {
       if (mounted) context.pop();
     } on AppException catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.message)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

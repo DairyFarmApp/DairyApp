@@ -169,7 +169,10 @@ final class MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = color ?? Theme.of(context).colorScheme.primary;
+    final colors = Theme.of(context).colorScheme;
+    // Informational cards share one brand accent. Error cards remain red so a
+    // safety or failure state is never mistaken for ordinary decoration.
+    final accent = color == colors.error ? colors.error : colors.primary;
     final cardColor = solidBackground
         ? accent
         : Theme.of(context).cardTheme.color;
@@ -186,52 +189,59 @@ final class MetricCard extends StatelessWidget {
 
     return Card(
       color: cardColor,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                borderRadius: BorderRadius.circular(13),
+      child: LayoutBuilder(
+        builder: (context, constraints) => Padding(
+          padding: EdgeInsets.all(
+            constraints.maxWidth < 150 || constraints.maxHeight < 190 ? 12 : 20,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: Icon(icon, color: iconColor, size: 22),
               ),
-              child: Icon(icon, color: iconColor, size: 22),
-            ),
-            const Spacer(),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(
-                value,
-                maxLines: 1,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: textColor,
+              const SizedBox(height: 12),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: textColor,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(color: mutedTextColor),
-            ),
-            if (helper != null) ...[
-              const SizedBox(height: 5),
+              const SizedBox(height: 3),
               Text(
-                helper!,
+                label,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(
                   context,
-                ).textTheme.bodySmall?.copyWith(color: mutedTextColor),
+                ).textTheme.titleSmall?.copyWith(color: mutedTextColor),
               ),
+              if (helper != null) ...[
+                const SizedBox(height: 5),
+                Text(
+                  helper!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: mutedTextColor),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -312,4 +322,4 @@ final class ResponsiveContent extends StatelessWidget {
   );
 }
 
-const dashboardAccentGold = AppColors.cardYellow;
+const dashboardAccentGold = AppColors.primary;

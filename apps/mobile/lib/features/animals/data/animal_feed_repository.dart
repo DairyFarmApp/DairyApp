@@ -4,15 +4,11 @@ import 'package:dairycare_mobile/features/animals/domain/animal_feed_models.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final animalFeedRepositoryProvider = Provider<AnimalFeedRepository>((ref) {
-  return AnimalFeedRepository(
-    apiClient: ref.watch(apiClientProvider),
-  );
+  return AnimalFeedRepository(apiClient: ref.watch(apiClientProvider));
 });
 
 class AnimalFeedRepository {
-  AnimalFeedRepository({
-    required ApiClient apiClient,
-  })  : _apiClient = apiClient;
+  AnimalFeedRepository({required ApiClient apiClient}) : _apiClient = apiClient;
 
   final ApiClient _apiClient;
 
@@ -57,8 +53,6 @@ class AnimalFeedRepository {
         'notes': notes,
       },
     );
-    return AnimalFeedConsumption.fromJson(
-      data['data'] as Map<String, dynamic>,
-    );
+    return AnimalFeedConsumption.fromJson(data['data'] as Map<String, dynamic>);
   }
 }

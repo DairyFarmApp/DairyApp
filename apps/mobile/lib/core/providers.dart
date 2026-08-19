@@ -12,12 +12,16 @@ final sessionStoreProvider = Provider<SessionStore>(
   (ref) => SecureSessionStore(),
 );
 
-final apiClientProvider = Provider<ApiClient>(
-  (ref) => ApiClient(
+final apiClientProvider = Provider<ApiClient>((ref) {
+  final store = ref.watch(sessionStoreProvider);
+  return ApiClient(
     config: ref.watch(environmentProvider),
-    readAccessToken: ref.watch(sessionStoreProvider).readAccessToken,
-  ),
-);
+    readAccessToken: store.readAccessToken,
+    readRenewalCredential: store.readRenewalCredential,
+    saveTokens: store.saveTokens,
+    clearSession: store.clear,
+  );
+});
 
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final database = AppDatabase();

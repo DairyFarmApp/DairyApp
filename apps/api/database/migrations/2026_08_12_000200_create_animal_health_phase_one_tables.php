@@ -98,9 +98,9 @@ return new class extends Migration
             DB::table('permissions')->updateOrInsert(['name' => $name], ['id' => (string) Str::uuid7(), 'created_at' => $now, 'updated_at' => $now]);
         }
         $permissionIds = DB::table('permissions')->whereIn('name', ['health.view', 'health.assess', 'health.manage'])->pluck('id');
-        DB::table('roles')->whereIn('slug', ['organization-owner', 'farm-manager'])->pluck('id')->each(function ($roleId) use ($permissionIds, $now): void {
+        DB::table('roles')->whereIn('slug', ['organization-owner', 'farm-manager'])->pluck('id')->each(function ($roleId) use ($permissionIds): void {
             foreach ($permissionIds as $permissionId) {
-                DB::table('role_permissions')->updateOrInsert(['role_id' => $roleId, 'permission_id' => $permissionId], ['created_at' => $now, 'updated_at' => $now]);
+                DB::table('permission_role')->updateOrInsert(['role_id' => $roleId, 'permission_id' => $permissionId]);
             }
         });
 

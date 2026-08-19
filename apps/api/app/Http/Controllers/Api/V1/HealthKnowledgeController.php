@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\AnimalHealth\Models\AnimalHealthCase;
+use App\Domain\AnimalHealth\Models\AnimalTreatment;
 use App\Domain\AnimalHealth\Models\HealthDisease;
 use App\Domain\AnimalHealth\Models\HealthKnowledgeReview;
 use App\Domain\AnimalHealth\Services\HealthAiDatasetService;
 use App\Domain\AnimalHealth\Services\HealthRagService;
+use App\Domain\AnimalRegistry\Models\Animal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\HealthAiAskRequest;
 use App\Http\Requests\Api\V1\HealthAiEvaluationReviewRequest;
@@ -17,6 +20,7 @@ use App\Support\AuditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -65,10 +69,35 @@ class HealthKnowledgeController extends Controller
     public function ask(HealthAiAskRequest $request): JsonResponse
     {
         $d = $request->validated();
-        $result = $this->rag->ask($d['question'], $d['species'], $d['symptom_codes'] ?? [], $d['language'] ?? 'both');
-        $this->audit->record($request, 'health_ai.question_answered', 'health_ai_query', null, null, ['species' => $d['species'], 'symptom_codes' => $d['symptom_codes'] ?? [], 'mode' => $result['mode'], 'match_codes' => collect($result['matches'])->pluck('code')->all()]);
+        $animalContext = isset($d['animal_id']) ? $this->animalContext($request, $d['animal_id']) : null;
+        $result = $this->rag->ask($d['question'], $d['species'], $d['symptom_codes'] ?? [], $d['language'] ?? 'both', $animalContext);
+        $result['animal_context'] = $animalContext;
+        $this->audit->record($request, 'health_ai.question_answered', 'health_ai_query', null, null, ['animal_id' => $d['animal_id'] ?? null, 'species' => $d['species'], 'symptom_codes' => $d['symptom_codes'] ?? [], 'mode' => $result['mode'], 'match_codes' => collect($result['matches'])->pluck('code')->all()]);
 
         return ApiResponse::success($request, $result);
+    }
+
+    private function animalContext(Request $request, string $animalId): array
+    {
+        $animal = Animal::query()->with('species')
+            ->where('organization_id', $request->attributes->get('organization_id'))
+            ->where('current_farm_id', $request->attributes->get('api_session')->farm_id)
+            ->findOrFail($animalId);
+        $cases = AnimalHealthCase::query()->with(['topDisease', 'symptoms'])
+            ->where('animal_id', $animal->id)->latest('reported_at')->limit(5)->get();
+        $treatments = Schema::hasTable('animal_treatments')
+            ? AnimalTreatment::query()
+                ->leftJoin('inventory_items', 'inventory_items.id', '=', 'animal_treatments.inventory_item_id')
+                ->where('animal_treatments.animal_id', $animal->id)
+                ->latest('animal_treatments.administered_at')->limit(5)
+                ->get(['animal_treatments.*', 'inventory_items.name as medicine_name'])
+            : collect();
+
+        return [
+            'animal' => ['id' => $animal->id, 'number' => $animal->animal_number, 'name' => $animal->name, 'species' => strtolower($animal->species->code)],
+            'recent_cases' => $cases->map(fn ($case) => ['case_number' => $case->case_number, 'date' => $case->reported_at?->toDateString(), 'status' => $case->status, 'recorded_condition' => $case->topDisease?->name, 'symptoms' => $case->symptoms->pluck('name')->all()])->all(),
+            'recent_treatments' => $treatments->map(fn ($treatment) => ['treatment_number' => $treatment->treatment_number, 'date' => $treatment->administered_at?->toDateString(), 'medicine' => $treatment->medicine_name, 'route' => $treatment->route, 'veterinarian' => $treatment->veterinarian_name])->all(),
+        ];
     }
 
     public function evaluationCases(Request $request): JsonResponse

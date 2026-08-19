@@ -27,8 +27,9 @@ class HealthAiDatasetTest extends TestCase
         $data = $r->json();
         $this->assertSame('1.0', $data['schema_version']);
         $this->assertNotContains('foot_rot', collect($data['diseases'])->pluck('code')->all());
+        $this->assertCount(49, $data['diseases']);
         $this->assertSame([], collect($data['diseases'])->firstWhere('code', 'mastitis')['medicine_evidence']);
-        $this->assertCount(13, $data['evaluation_cases']);
+        $this->assertCount(28, $data['evaluation_cases']);
         $this->assertNotEmpty(collect($data['diseases'])->firstWhere('code', 'fmd')['do_not_do']['roman_urdu']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'health_ai.dataset_exported']);
     }

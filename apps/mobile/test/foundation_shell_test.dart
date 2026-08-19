@@ -10,6 +10,41 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
+  testWidgets('compact milk mark opens a scrollable menu without overflow', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    FakeAuthController.session = foundationSession(
+      permissions: const {
+        'milk.view',
+        'health.view',
+        'inventory.view',
+        'animals.view',
+        'sheds.view',
+        'finance.view',
+      },
+    );
+    FakeSyncController.status = const SyncStatus();
+
+    await tester.pumpWidget(_app());
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(find.byType(BottomNavigationBar), findsNothing);
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.byType(BottomAppBar), findsNothing);
+
+    await tester.tap(find.byKey(const Key('mobile_menu_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Drawer), findsOneWidget);
+    expect(find.byKey(const Key('wide_sidebar_navigation')), findsOneWidget);
+    expect(find.text('Milk Production'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('menu hides farm and shed entries without permission', (
     tester,
   ) async {

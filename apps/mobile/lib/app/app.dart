@@ -13,7 +13,7 @@ final class DairyCareApp extends ConsumerWidget {
     debugShowCheckedModeBanner: false,
     theme: DairyCareTheme.light,
     darkTheme: DairyCareTheme.dark,
-    themeMode: ref.watch(themeModeProvider).value ?? ThemeMode.system,
+    themeMode: ref.watch(themeModeProvider).value ?? ThemeMode.light,
     routerConfig: ref.watch(routerProvider),
   );
 }

@@ -17,6 +17,8 @@ final class FoundationShell extends ConsumerStatefulWidget {
 }
 
 final class _FoundationShellState extends ConsumerState<FoundationShell> {
+  final GlobalKey<ScaffoldState> _mobileScaffoldKey =
+      GlobalKey<ScaffoldState>();
   bool _settingsExpanded = false;
 
   @override
@@ -51,14 +53,6 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
           Icons.point_of_sale_rounded,
           '/milk-sales',
           navigationKey: Key('main_milk_sales_menu_action'),
-        ),
-      if (session?.can('deliveries.view') ?? false)
-        const _Destination(
-          'Milk Deliveries',
-          Icons.local_shipping_outlined,
-          Icons.local_shipping_rounded,
-          '/deliveries',
-          navigationKey: Key('main_deliveries_menu_action'),
         ),
       if (session?.can('health.view') ?? false)
         const _Destination(
@@ -101,6 +95,13 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
           Icons.pets_outlined,
           Icons.pets_rounded,
           '/animals',
+        ),
+      if (session?.can('visitors.view') ?? false)
+        const _Destination(
+          'Visitors',
+          Icons.badge_outlined,
+          Icons.badge_rounded,
+          '/visitors',
         ),
       if (session?.can('sheds.view') ?? false)
         const _Destination(
@@ -204,7 +205,6 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
       (item) => item.matchesPrimary(location),
     );
     final showSettingsSubmenu = _settingsExpanded || onSettingsRoute;
-    final compactIndex = _selectedIndex(destinations, location);
     final width = MediaQuery.sizeOf(context).width;
     final wide = width >= 760;
     final profilePhoto = session?.user.hasProfilePhoto ?? false
@@ -214,14 +214,72 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
         ref.watch(themeModeProvider).value ?? ThemeMode.system;
 
     final content = Scaffold(
+      key: wide ? null : _mobileScaffoldKey,
+      drawer: wide
+          ? null
+          : Drawer(
+              width: 300,
+              backgroundColor: Theme.of(
+                context,
+              ).navigationRailTheme.backgroundColor,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(20, 18, 20, 14),
+                      child: Row(
+                        children: [
+                          AppMark(size: 42, inverted: true),
+                          SizedBox(width: 12),
+                          Text(
+                            'DairyCare',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 21,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(color: Colors.white24, height: 1),
+                    Expanded(
+                      child: _WideNavigation(
+                        destinations: destinations,
+                        settingsSubdestinations: settingsSubdestinations,
+                        settingsSubmenuExpanded: showSettingsSubmenu,
+                        selectedPath: location,
+                        extended: true,
+                        onSelected: (destination) {
+                          if (destination.togglesSettingsSubmenu) {
+                            _selectDestination(context, destination);
+                            return;
+                          }
+                          Navigator.of(context).pop();
+                          _selectDestination(context, destination);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         toolbarHeight: 64,
         titleSpacing: wide ? 24 : 16,
+        leadingWidth: wide ? null : 64,
+        leading: wide
+            ? null
+            : IconButton(
+                key: const Key('mobile_menu_button'),
+                tooltip: 'Open sections menu',
+                onPressed: () => _mobileScaffoldKey.currentState?.openDrawer(),
+                icon: const AppMark(size: 38),
+              ),
         title: Row(
           children: [
-            if (!wide) ...[const AppMark(size: 38), const SizedBox(width: 12)],
             Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,19 +470,6 @@ final class _FoundationShellState extends ConsumerState<FoundationShell> {
         ],
       ),
       body: widget.child,
-      bottomNavigationBar: wide
-          ? null
-          : _CompactNavigation(
-              destinations: destinations,
-              selectedIndex: compactIndex,
-              settingsSubmenuExpanded: showSettingsSubmenu,
-              settingsSubdestinations: settingsSubdestinations,
-              selectedPath: location,
-              onSelected: (value) =>
-                  _selectDestination(context, destinations[value]),
-              onSettingsSubdestinationSelected: (destination) =>
-                  context.go(destination.path),
-            ),
     );
 
     if (!wide) return content;
@@ -628,134 +673,6 @@ final class _SidebarDestinationTile extends StatelessWidget {
   }
 }
 
-final class _CompactNavigation extends StatelessWidget {
-  const _CompactNavigation({
-    required this.destinations,
-    required this.selectedIndex,
-    required this.settingsSubmenuExpanded,
-    required this.settingsSubdestinations,
-    required this.selectedPath,
-    required this.onSelected,
-    required this.onSettingsSubdestinationSelected,
-  });
-
-  final List<_Destination> destinations;
-  final int selectedIndex;
-  final bool settingsSubmenuExpanded;
-  final List<_Destination> settingsSubdestinations;
-  final String selectedPath;
-  final ValueChanged<int> onSelected;
-  final ValueChanged<_Destination> onSettingsSubdestinationSelected;
-
-  @override
-  Widget build(BuildContext context) => Material(
-    color: Theme.of(context).navigationBarTheme.backgroundColor,
-    elevation: 8,
-    child: SafeArea(
-      top: false,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 240),
-            transitionBuilder: (child, animation) => SizeTransition(
-              sizeFactor: animation,
-              axisAlignment: 1,
-              child: FadeTransition(opacity: animation, child: child),
-            ),
-            child: settingsSubmenuExpanded
-                ? DecoratedBox(
-                    key: const Key('compact_settings_slide_down_menu'),
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerLow.withValues(alpha: 0.96),
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Theme.of(context).colorScheme.outlineVariant,
-                        ),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        for (final destination in settingsSubdestinations)
-                          ListTile(
-                            key: destination.navigationKey,
-                            dense: true,
-                            contentPadding: const EdgeInsets.only(
-                              left: 34,
-                              right: 18,
-                            ),
-                            leading: Icon(
-                              destination.matchesPrimary(selectedPath)
-                                  ? destination.selectedIcon
-                                  : destination.icon,
-                              size: 21,
-                            ),
-                            title: Text(destination.label),
-                            selected: destination.matchesPrimary(selectedPath),
-                            onTap: () =>
-                                onSettingsSubdestinationSelected(destination),
-                          ),
-                      ],
-                    ),
-                  )
-                : const SizedBox(
-                    key: Key('compact_settings_slide_down_menu_closed'),
-                  ),
-          ),
-          SizedBox(
-            height: 72,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (var index = 0; index < destinations.length; index++)
-                    SizedBox(
-                      width: 92,
-                      child: InkWell(
-                        onTap: () => onSelected(index),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              index == selectedIndex
-                                  ? destinations[index].selectedIcon
-                                  : destinations[index].icon,
-                              color: index == selectedIndex
-                                  ? Colors.white
-                                  : Colors.white70,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              destinations[index].label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(
-                                    color: index == selectedIndex
-                                        ? Colors.white
-                                        : Colors.white70,
-                                    fontWeight: index == selectedIndex
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 final class _Destination {
   const _Destination(
     this.label,
@@ -784,17 +701,6 @@ final class _Destination {
     path,
     ...relatedPaths,
   ].any((item) => location == item || location.startsWith('$item/'));
-}
-
-int _selectedIndex(List<_Destination> destinations, String location) {
-  final exact = destinations.indexWhere(
-    (item) => item.matchesPrimary(location),
-  );
-  if (exact >= 0) {
-    return exact;
-  }
-  final related = destinations.indexWhere((item) => item.matches(location));
-  return related < 0 ? 0 : related;
 }
 
 String _initials(String? name) {

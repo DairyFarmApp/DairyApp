@@ -14,7 +14,7 @@ class HealthMedicineEvidenceTest extends TestCase
 
     public function test_drap_evidence_requires_separate_veterinary_approval_before_dataset_export(): void
     {
-        $this->foundation(['health.medicine_evidence.manage', 'health.medicine_evidence.review', 'health.ai.export']);
+        $this->foundation(['health.medicine_evidence.manage', 'health.medicine_evidence.review', 'health.ai.export', 'health.view']);
         $h = $this->bearer($this->loginToken());
         $d = HealthDisease::where('code', 'mastitis')->firstOrFail();
         $source = DB::table('health_knowledge_sources')->where('disease_id', $d->id)->value('id');
@@ -26,6 +26,18 @@ class HealthMedicineEvidenceTest extends TestCase
         $this->postJson("/api/v1/health/medicine-evidence/$id/review", ['decision' => 'approved', 'reviewer_notes' => 'DRAP record, label evidence and species scope reviewed.', 'reviewer_name' => 'Dr Veterinary Reviewer', 'reviewer_registration' => 'PVMC-11223'], $h)->assertOk()->assertJsonPath('data.review_status', 'approved')->assertJsonPath('data.review_version', 2);
         $after = $this->get('/api/v1/health/ai/dataset.json', $h)->assertOk()->json();
         $this->assertSame('Veterinarian-selected active ingredient', collect($after['diseases'])->firstWhere('code', 'mastitis')['medicine_evidence'][0]['active_ingredient']);
+        config(['services.health_ai.enabled' => false]);
+        $this->postJson('/api/v1/health/ai/ask', [
+            'question' => 'My cow has a swollen udder and clots in milk.',
+            'species' => 'cattle',
+            'symptom_codes' => ['udder_swelling', 'abnormal_milk'],
+            'language' => 'both',
+        ], $h)
+            ->assertOk()
+            ->assertJsonPath('data.matches.0.code', 'mastitis')
+            ->assertJsonPath('data.matches.0.medicines.0.active_ingredient', 'Veterinarian-selected active ingredient')
+            ->assertJsonPath('data.matches.0.medicines.0.brand_name', 'Registry-verified veterinary product')
+            ->assertJsonPath('data.matches.0.medicines.0.drap_registration_number', 'DRAP-VET-000001');
         $this->assertDatabaseHas('health_medicine_evidence_reviews', ['medicine_evidence_id' => $id, 'reviewer_registration' => 'PVMC-11223']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'health_medicine_evidence.reviewed', 'entity_id' => $id]);
     }

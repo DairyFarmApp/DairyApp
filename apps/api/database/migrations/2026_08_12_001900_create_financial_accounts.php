@@ -30,7 +30,7 @@ return new class extends Migration {
         });
         foreach (['finance_accounts.view', 'finance_accounts.manage', 'finance_accounts.transfer'] as $name) DB::table('permissions')->updateOrInsert(['name'=>$name], ['id'=>(string)Str::uuid7(),'created_at'=>now(),'updated_at'=>now()]);
         $ids=DB::table('permissions')->whereIn('name',['finance_accounts.view','finance_accounts.manage','finance_accounts.transfer'])->pluck('id');
-        foreach(DB::table('roles')->whereIn('slug',['organization-owner','farm-manager'])->pluck('id') as $role) foreach($ids as $id) DB::table('role_permissions')->updateOrInsert(['role_id'=>$role,'permission_id'=>$id],['created_at'=>now(),'updated_at'=>now()]);
+        foreach(DB::table('roles')->whereIn('slug',['organization-owner','farm-manager'])->pluck('id') as $role) foreach($ids as $id) DB::table('permission_role')->updateOrInsert(['role_id'=>$role,'permission_id'=>$id]);
     }
     public function down(): void { Schema::dropIfExists('financial_account_transfers'); Schema::dropIfExists('financial_account_transactions'); Schema::dropIfExists('financial_accounts'); DB::table('permissions')->whereIn('name',['finance_accounts.view','finance_accounts.manage','finance_accounts.transfer'])->delete(); }
 };

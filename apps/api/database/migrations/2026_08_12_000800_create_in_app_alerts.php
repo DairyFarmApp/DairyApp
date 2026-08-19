@@ -10,6 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('in_app_alerts')) {
         Schema::create('in_app_alerts', function (Blueprint $t) {
             $t->uuid('id')->primary();
             $t->uuid('organization_id');
@@ -35,12 +36,13 @@ return new class extends Migration
             $t->foreign('assigned_user_id')->references('id')->on('users')->nullOnDelete();
             $t->foreign('resolved_by')->references('id')->on('users')->nullOnDelete();
         });
+        }
         foreach (['alerts.view', 'alerts.manage'] as $n) {
             DB::table('permissions')->updateOrInsert(['name' => $n], ['id' => (string) Str::uuid7(), 'created_at' => now(), 'updated_at' => now()]);
         }$ids = DB::table('permissions')->whereIn('name', ['alerts.view', 'alerts.manage'])->pluck('id');
         foreach (DB::table('roles')->whereIn('slug', ['organization-owner', 'farm-manager'])->pluck('id') as $r) {
             foreach ($ids as $id) {
-                DB::table('role_permissions')->updateOrInsert(['role_id' => $r, 'permission_id' => $id], ['created_at' => now(), 'updated_at' => now()]);
+                DB::table('permission_role')->updateOrInsert(['role_id' => $r, 'permission_id' => $id]);
             }
         }
     }

@@ -21,6 +21,8 @@ class HealthAssessmentService
                 $score = round(($earned / $total) * 100, 2);
 
                 return ['disease' => $disease, 'score' => $score, 'matched' => $matched->pluck('name')->values()->all(), 'missing_key' => $missingKeys->pluck('name')->values()->all()];
-            })->filter(fn ($result) => $result['score'] > 0)->sortByDesc('score')->take(5)->values();
+            })->filter(fn ($result) => $result['score'] > 0)
+            ->sortByDesc(fn (array $result): float => ($result['score'] * 100) + count($result['matched']))
+            ->take(5)->values();
     }
 }

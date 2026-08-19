@@ -4,6 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final dailyProductionReportProvider =
     FutureProvider.family<List<AnimalDailyRecord>, DateTime>((ref, date) {
-  final repo = ref.watch(reportsRepositoryProvider);
-  return repo.getDailyProduction(date);
-});
+      final repo = ref.watch(reportsRepositoryProvider);
+      return repo.getDailyProduction(date);
+    });

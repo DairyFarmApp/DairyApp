@@ -21,13 +21,13 @@ class HealthAiEvaluationTest extends TestCase
 
         $report = app(HealthAiEvaluationService::class)->evaluate();
 
-        $this->assertSame(13, $report['approved_case_count']);
-        $this->assertSame(26, $report['scenario_count']);
+        $this->assertSame(28, $report['approved_case_count']);
+        $this->assertSame(56, $report['scenario_count']);
         $this->assertTrue($report['release_gate_passed'], json_encode($report, JSON_PRETTY_PRINT));
         $this->assertSame(1.0, $report['metrics']['top_match_accuracy']);
         $this->assertSame(1.0, $report['metrics']['emergency_accuracy']);
         $this->assertSame(1.0, $report['metrics']['citation_compliance']);
-        $this->assertCount(6, collect($report['results'])->where('expects_match', false));
+        $this->assertCount(4, collect($report['results'])->where('expects_match', false));
         $this->assertSame(['english', 'roman_urdu'], collect($report['results'])->where('case_code', 'EVAL-FMD-01')->pluck('language')->all());
     }
 

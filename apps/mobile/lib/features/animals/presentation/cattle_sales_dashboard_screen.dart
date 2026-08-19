@@ -46,7 +46,9 @@ class CattleSalesDashboardScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 32),
                 SizedBox(
-                  height: 160,
+                  height: MediaQuery.textScalerOf(
+                    context,
+                  ).scale(170).clamp(190, 260).toDouble(),
                   child: Row(
                     children: [
                       Expanded(

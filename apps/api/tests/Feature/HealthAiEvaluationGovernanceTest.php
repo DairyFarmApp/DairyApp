@@ -21,7 +21,7 @@ class HealthAiEvaluationGovernanceTest extends TestCase
 
         $this->getJson('/api/v1/health/ai/evaluation-cases', $headers)
             ->assertOk()
-            ->assertJsonCount(13, 'data')
+            ->assertJsonCount(28, 'data')
             ->assertJsonPath('data.0.review_version', 1);
 
         $this->postJson("/api/v1/health/ai/evaluation-cases/{$case->id}/review", [

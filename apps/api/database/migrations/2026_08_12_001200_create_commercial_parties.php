@@ -93,7 +93,7 @@ return new class extends Migration
         $permissionIds = DB::table('permissions')->whereIn('name', $names)->pluck('id');
         foreach (DB::table('roles')->whereIn('slug', ['organization-owner', 'farm-manager'])->pluck('id') as $roleId) {
             foreach ($permissionIds as $permissionId) {
-                DB::table('role_permissions')->updateOrInsert(['role_id' => $roleId, 'permission_id' => $permissionId], ['created_at' => now(), 'updated_at' => now()]);
+                DB::table('permission_role')->updateOrInsert(['role_id' => $roleId, 'permission_id' => $permissionId]);
             }
         }
     }

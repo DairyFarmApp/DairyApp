@@ -48,6 +48,7 @@ final class HealthAiMatch {
     required this.summary,
     required this.immediateCare,
     required this.source,
+    required this.medicines,
     this.nameRomanUrdu,
     this.immediateCareRomanUrdu,
     this.doNotDo,
@@ -66,6 +67,12 @@ final class HealthAiMatch {
     doNotDo: json['do_not_do'] as String?,
     feedWaterGuidance: json['feed_water_guidance'] as String?,
     confirmationGuidance: json['confirmation_guidance'] as String?,
+    medicines: (json['medicines'] as List<dynamic>? ?? const [])
+        .map(
+          (item) =>
+              HealthAiMedicine.fromJson((item as Map).cast<String, dynamic>()),
+        )
+        .toList(),
     source: HealthAiSource.fromJson(
       (json['source'] as Map?)?.cast<String, dynamic>() ?? const {},
     ),
@@ -78,6 +85,46 @@ final class HealthAiMatch {
       feedWaterGuidance,
       confirmationGuidance;
   final HealthAiSource source;
+  final List<HealthAiMedicine> medicines;
+}
+
+final class HealthAiMedicine {
+  const HealthAiMedicine({
+    required this.activeIngredient,
+    required this.indication,
+    this.brandName,
+    this.manufacturer,
+    this.dosageForm,
+    this.drapRegistrationNumber,
+    this.drapRegistryUrl,
+    this.speciesScope,
+    this.contraindications,
+    this.withdrawalGuidance,
+  });
+
+  factory HealthAiMedicine.fromJson(Map<String, dynamic> json) =>
+      HealthAiMedicine(
+        activeIngredient: json['active_ingredient'] as String? ?? '',
+        brandName: json['brand_name'] as String?,
+        manufacturer: json['manufacturer'] as String?,
+        dosageForm: json['dosage_form'] as String?,
+        drapRegistrationNumber: json['drap_registration_number'] as String?,
+        drapRegistryUrl: json['drap_registry_url'] as String?,
+        indication: json['indication'] as String? ?? '',
+        speciesScope: json['species_scope'] as String?,
+        contraindications: json['contraindications'] as String?,
+        withdrawalGuidance: json['withdrawal_guidance'] as String?,
+      );
+
+  final String activeIngredient, indication;
+  final String? brandName,
+      manufacturer,
+      dosageForm,
+      drapRegistrationNumber,
+      drapRegistryUrl,
+      speciesScope,
+      contraindications,
+      withdrawalGuidance;
 }
 
 final class HealthAiAnswer {

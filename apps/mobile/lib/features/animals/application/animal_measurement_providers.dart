@@ -57,37 +57,43 @@ final animalStatusHistoryProvider =
           .getStatusHistory(organizationId: organizationId, animalId: animalId);
     });
 
-
 final animalFeedHistoryProvider =
-    FutureProvider.family<AnimalFeedHistoryLoadResult, String>((
-      ref,
-      animalId,
-    ) {
+    FutureProvider.family<AnimalFeedHistoryLoadResult, String>((ref, animalId) {
       final organizationId = ref
           .watch(authControllerProvider)
           .asData
           ?.value
           ?.activeOrganizationId;
       if (organizationId == null) {
-        return const AnimalFeedHistoryLoadResult(items: [], currentPage: 1, lastPage: 1, total: 0);
+        return const AnimalFeedHistoryLoadResult(
+          items: [],
+          currentPage: 1,
+          lastPage: 1,
+          total: 0,
+        );
       }
       return ref
           .watch(animalFeedRepositoryProvider)
-          .getFeedConsumptions(organizationId: organizationId, animalId: animalId);
+          .getFeedConsumptions(
+            organizationId: organizationId,
+            animalId: animalId,
+          );
     });
 
 final animalMilkHistoryProvider =
-    FutureProvider.family<AnimalMilkHistoryLoadResult, String>((
-      ref,
-      animalId,
-    ) {
+    FutureProvider.family<AnimalMilkHistoryLoadResult, String>((ref, animalId) {
       final organizationId = ref
           .watch(authControllerProvider)
           .asData
           ?.value
           ?.activeOrganizationId;
       if (organizationId == null) {
-        return const AnimalMilkHistoryLoadResult(items: [], currentPage: 1, lastPage: 1, total: 0);
+        return const AnimalMilkHistoryLoadResult(
+          items: [],
+          currentPage: 1,
+          lastPage: 1,
+          total: 0,
+        );
       }
       return ref
           .watch(animalMilkRepositoryProvider)

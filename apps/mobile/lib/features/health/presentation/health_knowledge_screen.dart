@@ -45,6 +45,7 @@ final class HealthKnowledgeScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Card(
+              margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
                 leading: const Icon(Icons.health_and_safety_outlined),
                 title: const Text(
@@ -59,6 +60,7 @@ final class HealthKnowledgeScreen extends ConsumerWidget {
             ),
             if (canReviewAi)
               Card(
+                margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
                   leading: const Icon(Icons.fact_check_outlined),
                   title: const Text('AI veterinary review / AI vet tasdeeq'),
@@ -71,6 +73,7 @@ final class HealthKnowledgeScreen extends ConsumerWidget {
               ),
             if (canManageMedicineEvidence)
               Card(
+                margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
                   leading: const Icon(Icons.medication_outlined),
                   title: const Text('Pakistan medicine evidence'),
@@ -82,6 +85,7 @@ final class HealthKnowledgeScreen extends ConsumerWidget {
                 ),
               ),
             const Card(
+              margin: EdgeInsets.only(bottom: 16),
               child: Padding(
                 padding: EdgeInsets.all(16),
                 child: Text(
@@ -91,6 +95,7 @@ final class HealthKnowledgeScreen extends ConsumerWidget {
             ),
             for (final item in items)
               Card(
+                margin: const EdgeInsets.only(bottom: 12),
                 child: ExpansionTile(
                   leading: Icon(
                     item.urgency == 'emergency'
@@ -189,6 +194,7 @@ final class HealthKnowledgeScreen extends ConsumerWidget {
                 const Text(
                   'Only a qualified veterinary reviewer should approve clinical content.',
                 ),
+                const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: decision,
                   items: const [
@@ -201,18 +207,21 @@ final class HealthKnowledgeScreen extends ConsumerWidget {
                   ],
                   onChanged: (v) => setState(() => decision = v ?? decision),
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: name,
                   decoration: const InputDecoration(
                     labelText: 'Veterinarian name',
                   ),
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: registration,
                   decoration: const InputDecoration(
                     labelText: 'PVMC/registration number',
                   ),
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: notes,
                   maxLines: 3,

@@ -45,6 +45,7 @@ use App\Http\Controllers\Api\V1\ShedController;
 use App\Http\Controllers\Api\V1\SupplierController;
 use App\Http\Controllers\Api\V1\SupplierInvoiceController;
 use App\Http\Controllers\Api\V1\SyncController;
+use App\Http\Controllers\Api\V1\VisitorController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
@@ -189,6 +190,9 @@ Route::prefix('v1')->group(function (): void {
             Route::get('customer-refunds/{refund}/receipt.pdf', [DeliveryController::class, 'refundReceipt'])->middleware('permission:deliveries.view');
             Route::get('deliveries/export.xlsx', [DeliveryController::class, 'export'])->middleware('permission:deliveries.view');
             Route::get('employees', [EmployeeController::class, 'index'])->middleware('permission:employees.view');
+            Route::get('visitors', [VisitorController::class, 'index'])->middleware('permission:visitors.view');
+            Route::post('visitors', [VisitorController::class, 'store'])->middleware('permission:visitors.manage');
+            Route::delete('visitors/{visitor}', [VisitorController::class, 'destroy'])->middleware('permission:visitors.manage');
             Route::post('employees', [EmployeeController::class, 'store'])->middleware('permission:employees.manage');
             Route::patch('employees/{employee}', [EmployeeController::class, 'update'])->middleware('permission:employees.manage');
             Route::delete('employees/{employee}', [EmployeeController::class, 'archive'])->middleware('permission:employees.manage');

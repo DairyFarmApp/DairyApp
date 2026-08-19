@@ -151,28 +151,46 @@ final class _FinanceBodyState extends State<_FinanceBody> {
   List<FinanceRecord> _filterRecords(List<FinanceRecord> records) {
     if (_selectedCategory == 'All') return records;
     if (_selectedCategory == 'Sales') {
-      return records.where((r) => r.category.toLowerCase().contains('sale')).toList();
+      return records
+          .where((r) => r.category.toLowerCase().contains('sale'))
+          .toList();
     }
     if (_selectedCategory == 'Purchases') {
-      return records.where((r) =>
-        r.category.toLowerCase().contains('purchase') ||
-        r.category == 'Feed' ||
-        r.category == 'Medicine'
-      ).toList();
+      return records
+          .where(
+            (r) =>
+                r.category.toLowerCase().contains('purchase') ||
+                r.category == 'Feed' ||
+                r.category == 'Medicine',
+          )
+          .toList();
     }
     if (_selectedCategory == 'Salaries') {
-      return records.where((r) => r.category.toLowerCase().contains('salary') || r.category.toLowerCase().contains('payroll')).toList();
+      return records
+          .where(
+            (r) =>
+                r.category.toLowerCase().contains('salary') ||
+                r.category.toLowerCase().contains('payroll'),
+          )
+          .toList();
     }
-    return records.where((r) => r.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
+    return records
+        .where(
+          (r) => r.category.toLowerCase() == _selectedCategory.toLowerCase(),
+        )
+        .toList();
   }
 
   List<LedgerEntry> _filterLedger(List<LedgerEntry> entries) {
     if (_selectedCategory == 'All') return entries;
     final query = _selectedCategory.toLowerCase();
-    return entries.where((e) =>
-      e.description.toLowerCase().contains(query) ||
-      e.sourceType.toLowerCase().contains(query)
-    ).toList();
+    return entries
+        .where(
+          (e) =>
+              e.description.toLowerCase().contains(query) ||
+              e.sourceType.toLowerCase().contains(query),
+        )
+        .toList();
   }
 
   @override

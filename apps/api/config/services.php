@@ -34,6 +34,13 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-    'health_ai' => ['enabled' => env('HEALTH_AI_ENABLED', false), 'url' => env('HEALTH_AI_URL', 'http://127.0.0.1:11434/v1'), 'model' => env('HEALTH_AI_MODEL', 'qwen2.5:7b-instruct'), 'timeout' => env('HEALTH_AI_TIMEOUT', 30)],
+    'health_ai' => [
+        'enabled' => env('HEALTH_AI_ENABLED', false),
+        'provider' => env('HEALTH_AI_PROVIDER', 'openai_compatible'),
+        'url' => env('HEALTH_AI_URL', 'http://127.0.0.1:11434/v1'),
+        'model' => env('HEALTH_AI_MODEL', 'qwen2.5:7b-instruct'),
+        'api_key' => env('GEMINI_API_KEY'),
+        'timeout' => env('HEALTH_AI_TIMEOUT', 30),
+    ],
 
 ];

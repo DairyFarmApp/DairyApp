@@ -4,15 +4,11 @@ import 'package:dairycare_mobile/features/milk/domain/milk_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final animalMilkRepositoryProvider = Provider<AnimalMilkRepository>((ref) {
-  return AnimalMilkRepository(
-    apiClient: ref.watch(apiClientProvider),
-  );
+  return AnimalMilkRepository(apiClient: ref.watch(apiClientProvider));
 });
 
 class AnimalMilkRepository {
-  AnimalMilkRepository({
-    required ApiClient apiClient,
-  })  : _apiClient = apiClient;
+  AnimalMilkRepository({required ApiClient apiClient}) : _apiClient = apiClient;
 
   final ApiClient _apiClient;
 
@@ -36,7 +32,6 @@ class AnimalMilkRepository {
       total: (meta?['total'] as int?) ?? ((data['data'] as List?)?.length ?? 0),
     );
   }
-
 }
 
 class AnimalMilkHistoryLoadResult {

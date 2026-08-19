@@ -98,6 +98,7 @@ final class _StockUsageIndentsScreenState
             children: [
               DropdownButtonFormField<String>(
                 key: const Key('stock_usage_item'),
+                isExpanded: true,
                 initialValue: available.any((item) => item.id == _itemId)
                     ? _itemId
                     : null,

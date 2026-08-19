@@ -12,10 +12,12 @@ final class DailyProductionReportScreen extends ConsumerStatefulWidget {
   const DailyProductionReportScreen({super.key});
 
   @override
-  ConsumerState<DailyProductionReportScreen> createState() => _DailyProductionReportScreenState();
+  ConsumerState<DailyProductionReportScreen> createState() =>
+      _DailyProductionReportScreenState();
 }
 
-class _DailyProductionReportScreenState extends ConsumerState<DailyProductionReportScreen> {
+class _DailyProductionReportScreenState
+    extends ConsumerState<DailyProductionReportScreen> {
   DateTime _selectedDate = DateTime.now();
 
   Future<void> _pickDate() async {
@@ -32,23 +34,27 @@ class _DailyProductionReportScreenState extends ConsumerState<DailyProductionRep
 
   void _exportCsv(List records) {
     final buffer = StringBuffer();
-    buffer.writeln('Animal Number,Name,Date,Total Feed (kg),Total Milk (Liters)');
+    buffer.writeln(
+      'Animal Number,Name,Date,Total Feed (kg),Total Milk (Liters)',
+    );
     final dateFormat = DateFormat('yyyy-MM-dd');
 
     for (final record in records) {
       final name = record.animalName ?? '';
       final date = dateFormat.format(record.date);
-      buffer.writeln('${record.animalNumber},$name,$date,${record.totalFeedKg},${record.totalMilkLitres}');
+      buffer.writeln(
+        '${record.animalNumber},$name,$date,${record.totalFeedKg},${record.totalMilkLitres}',
+      );
     }
 
     final bytes = Uint8List.fromList(utf8.encode(buffer.toString()));
-    final filename = 'daily_production_report_${dateFormat.format(_selectedDate)}.csv';
+    final filename =
+        'daily_production_report_${dateFormat.format(_selectedDate)}.csv';
 
     SharePlus.instance.share(
       ShareParams(
         files: [XFile.fromData(bytes, name: filename, mimeType: 'text/csv')],
-        text:
-            'Daily Production Report for ${dateFormat.format(_selectedDate)}',
+        text: 'Daily Production Report for ${dateFormat.format(_selectedDate)}',
       ),
     );
   }
@@ -94,24 +100,33 @@ class _DailyProductionReportScreenState extends ConsumerState<DailyProductionRep
             child: reportAsync.when(
               data: (records) {
                 if (records.isEmpty) {
-                  return const EmptyStateView(message: 'No records found for this date.');
+                  return const EmptyStateView(
+                    message: 'No records found for this date.',
+                  );
                 }
                 return ListView.builder(
                   itemCount: records.length,
                   itemBuilder: (context, index) {
                     final record = records[index];
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text(record.animalNumber),
+                        leading: CircleAvatar(child: Text(record.animalNumber)),
+                        title: Text(
+                          record.animalName ?? 'Animal ${record.animalNumber}',
                         ),
-                        title: Text(record.animalName ?? 'Animal ${record.animalNumber}'),
                         subtitle: Text(
                           'Feed: ${record.totalFeedKg} kg  |  Milk: ${record.totalMilkLitres} L',
                         ),
-                        trailing: const Icon(Icons.chevron_right_rounded, size: 20),
-                        onTap: () => context.push('/animals/${record.animalId}'),
+                        trailing: const Icon(
+                          Icons.chevron_right_rounded,
+                          size: 20,
+                        ),
+                        onTap: () =>
+                            context.push('/animals/${record.animalId}'),
                       ),
                     );
                   },
@@ -119,7 +134,9 @@ class _DailyProductionReportScreenState extends ConsumerState<DailyProductionRep
               },
               error: (err, stack) => ErrorStateView(
                 message: err.toString(),
-                onRetry: () => ref.invalidate(dailyProductionReportProvider(_selectedDate)),
+                onRetry: () => ref.invalidate(
+                  dailyProductionReportProvider(_selectedDate),
+                ),
               ),
               loading: () => const LoadingStateView(),
             ),

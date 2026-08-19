@@ -104,7 +104,7 @@ return new class extends Migration
         }$ids = DB::table('permissions')->whereIn('name', ['breeding.view', 'breeding.manage'])->pluck('id');
         foreach (DB::table('roles')->whereIn('slug', ['organization-owner', 'farm-manager'])->pluck('id') as $r) {
             foreach ($ids as $id) {
-                DB::table('role_permissions')->updateOrInsert(['role_id' => $r, 'permission_id' => $id], ['created_at' => now(), 'updated_at' => now()]);
+                DB::table('permission_role')->updateOrInsert(['role_id' => $r, 'permission_id' => $id]);
             }
         }
     }
@@ -115,6 +115,6 @@ return new class extends Migration
         Schema::dropIfExists('animal_pregnancy_checks');
         Schema::dropIfExists('animal_breeding_services');
         Schema::dropIfExists('animal_heat_records');
-        DB::table('permissions')->whereIn('name',['breeding.view', 'breeding.manage'])->delete();
+        DB::table('permissions')->whereIn('name', ['breeding.view', 'breeding.manage'])->delete();
     }
 };

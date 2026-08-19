@@ -50,11 +50,11 @@ import 'package:dairycare_mobile/features/workforce/presentation/employee_loans_
 import 'package:dairycare_mobile/features/workforce/presentation/employees_screen.dart';
 import 'package:dairycare_mobile/features/workforce/presentation/finance_screen.dart';
 import 'package:dairycare_mobile/features/workforce/presentation/payroll_screen.dart';
+import 'package:dairycare_mobile/features/visitors/presentation/visitors_screen.dart';
 import 'package:dairycare_mobile/features/commerce/presentation/commercial_parties_screen.dart';
 import 'package:dairycare_mobile/features/commerce/presentation/purchase_orders_screen.dart';
 import 'package:dairycare_mobile/features/commerce/presentation/supplier_invoices_screen.dart';
 import 'package:dairycare_mobile/features/commerce/presentation/milk_sales_screen.dart';
-import 'package:dairycare_mobile/features/commerce/presentation/deliveries_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -94,6 +94,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (_, _) => const FoundationHomeScreen(),
           ),
           GoRoute(path: '/alerts', builder: (_, _) => const AlertsScreen()),
+          GoRoute(path: '/visitors', builder: (_, _) => const VisitorsScreen()),
           GoRoute(path: '/farms', builder: (_, _) => const FarmListScreen()),
           GoRoute(path: '/sheds', builder: (_, _) => const ShedListScreen()),
           GoRoute(
@@ -282,10 +283,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/milk-sales',
             builder: (_, _) => const MilkSalesScreen(),
-          ),
-          GoRoute(
-            path: '/deliveries',
-            builder: (_, _) => const DeliveriesScreen(),
           ),
           GoRoute(
             path: '/feed/plans',

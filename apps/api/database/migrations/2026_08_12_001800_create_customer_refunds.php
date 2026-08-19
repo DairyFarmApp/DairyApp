@@ -37,7 +37,7 @@ return new class extends Migration
         DB::table('permissions')->updateOrInsert(['name' => $name], ['id' => (string) Str::uuid7(), 'created_at' => now(), 'updated_at' => now()]);
         $permission = DB::table('permissions')->where('name', $name)->value('id');
         foreach (DB::table('roles')->whereIn('slug', ['organization-owner', 'farm-manager'])->pluck('id') as $role) {
-            DB::table('role_permissions')->updateOrInsert(['role_id' => $role, 'permission_id' => $permission], ['created_at' => now(), 'updated_at' => now()]);
+            DB::table('permission_role')->updateOrInsert(['role_id' => $role, 'permission_id' => $permission]);
         }
     }
 

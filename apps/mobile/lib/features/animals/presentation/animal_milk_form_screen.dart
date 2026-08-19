@@ -12,10 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 final class AnimalMilkFormScreen extends ConsumerStatefulWidget {
-  const AnimalMilkFormScreen({
-    super.key,
-    required this.animalId,
-  });
+  const AnimalMilkFormScreen({super.key, required this.animalId});
 
   final String animalId;
 
@@ -92,7 +89,10 @@ class _AnimalMilkFormScreenState extends ConsumerState<AnimalMilkFormScreen> {
                     ),
                     items: [
                       for (final value in MilkingSession.values)
-                        DropdownMenuItem(value: value, child: Text(value.label)),
+                        DropdownMenuItem(
+                          value: value,
+                          child: Text(value.label),
+                        ),
                     ],
                     onChanged: (value) => setState(
                       () => _session = value ?? MilkingSession.morning,
@@ -101,7 +101,9 @@ class _AnimalMilkFormScreenState extends ConsumerState<AnimalMilkFormScreen> {
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _quantity,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Quantity (Litres)',
                       border: OutlineInputBorder(),
@@ -111,7 +113,9 @@ class _AnimalMilkFormScreenState extends ConsumerState<AnimalMilkFormScreen> {
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _rejectedQuantity,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Rejected Quantity (Litres)',
                       border: OutlineInputBorder(),
@@ -135,9 +139,7 @@ class _AnimalMilkFormScreenState extends ConsumerState<AnimalMilkFormScreen> {
                     ),
                     child: Row(
                       children: [
-                        Expanded(
-                          child: Text(DateFormat.yMMMd().format(_date)),
-                        ),
+                        Expanded(child: Text(DateFormat.yMMMd().format(_date))),
                         IconButton(
                           tooltip: 'Choose date',
                           onPressed: _pickDate,
@@ -236,30 +238,36 @@ class _AnimalMilkFormScreenState extends ConsumerState<AnimalMilkFormScreen> {
           code: 'MILK_CONTEXT_REQUIRED',
         );
       }
-      final result = await ref.read(milkRepositoryProvider).saveBulk(
-        organizationId: organizationId,
-        farmId: farmId,
-        productionDate: _date,
-        session: _session,
-        drafts: [
-          MilkEntryDraft(
-            animal: MilkEligibleAnimal(
-              id: animal.id,
-              animalNumber: animal.animalNumber,
-              name: animal.name,
-              shedId: shedId,
-            ),
-            quantityLitres: double.parse(_quantity.text.trim()).toStringAsFixed(3),
-            rejectedQuantityLitres: _rejectedQuantity.text.trim().isEmpty
-                ? '0.000'
-                : double.parse(_rejectedQuantity.text.trim()).toStringAsFixed(3),
-            rejectionReason: _rejectionReason.text.trim().isEmpty
-                ? null
-                : _rejectionReason.text.trim(),
-            notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
-          ),
-        ],
-      );
+      final result = await ref
+          .read(milkRepositoryProvider)
+          .saveBulk(
+            organizationId: organizationId,
+            farmId: farmId,
+            productionDate: _date,
+            session: _session,
+            drafts: [
+              MilkEntryDraft(
+                animal: MilkEligibleAnimal(
+                  id: animal.id,
+                  animalNumber: animal.animalNumber,
+                  name: animal.name,
+                  shedId: shedId,
+                ),
+                quantityLitres: double.parse(
+                  _quantity.text.trim(),
+                ).toStringAsFixed(3),
+                rejectedQuantityLitres: _rejectedQuantity.text.trim().isEmpty
+                    ? '0.000'
+                    : double.parse(
+                        _rejectedQuantity.text.trim(),
+                      ).toStringAsFixed(3),
+                rejectionReason: _rejectionReason.text.trim().isEmpty
+                    ? null
+                    : _rejectionReason.text.trim(),
+                notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
+              ),
+            ],
+          );
       ref.invalidate(animalMilkHistoryProvider(animal.id));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -275,7 +283,9 @@ class _AnimalMilkFormScreenState extends ConsumerState<AnimalMilkFormScreen> {
       }
     } on AppException catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.message)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

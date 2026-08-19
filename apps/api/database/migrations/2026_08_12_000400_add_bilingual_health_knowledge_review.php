@@ -50,7 +50,7 @@ return new class extends Migration
         }
         $permission = DB::table('permissions')->where('name', 'health.knowledge.review')->value('id');
         foreach (DB::table('roles')->whereIn('slug', ['organization-owner', 'farm-manager'])->pluck('id') as $role) {
-            DB::table('role_permissions')->updateOrInsert(['role_id' => $role, 'permission_id' => $permission], ['created_at' => now(), 'updated_at' => now()]);
+            DB::table('permission_role')->updateOrInsert(['role_id' => $role, 'permission_id' => $permission]);
         }
     }
 
