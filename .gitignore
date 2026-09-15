@@ -43,6 +43,7 @@ apps/api/bootstrap/cache/*.php
 # Test and tool artifacts
 coverage/
 *.log
+*.apk
 .phpunit.result.cache
 .phpunit.cache/
 apps/api/dairycare_test
