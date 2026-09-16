@@ -47,6 +47,7 @@ return new class extends Migration
         Schema::dropIfExists('health_medicine_evidence_reviews');
         Schema::table('health_disease_medicine_evidence', function (Blueprint $table): void {
             $table->dropForeign('health_med_evidence_reviewer_fk');
+            $table->index('disease_id', 'health_med_evidence_disease_fk_idx');
             $table->dropUnique('health_med_evidence_disease_drap_unique');
             $table->dropColumn(['brand_name', 'manufacturer', 'dosage_form', 'drap_registration_number', 'drap_registry_url', 'drap_verified_on', 'species_scope', 'reviewer_name', 'reviewer_registration', 'review_notes', 'review_version']);
         });
