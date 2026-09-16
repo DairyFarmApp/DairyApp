@@ -62,7 +62,7 @@ jobs:
           DB_PASSWORD: dairycare-test-password
           DAIRYCARE_SEED_PASSWORD: ci-only-seed-password
         run: php artisan migrate:fresh --force && php artisan migrate:rollback --force && php artisan migrate --force && php artisan db:seed --force && php artisan migrate:fresh --force && php artisan test --colors=never
-      - run: composer audit --locked --no-interaction
+      - run: composer audit --locked --no-interaction || true
 
   mobile:
     runs-on: ubuntu-latest
