@@ -323,12 +323,13 @@ class InventoryManagementTest extends TestCase
         StockMovement::query()
             ->where('inventory_item_id', $first->json('data.id'))
             ->update(['occurred_at' => now()->subDays(10)]);
+        $farmDate = now('Asia/Karachi')->toDateString();
         $this->postJson(
             '/api/v1/inventory/medicine/items/'.$first->json('data.id').'/receipts',
             [
                 'batch_number' => 'MED-RECENT',
                 'supplier' => 'Recent Supplier',
-                'purchase_date' => today()->toDateString(),
+                'purchase_date' => $farmDate,
                 'expiry_date' => today()->addYear()->toDateString(),
                 'quantity' => '2.000',
                 'unit_cost' => '75.0000',
@@ -339,8 +340,8 @@ class InventoryManagementTest extends TestCase
 
         $period = http_build_query([
             'item_ids' => [$first->json('data.id')],
-            'from_date' => today()->toDateString(),
-            'to_date' => today()->toDateString(),
+            'from_date' => $farmDate,
+            'to_date' => $farmDate,
         ]);
         $pdf = $this->get("/api/v1/inventory/medicine/exports/receipt?$period", $headers)
             ->assertOk()
